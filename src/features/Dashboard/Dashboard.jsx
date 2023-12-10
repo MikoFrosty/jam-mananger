@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import jamManagerLogo from "../../assets/jam-manager-logo-500.png";
-import JamList from "./Jamlist";
+import JamList from "./JamList";
 import { Dialog, DialogTitle } from "@mui/material";
 import { DialogContent } from "@mui/material";
 import { TextField } from "@mui/material";
@@ -28,7 +28,7 @@ const API_URL = "https://jams-manager-2be71439fdcd.herokuapp.com/";
 
 export default function Dashboard() {
   const [createJamModalOpen, setCreateJamModalOpen] = useState(false);
-  const [jamList, setJamList] = useState([]);
+  const [jamListData, setJamListData] = useState([]);
   const [title, setTitle] = useState("");
   const [timeLimit, setTimeLimit] = useState("");
   const [refetch, setRefetch] = useState(true);
@@ -39,7 +39,7 @@ export default function Dashboard() {
     const fetchData = async () => {
       const response = await fetch(API_URL + "jams");
       const data = await response.json();
-      setJamList(data);
+      setJamListData(data);
     };
     if (refetch) {
       fetchData();
@@ -109,7 +109,7 @@ export default function Dashboard() {
         </Container>
       </Box>
       <Container sx={{ py: 8 }} maxWidth="md">
-        <JamList jamList={jamList} />
+        <JamList jamList={jamListData} />
       </Container>
       {createJamModalOpen && (
         <Dialog
