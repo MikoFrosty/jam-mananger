@@ -65,9 +65,10 @@ export default function Dashboard() {
         body: JSON.stringify(dataToSave),
       });
     };
-    saveData();
-    setCreateJamModalOpen(false);
-    setRefetch(true);
+    saveData().then(() => {
+      setCreateJamModalOpen(false);
+      setRefetch(true);
+    });
   };
 
   return (
