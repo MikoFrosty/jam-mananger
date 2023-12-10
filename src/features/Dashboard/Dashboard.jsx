@@ -1,29 +1,73 @@
+import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import jamManagerLogo from "../../assets/jam-manager-logo-500.png";
+import JamList from "./Jamlist";
+import { Dialog, DialogTitle } from "@mui/material";
+import { DialogContent } from "@mui/material";
+import { TextField } from "@mui/material";
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const mainStyle = {
+  color: "white",
+  padding: "10px",
+  fontFamily: "Arial",
+  margin: 0,
+  width: "100%",
+};
+
+const logoStyle = {
+  width: "100%",
+  maxWidth: "300px",
+  height: "auto",
+};
+
+const API_URL = "https://jams-manager-2be71439fdcd.herokuapp.com/";
 
 export default function Dashboard() {
-  const mainStyle = {
-    color: "white",
-    padding: "10px",
-    fontFamily: "Arial",
-    margin: 0,
-    width: "100%",
-  };
-  const logoStyle = {
-    width: "100%",
-    maxWidth: "300px",
-    height: "auto",
+  const [createJamModalOpen, setCreateJamModalOpen] = useState(false);
+  const [jamList, setJamList] = useState([]);
+  const [title, setTitle] = useState("");
+  const [timeLimit, setTimeLimit] = useState("");
+  const [refetch, setRefetch] = useState(true);
+  // const [jamUrl, setJamUrl] = useState("");
+  // const [imageUrl, setImageUrl] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(API_URL + "jams");
+      const data = await response.json();
+      setJamList(data);
+    };
+    if (refetch) {
+      fetchData();
+      setRefetch(false);
+    }
+  }, [refetch]);
+
+  const onSave = (e) => {
+    e.preventDefault();
+    const dataToSave = {
+      title: title,
+      time_limit: timeLimit,
+      // jam_url: jamUrl,
+      // image_url: imageUrl,
+      // options: "",
+    };
+    const saveData = async () => {
+      await fetch(API_URL + "create_jam", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSave),
+      });
+    };
+    saveData();
+    setCreateJamModalOpen(false);
+    setRefetch(true);
   };
 
   return (
@@ -45,10 +89,7 @@ export default function Dashboard() {
             color="text.secondary"
             paragraph
           >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum,
-            maxime corporis est quibusdam esse temporibus! Aliquid optio eius
-            veritatis, obcaecati vero labore sapiente sit blanditiis voluptas,
-            ex sequi suscipit cumque.
+            Jam Manager is a tool for creating and managing jams.
           </Typography>
           <Stack
             sx={{ pt: 4 }}
@@ -56,49 +97,98 @@ export default function Dashboard() {
             spacing={2}
             justifyContent="center"
           >
-            <Button variant="contained">Main call to action</Button>
-            <Button variant="outlined">Secondary action</Button>
+            <Button
+              onClick={() => setCreateJamModalOpen(true)}
+              size="large"
+              sx={{ fontSize: "30px" }}
+              variant="contained"
+            >
+              Create Jam
+            </Button>
           </Stack>
         </Container>
       </Box>
       <Container sx={{ py: 8 }} maxWidth="md">
-        {/* End hero unit */}
-        <Grid container spacing={4}>
-          {cards.map((card) => (
-            <Grid item key={card} xs={12} sm={6} md={4}>
-              <Card
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <CardMedia
-                  component="div"
-                  sx={{
-                    // 16:9
-                    pt: "56.25%",
-                  }}
-                  image="https://source.unsplash.com/random?wallpapers"
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    Heading
-                  </Typography>
-                  <Typography>
-                    This is a media card. You can use this section to describe
-                    the content.
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small">View</Button>
-                  <Button size="small">Edit</Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <JamList jamList={jamList} />
       </Container>
+      {createJamModalOpen && (
+        <Dialog
+          open={createJamModalOpen}
+          onClose={() => setCreateJamModalOpen(false)}
+        >
+          {/*"Create Jam input fields go here"*/}
+          <DialogTitle>Create Jam</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Jam Title"
+              type="text"
+              fullWidth
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Jam Time Limit (in minutes)"
+              type="text"
+              fullWidth
+              onChange={(e) => setTimeLimit(e.target.value)}
+            />
+            {/* <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Jam URL"
+              type="text"
+              fullWidth
+            /> */}
+            {/* <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Jam Options"
+              type="text"
+              fullWidth
+            /> */}
+            {/* <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Jam Image URL"
+              type="text"
+              fullWidth
+            /> */}
+            <Stack sx={{ pt: 5 }} spacing={2}>
+              <Button
+                size="large"
+                variant="contained"
+                color="success"
+                onClick={onSave}
+              >
+                Save
+              </Button>
+              <Button
+                onClick={() => setCreateJamModalOpen(false)}
+                size="large"
+                variant="contained"
+              >
+                Cancel
+              </Button>
+              {/* <Button
+                onClick={() => setCreateJamModalOpen(false)}
+                size="large"
+                variant="contained"
+                color="error"
+              >
+                Delete
+              </Button> */}
+            </Stack>
+          </DialogContent>
+        </Dialog>
+      )}
     </main>
   );
 }
