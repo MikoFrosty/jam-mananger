@@ -1,22 +1,23 @@
-import { useState, useEffect } from "react";
+/* eslint-disable react/prop-types */
+// import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
+// import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+// import Button from "@mui/material/Button";
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+// const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-const mockJam = {
-  created_timestamp: "1702178798644",
-  jam_url: "facebook.com",
-  options: "",
-  time_limit: "1",
-  title: "MOCK JAM",
-  image_url: "",
-};
+// const mockJam = {
+//   created_timestamp: "1702178798644",
+//   jam_url: "facebook.com",
+//   options: "",
+//   time_limit: "1",
+//   title: "MOCK JAM",
+//   image_url: "",
+// };
 
 export default function JamList({ jamList }) {
   // ?sfdsfsd
