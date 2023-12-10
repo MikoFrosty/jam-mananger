@@ -6,9 +6,8 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import jamManagerLogo from "../../assets/jam-manager-logo-500.png";
 import JamList from "./JamList";
-import { Dialog, DialogTitle } from "@mui/material";
-import { DialogContent } from "@mui/material";
-import { TextField } from "@mui/material";
+import CreateJamModal from "./CreateJamModal";
+const AuthorizationHeader = import.meta.env.VITE_AUTHORIZATION_HEADER;
 
 const mainStyle = {
   color: "white",
@@ -26,18 +25,33 @@ const logoStyle = {
 
 const API_URL = "https://jams-manager-2be71439fdcd.herokuapp.com/";
 
+const mockJamList = [
+  {
+    created_timestamp: "1702178798644",
+    jam_url: "facebook.com",
+    options: "",
+    time_limit: "1",
+    title: "MOCK JAM",
+    image_url: "",
+  },
+];
+
 export default function Dashboard() {
   const [createJamModalOpen, setCreateJamModalOpen] = useState(false);
   const [jamListData, setJamListData] = useState([]);
-  const [title, setTitle] = useState("");
-  const [timeLimit, setTimeLimit] = useState("");
   const [refetch, setRefetch] = useState(true);
-  // const [jamUrl, setJamUrl] = useState("");
-  // const [imageUrl, setImageUrl] = useState("");
+  const [Authorization, setAuthorization] = useState(
+    localStorage.getItem("Authorization") || AuthorizationHeader
+  );
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(API_URL + "jams");
+      const response = await fetch(API_URL + "jams", {
+        headers: {
+          Authorization,
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setJamListData(data);
     };
@@ -47,33 +61,29 @@ export default function Dashboard() {
     }
   }, [refetch]);
 
-  const onSave = (e) => {
-    e.preventDefault();
-    const dataToSave = {
-      title: title,
-      time_limit: timeLimit,
-      // jam_url: jamUrl,
-      // image_url: imageUrl,
-      // options: "",
-    };
+  const onSave = (newJam) => {
     const saveData = async () => {
       await fetch(API_URL + "create_jam", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSave),
+        body: JSON.stringify(newJam),
       });
     };
-    saveData().then(() => {
-      setCreateJamModalOpen(false);
-      setRefetch(true);
+    saveData().then((data) => {
+      if (data.status !== 200) {
+        console.log("Error saving data");
+        return;
+      } else {
+        setCreateJamModalOpen(false);
+        setRefetch(true);
+      }
     });
   };
 
   return (
     <main style={mainStyle} id="TESTTESTTEST">
-      {/* Hero unit */}
       <Box
         sx={{
           bgcolor: "background.paper",
@@ -113,82 +123,11 @@ export default function Dashboard() {
         <JamList jamList={jamListData} />
       </Container>
       {createJamModalOpen && (
-        <Dialog
-          open={createJamModalOpen}
-          onClose={() => setCreateJamModalOpen(false)}
-        >
-          {/*"Create Jam input fields go here"*/}
-          <DialogTitle>Create Jam</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Jam Title"
-              type="text"
-              fullWidth
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Jam Time Limit (in minutes)"
-              type="text"
-              fullWidth
-              onChange={(e) => setTimeLimit(e.target.value)}
-            />
-            {/* <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Jam URL"
-              type="text"
-              fullWidth
-            /> */}
-            {/* <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Jam Options"
-              type="text"
-              fullWidth
-            /> */}
-            {/* <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Jam Image URL"
-              type="text"
-              fullWidth
-            /> */}
-            <Stack sx={{ pt: 5 }} spacing={2}>
-              <Button
-                size="large"
-                variant="contained"
-                color="success"
-                onClick={onSave}
-              >
-                Save
-              </Button>
-              <Button
-                onClick={() => setCreateJamModalOpen(false)}
-                size="large"
-                variant="contained"
-              >
-                Cancel
-              </Button>
-              {/* <Button
-                onClick={() => setCreateJamModalOpen(false)}
-                size="large"
-                variant="contained"
-                color="error"
-              >
-                Delete
-              </Button> */}
-            </Stack>
-          </DialogContent>
-        </Dialog>
+        <CreateJamModal
+          onSave={onSave}
+          createJamModalOpen={createJamModalOpen}
+          setCreateJamModalOpen={setCreateJamModalOpen}
+        />
       )}
     </main>
   );
