@@ -6,7 +6,7 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
-import CreateJamModal from "../../components/JamModal";
+import JamModal from "../../components/JamModal";
 
 const getJamTimeString = (jam) => {
   const hours = Math.floor(jam.time_limit / 60);
@@ -29,7 +29,7 @@ const getJamCreatedDate = (jam) => {
   return "Created: " + date.toLocaleString();
 };
 
-export default function JamCard({ jam }) {
+export default function JamCard({ jam, onDelete }) {
   const [open, setOpen] = useState(false);
   //console.log(open);
 
@@ -78,7 +78,7 @@ export default function JamCard({ jam }) {
           </CardContent>
         </CardActionArea>
       </Card>
-      {open && <CreateJamModal jam={jam} open={open} setOpen={setOpen} />}
+      {open && <JamModal isCreate={false} jamData={jam} open={open} setOpen={setOpen} onDelete={onDelete} />}
     </>
   );
 }

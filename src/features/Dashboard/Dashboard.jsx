@@ -7,6 +7,7 @@ import Container from "@mui/material/Container";
 import jamManagerLogo from "../../assets/jam-manager-logo-500.png";
 import JamList from "./JamList";
 import CreateJamModal from "./CreateJamModal";
+import JamModal from "../../components/JamModal";
 const AuthorizationHeader = import.meta.env.VITE_AUTHORIZATION_HEADER;
 
 const mainStyle = {
@@ -24,6 +25,8 @@ const logoStyle = {
 };
 
 const API_URL = "https://jams-manager-2be71439fdcd.herokuapp.com/";
+const AUTH_TOKEN =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTc1NTYxMjI3MDhjZTAwMDIyN2Q4YzQiLCJpYXQiOjE3MDIxOTMwMDksImV4cCI6MTcwMjIzNjIwOX0.R9JpFYqwa3ORPYG23ue5m6OX7_bUv-9FSKQvbnQksgE";
 
 const mockJamList = [
   {
@@ -41,7 +44,9 @@ export default function Dashboard() {
   const [jamListData, setJamListData] = useState([]);
   const [refetch, setRefetch] = useState(true);
   const [Authorization, setAuthorization] = useState(
-    localStorage.getItem("Authorization") || AuthorizationHeader
+    //localStorage.getItem("Authorization") ||
+    //AuthorizationHeader ||
+    AUTH_TOKEN
   );
 
   useEffect(() => {
@@ -63,16 +68,19 @@ export default function Dashboard() {
 
   const onSave = (newJam) => {
     const saveData = async () => {
-      await fetch(API_URL + "create_jam", {
+      const result = await fetch(API_URL + "create_jam", {
         method: "POST",
         headers: {
+          Authorization,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newJam),
       });
+      return result.json();
     };
     saveData().then((data) => {
-      if (data.status !== 200) {
+      console.log(data);
+      if (!data) {
         console.log("Error saving data");
         return;
       } else {
@@ -82,8 +90,31 @@ export default function Dashboard() {
     });
   };
 
+  const handleDelete = (jamId) => {
+    const deleteData = async () => {
+      const result = await fetch(API_URL + "jams?id=" + jamId, {
+        method: "DELETE",
+        headers: {
+          Authorization,
+          "Content-Type": "application/json",
+        },
+      });
+      return result.json();
+    };
+    deleteData().then((data) => {
+      console.log(data);
+      if (!data) {
+        console.log("Error deleting data");
+        return;
+      } else {
+        setRefetch(true);
+        // TODO: Close modal
+      }
+    });
+  };
+
   return (
-    <main style={mainStyle} id="TESTTESTTEST">
+    <main style={mainStyle}>
       <Box
         sx={{
           bgcolor: "background.paper",
@@ -120,7 +151,7 @@ export default function Dashboard() {
         </Container>
       </Box>
       <Container sx={{ py: 8 }} maxWidth="md">
-        <JamList jamList={jamListData} />
+        <JamList jamList={jamListData} onDelete={handleDelete} />
       </Container>
       {createJamModalOpen && (
         <CreateJamModal

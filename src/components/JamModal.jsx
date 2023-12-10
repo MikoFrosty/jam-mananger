@@ -8,7 +8,15 @@ import {
   TextField,
 } from "@mui/material";
 
-export default function JamModal({ onSave, open, setOpen }) {
+export default function JamModal({
+  isCreate,
+  onSave,
+  open,
+  setOpen,
+  jamData = null,
+  onDelete = null,
+}) {
+  console.log("jam modal open: ", jamData);
   const [title, setTitle] = useState("");
   const [timeLimit, setTimeLimit] = useState("");
   const [jamUrl, setJamUrl] = useState("");
@@ -30,12 +38,19 @@ export default function JamModal({ onSave, open, setOpen }) {
     return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
   };
 
+  if ((!isCreate && !jamData) || (!isCreate && !onDelete)) {
+    console.log("jam modal error: ", isCreate, jamData, onDelete);
+    return null;
+  }
+
   return (
     <Dialog
       open={open}
-      onClose={() => setOpen(false)}
+      onClose={() => {
+        console.log("jam modal closed");
+        setOpen(false);
+      }}
     >
-      {/*"Create Jam input fields go here"*/}
       <DialogTitle>Create Jam</DialogTitle>
       <DialogContent>
         <TextField
@@ -105,14 +120,16 @@ export default function JamModal({ onSave, open, setOpen }) {
           >
             Cancel
           </Button>
-          {/* <Button
-                onClick={() => setCreateJamModalOpen(false)}
-                size="large"
-                variant="contained"
-                color="error"
-              >
-                Delete
-              </Button> */}
+          {!isCreate && (
+            <Button
+              onClick={() => onDelete(jamData._id)}
+              size="large"
+              variant="contained"
+              color="error"
+            >
+              Delete
+            </Button>
+          )}
         </Stack>
       </DialogContent>
     </Dialog>

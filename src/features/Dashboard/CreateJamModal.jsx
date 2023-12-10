@@ -30,9 +30,9 @@ export default function CreateJamModal({
 
     const newJam = {
       title,
-      timeLimit,
-      jamUrl,
-      imageUrl,
+      time_limit: timeLimit,
+      jam_url: jamUrl,
+      image_url: imageUrl,
     };
     onSave(newJam);
   };
@@ -46,7 +46,6 @@ export default function CreateJamModal({
       open={createJamModalOpen}
       onClose={() => setCreateJamModalOpen(false)}
     >
-      {/*"Create Jam input fields go here"*/}
       <DialogTitle>Create Jam</DialogTitle>
       <DialogContent>
         <TextField
