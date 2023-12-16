@@ -8,7 +8,9 @@ import jamManagerLogo from "../../assets/jam-manager-logo-500.png";
 import JamList from "./JamList";
 import CreateJamModal from "./CreateJamModal";
 import JamModal from "../../components/JamModal";
-const AuthorizationHeader = import.meta.env.VITE_AUTHORIZATION_HEADER;
+import AuthContext from "../../Contexts/AuthContext";
+import { useContext } from "react";
+import fetchWrapper from "../../utils/fetchWrapper";
 
 const mainStyle = {
   color: "white",
@@ -25,8 +27,6 @@ const logoStyle = {
 };
 
 const API_URL = "https://jams-manager-2be71439fdcd.herokuapp.com/";
-const AUTH_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTc1NTYxMjI3MDhjZTAwMDIyN2Q4YzQiLCJpYXQiOjE3MDIxOTMwMDksImV4cCI6MTcwMjIzNjIwOX0.R9JpFYqwa3ORPYG23ue5m6OX7_bUv-9FSKQvbnQksgE";
 
 const mockJamList = [
   {
@@ -40,20 +40,21 @@ const mockJamList = [
 ];
 
 export default function Dashboard() {
+  const { user, setUserData, token, setTokenString } = useContext(AuthContext);
   const [createJamModalOpen, setCreateJamModalOpen] = useState(false);
   const [jamListData, setJamListData] = useState([]);
   const [refetch, setRefetch] = useState(true);
-  const [Authorization, setAuthorization] = useState(
-    //localStorage.getItem("Authorization") ||
-    //AuthorizationHeader ||
-    AUTH_TOKEN
-  );
 
   useEffect(() => {
+    fetchWrapper("/jams", token, "GET", null).then((data) => {
+      console.log('fetchWrapper JamListData', data);
+      setJamListData(data);
+    });
+
     const fetchData = async () => {
       const response = await fetch(API_URL + "jams", {
         headers: {
-          Authorization,
+          Authorization: token,
           "Content-Type": "application/json",
         },
       });
@@ -76,7 +77,7 @@ export default function Dashboard() {
       const result = await fetch(API_URL + "create_jam", {
         method: "POST",
         headers: {
-          Authorization,
+          Authorization: token,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newJam),
@@ -100,7 +101,7 @@ export default function Dashboard() {
       const result = await fetch(API_URL + "jams?id=" + jamId, {
         method: "DELETE",
         headers: {
-          Authorization,
+          Authorization: token,
           "Content-Type": "application/json",
         },
       });
