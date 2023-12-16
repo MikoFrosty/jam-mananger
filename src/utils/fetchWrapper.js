@@ -32,7 +32,7 @@ const fetchWrapper = async (path, token, method, payload) => {
     const response = await fetch(baseUrl + path, requestOptions);
     if (!response.ok) {
       // Handle specific error for invalid token
-      if (response.status === 401) {
+      if (response.status === 403) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         console.error("Invalid token, please log in again.");

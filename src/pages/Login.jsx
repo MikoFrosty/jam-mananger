@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import AuthContext from "../Contexts/AuthContext";
 import { useContext } from "react";
+import fetchWrapper from "../utils/fetchWrapper";
 
 function Copyright(props) {
   return (
@@ -37,9 +38,13 @@ export default function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
+    const payload = {
       email: data.get("email"),
-      password: data.get("password"),
+      password: data.get("password")
+    };
+    fetchWrapper("/login", "", "POST", {...payload}).then((res) => {
+      setUserData(res.user);
+      setTokenString(res.token)
     });
   };
 
