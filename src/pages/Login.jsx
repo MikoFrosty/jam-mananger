@@ -13,6 +13,7 @@ import Container from "@mui/material/Container";
 import AuthContext from "../Contexts/AuthContext";
 import { useContext } from "react";
 import fetchWrapper from "../utils/fetchWrapper";
+import { useNavigate } from "react-router-dom";
 
 function Copyright(props) {
   return (
@@ -34,17 +35,19 @@ function Copyright(props) {
 
 export default function Login() {
   const { user, setUserData, token, setTokenString } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const payload = {
       email: data.get("email"),
-      password: data.get("password")
+      password: data.get("password"),
     };
-    fetchWrapper("/login", "", "POST", {...payload}).then((res) => {
+    fetchWrapper("/login", "", "POST", { ...payload }).then((res) => {
       setUserData(res.user);
-      setTokenString(res.token)
+      setTokenString(res.token);
+      navigate("/");
     });
   };
 

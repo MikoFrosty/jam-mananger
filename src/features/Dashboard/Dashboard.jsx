@@ -44,49 +44,41 @@ export default function Dashboard() {
   const [createJamModalOpen, setCreateJamModalOpen] = useState(false);
   const [jamListData, setJamListData] = useState([]);
   const [refetch, setRefetch] = useState(true);
+  // console.log('user from context', user);
+  // console.log("token from context", token);
 
   useEffect(() => {
-    fetchWrapper("/jams", token, "GET", null).then((data) => {
-      console.log('fetchWrapper JamListData', data);
-      setJamListData(data);
-    });
-
-    const fetchData = async () => {
-      const response = await fetch(API_URL + "jams", {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        console.log("Error fetching data");
-        return;
-      } else {
-        const data = await response.json();
-        setJamListData(data);
-      }
-    };
     if (refetch) {
-      fetchData();
+      fetchWrapper("/jams", token, "GET", null).then((res) => {
+        console.log("fetchWrapper JamListData", res);
+        setJamListData(res.jams);
+      });
       setRefetch(false);
     }
   }, [refetch]);
 
   const onSave = (newJam) => {
-    const saveData = async () => {
-      const result = await fetch(API_URL + "create_jam", {
-        method: "POST",
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newJam),
-      });
-      return result.json();
+    const parsedUser = JSON.parse(user);
+    console.log('parsed user', parsedUser);
+    const body = {
+      ...newJam,
+      jam_group_id: parsedUser.jam_groups[0],
     };
-    saveData().then((data) => {
-      console.log(data);
-      if (!data) {
+    // const saveData = async () => {
+    //   const result = await fetch(API_URL + "create_jam", {
+    //     method: "POST",
+    //     headers: {
+    //       Authorization: token,
+    //       "Content-Type": "application/json",
+    //     },
+    //     body,
+    //   });
+    //   return result.json();
+    // };
+
+    fetchWrapper("/create_jam", token, "POST", body).then((res) => {
+      console.log(res);
+      if (!res) {
         console.log("Error saving data");
         return;
       } else {

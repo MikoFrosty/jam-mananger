@@ -11,7 +11,7 @@ export default function AuthProvider({ children }) {
   };
 
   const setTokenString = (data) => {
-    localStorage.setItem("token", JSON.stringify(data));
+    localStorage.setItem("token", data);
     setToken(data);
   };
 
