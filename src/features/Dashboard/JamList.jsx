@@ -6,6 +6,8 @@ export default function JamList({ jamList, onDelete }) {
     return null;
   }
 
+  console.log('jamList', jamList);
+
   return (
     <Grid container spacing={4}>
       {jamList.map((jam, i) => (

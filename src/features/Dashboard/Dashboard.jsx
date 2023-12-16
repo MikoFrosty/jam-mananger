@@ -57,8 +57,13 @@ export default function Dashboard() {
           "Content-Type": "application/json",
         },
       });
-      const data = await response.json();
-      setJamListData(data);
+      if (!response.ok) {
+        console.log("Error fetching data");
+        return;
+      } else {
+        const data = await response.json();
+        setJamListData(data);
+      }
     };
     if (refetch) {
       fetchData();
