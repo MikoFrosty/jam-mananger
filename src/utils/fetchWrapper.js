@@ -35,8 +35,7 @@ const fetchWrapper = async (path, token, method, payload) => {
       if (response.status === 403) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        console.error("Invalid token, please log in again.");
-        throw new Error("Invalid token");
+        window.location.reload();
       }
     }
     const data = await response.json();

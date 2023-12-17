@@ -8,7 +8,9 @@ import jamManagerLogo from "../../assets/jam-manager-logo-500.png";
 import JamList from "./JamList";
 import CreateJamModal from "./CreateJamModal";
 import JamModal from "../../components/JamModal";
-const AuthorizationHeader = import.meta.env.VITE_AUTHORIZATION_HEADER;
+import AuthContext from "../../Contexts/AuthContext";
+import { useContext } from "react";
+import fetchWrapper from "../../utils/fetchWrapper";
 
 const mainStyle = {
   color: "white",
@@ -25,8 +27,6 @@ const logoStyle = {
 };
 
 const API_URL = "https://jams-manager-2be71439fdcd.herokuapp.com/";
-const AUTH_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTc1NTYxMjI3MDhjZTAwMDIyN2Q4YzQiLCJpYXQiOjE3MDIxOTMwMDksImV4cCI6MTcwMjIzNjIwOX0.R9JpFYqwa3ORPYG23ue5m6OX7_bUv-9FSKQvbnQksgE";
 
 const mockJamList = [
   {
@@ -40,52 +40,45 @@ const mockJamList = [
 ];
 
 export default function Dashboard() {
+  const { user, setUserData, token, setTokenString } = useContext(AuthContext);
   const [createJamModalOpen, setCreateJamModalOpen] = useState(false);
   const [jamListData, setJamListData] = useState([]);
   const [refetch, setRefetch] = useState(true);
-  const [Authorization, setAuthorization] = useState(
-    //localStorage.getItem("Authorization") ||
-    //AuthorizationHeader ||
-    AUTH_TOKEN
-  );
+  // console.log('user from context', user);
+  // console.log("token from context", token);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(API_URL + "jams", {
-        headers: {
-          Authorization,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        console.log("Error fetching data");
-        return;
-      } else {
-        const data = await response.json();
-        setJamListData(data);
-      }
-    };
     if (refetch) {
-      fetchData();
+      fetchWrapper("/jams", token, "GET", null).then((res) => {
+        console.log("fetchWrapper JamListData", res);
+        setJamListData(res.jams);
+      });
       setRefetch(false);
     }
   }, [refetch]);
 
   const onSave = (newJam) => {
-    const saveData = async () => {
-      const result = await fetch(API_URL + "create_jam", {
-        method: "POST",
-        headers: {
-          Authorization,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newJam),
-      });
-      return result.json();
+    const parsedUser = JSON.parse(user);
+    console.log('parsed user', parsedUser);
+    const body = {
+      ...newJam,
+      jam_group_id: parsedUser.jam_groups[0],
     };
-    saveData().then((data) => {
-      console.log(data);
-      if (!data) {
+    // const saveData = async () => {
+    //   const result = await fetch(API_URL + "create_jam", {
+    //     method: "POST",
+    //     headers: {
+    //       Authorization: token,
+    //       "Content-Type": "application/json",
+    //     },
+    //     body,
+    //   });
+    //   return result.json();
+    // };
+
+    fetchWrapper("/create_jam", token, "POST", body).then((res) => {
+      console.log(res);
+      if (!res) {
         console.log("Error saving data");
         return;
       } else {
@@ -100,7 +93,7 @@ export default function Dashboard() {
       const result = await fetch(API_URL + "jams?id=" + jamId, {
         method: "DELETE",
         headers: {
-          Authorization,
+          Authorization: token,
           "Content-Type": "application/json",
         },
       });
