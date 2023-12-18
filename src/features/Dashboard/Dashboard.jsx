@@ -11,13 +11,16 @@ import JamModal from "../../components/JamModal";
 import AuthContext from "../../Contexts/AuthContext";
 import { useContext } from "react";
 import fetchWrapper from "../../utils/fetchWrapper";
+import { Grid } from "@mui/material";
+import JamSearch from "../../components/JamSearch";
+import JamCalendar from "../../components/JamCalendar";
+import AppBarComponent from "../AppBar/AppBarComponent";
 
 const mainStyle = {
-  color: "white",
-  padding: "10px",
   fontFamily: "Arial",
   margin: 0,
   width: "100%",
+  minHeight: "100vh",
 };
 
 const logoStyle = {
@@ -44,6 +47,9 @@ export default function Dashboard() {
   const [createJamModalOpen, setCreateJamModalOpen] = useState(false);
   const [jamListData, setJamListData] = useState([]);
   const [refetch, setRefetch] = useState(true);
+  const [filteredJams, setFilteredJams] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedJamGroups, setSelectedJamGroups] = useState(["All"]);
   // console.log('user from context', user);
   // console.log("token from context", token);
 
@@ -57,9 +63,55 @@ export default function Dashboard() {
     }
   }, [refetch]);
 
+  useEffect(() => {
+    const filtered = jamListData.filter((jam) =>
+      jam.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Ceck Jam Group filters
+    if (selectedJamGroups.includes("All")) {
+      setFilteredJams(filtered);
+    } else {
+      console.log("selectedJamGroups", selectedJamGroups);
+      const filteredByGroup = filtered.filter((jam) =>
+        selectedJamGroups.includes(jam.jam_group_id)
+      );
+      setFilteredJams(filteredByGroup);
+    }
+  }, [searchTerm, jamListData]);
+
+  const handleSelectedDataChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    const new_selections =
+      typeof value === "string" ? value.replace.split(",") : value;
+
+    const set1 = new Set(selectedJamGroups);
+    const set2 = new Set(new_selections);
+    const new_value = [
+      ...selectedJamGroups.filter((item) => !set2.has(item)),
+      ...new_selections.filter((item) => !set1.has(item)),
+    ][0];
+
+    console.log("LOOK HEREEEEE", new_value);
+
+    if (new_value !== "All" && selectedJamGroups.includes("All")) {
+      setSelectedJamGroups([value.pop("All")]);
+    } else if (new_value !== "All") {
+      setSelectedJamGroups(
+        // On autofill we get a stringified value.
+        typeof value === "string" ? value.split(",") : value
+      );
+    } else if (new_value === "All" || new_selections.length === 0) {
+      setSelectedJamGroups(["All"]);
+    }
+  };
+
   const onSave = (newJam) => {
     const parsedUser = JSON.parse(user);
-    console.log('parsed user', parsedUser);
+    console.log("parsed user", parsedUser);
     const body = {
       ...newJam,
       jam_group_id: parsedUser.jam_groups[0],
@@ -111,46 +163,100 @@ export default function Dashboard() {
     });
   };
 
+  const handleJamSelect = (jamId) => {
+    console.log("handleJamSelect", jamId);
+    const selectedJam = jamListData.filter((jam) => jam._id === jamId);
+    console.log("selectedJam", selectedJam);
+    setFilteredJams([selectedJam]);
+  };
+
+  const handleSearchChange = (searchValue) => {
+    setSearchTerm(searchValue);
+  };
+
+  const handleCreateJamClick = () => {
+    setCreateJamModalOpen(true);
+  };
+
   return (
     <main style={mainStyle}>
-      <Box
-        sx={{
-          bgcolor: "background.paper",
-          pt: 2,
-          pb: 6,
-        }}
+      {/* App Bar */}
+      <AppBarComponent
+        token={token}
+        handleChange={handleSelectedDataChange}
+        selectedData={selectedJamGroups}
+        onCreateJamClick={handleCreateJamClick}
+      />
+      {/* main layout for dashboard */}
+      <Grid
+        xs={12}
+        item
+        container
+        justifyContent="center"
+        alignItems="flex-start"
+        mt={2}
       >
-        <Container maxWidth="sm">
-          <img style={logoStyle} src={jamManagerLogo} alt="Jam Manager Logo" />
-
-          <Typography
-            variant="h5"
-            align="center"
-            color="text.secondary"
-            paragraph
-          >
-            Jam Manager is a tool for creating and managing jams.
-          </Typography>
-          <Stack
-            sx={{ pt: 4 }}
-            direction="row"
-            spacing={2}
+        {/* left side of dashboard */}
+        <Grid
+          item
+          margin={2}
+          width="450px"
+          sx={{
+            border: "1px solid black",
+          }}
+        >
+          {/* calendar section */}
+          <Grid
+            container
+            item
+            flexDirection={"column"}
             justifyContent="center"
+            alignItems="center"
+            minHeight={"400px"}
           >
-            <Button
-              onClick={() => setCreateJamModalOpen(true)}
-              size="large"
-              sx={{ fontSize: "30px" }}
-              variant="contained"
+            <JamCalendar />
+          </Grid>
+          {/* jam feed section */}
+          <Grid
+            container
+            item
+            justifyContent="center"
+            alignItems="center"
+            minHeight={"300px"}
+          >
+            {/* <img src={jamManagerLogo} style={logoStyle} alt="logo" /> */}
+            <Typography
+              variant="h5"
+              align="center"
+              color="text.secondary"
+              paragraph
             >
-              Create Jam
-            </Button>
-          </Stack>
-        </Container>
-      </Box>
-      <Container sx={{ py: 8 }} maxWidth="md">
-        <JamList jamList={jamListData} onDelete={handleDelete} />
-      </Container>
+              Jam Feed Section
+            </Typography>
+          </Grid>
+        </Grid>
+        {/* Search and jam list */}
+        <Grid
+          margin={2}
+          item
+          flexDirection={"column"}
+          xs
+          justifyContent="flex-start"
+          alignItems="center"
+        >
+          {/* search bar */}
+          <Grid item mb={2}>
+            <JamSearch
+              jamList={jamListData}
+              onJamSelect={handleJamSelect}
+              onSearchChange={handleSearchChange}
+            />
+          </Grid>
+          <Grid container item justifyContent={"center"} alignItems={"center"}>
+            <JamList jamList={filteredJams} onDelete={handleDelete} />
+          </Grid>
+        </Grid>
+      </Grid>
       {createJamModalOpen && (
         <CreateJamModal
           onSave={onSave}

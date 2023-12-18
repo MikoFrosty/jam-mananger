@@ -30,7 +30,7 @@ const ColorButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-export default function AppBarComponent({ token, handleChange, selectedData }) {
+export default function AppBarComponent({ token, handleChange, selectedData, onCreateJamClick }) {
   const [expandedUser, setExpandedUser] = useState({});
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export default function AppBarComponent({ token, handleChange, selectedData }) {
           </MultipleSelect>
           <ColorButton
             disableTouchRipple
-            onClick={() => console.log("clicked")}
+            onClick={onCreateJamClick}
             variant="contained"
           >
             Create Jam

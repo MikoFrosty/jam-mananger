@@ -43,7 +43,6 @@ export default function MultipleSelect({
               borderWidth: 2
             },
           }}
-          onFocus={"none"}
           labelId="demo-multiple-name-label"
           id="demo-multiple-name"
           multiple
