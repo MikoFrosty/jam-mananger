@@ -14,13 +14,13 @@ import fetchWrapper from "../../utils/fetchWrapper";
 import { Grid } from "@mui/material";
 import JamSearch from "../../components/JamSearch";
 import JamCalendar from "../../components/JamCalendar";
+import AppBarComponent from "../AppBar/AppBarComponent";
 
 const mainStyle = {
   fontFamily: "Arial",
   margin: 0,
   width: "100%",
   minHeight: "100vh",
-  paddingTop: "70px",
 };
 
 const logoStyle = {
@@ -49,7 +49,7 @@ export default function Dashboard() {
   const [refetch, setRefetch] = useState(true);
   const [filteredJams, setFilteredJams] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  console.log("selectedJams", filteredJams);
+  const [selectedJamGroups, setSelectedJamGroups] = useState(["All"]);
   // console.log('user from context', user);
   // console.log("token from context", token);
 
@@ -67,8 +67,47 @@ export default function Dashboard() {
     const filtered = jamListData.filter((jam) =>
       jam.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredJams(filtered);
+
+    // Ceck Jam Group filters
+    if (selectedJamGroups.includes("All")) {
+      setFilteredJams(filtered);
+    } else {
+      console.log("selectedJamGroups", selectedJamGroups);
+      const filteredByGroup = filtered.filter((jam) =>
+        selectedJamGroups.includes(jam.jam_group_id)
+      );
+      setFilteredJams(filteredByGroup);
+    }
   }, [searchTerm, jamListData]);
+
+  const handleSelectedDataChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    const new_selections =
+      typeof value === "string" ? value.replace.split(",") : value;
+
+    const set1 = new Set(selectedJamGroups);
+    const set2 = new Set(new_selections);
+    const new_value = [
+      ...selectedJamGroups.filter((item) => !set2.has(item)),
+      ...new_selections.filter((item) => !set1.has(item)),
+    ][0];
+
+    console.log("LOOK HEREEEEE", new_value);
+
+    if (new_value !== "All" && selectedJamGroups.includes("All")) {
+      setSelectedJamGroups([value.pop("All")]);
+    } else if (new_value !== "All") {
+      setSelectedJamGroups(
+        // On autofill we get a stringified value.
+        typeof value === "string" ? value.split(",") : value
+      );
+    } else if (new_value === "All" || new_selections.length === 0) {
+      setSelectedJamGroups(["All"]);
+    }
+  };
 
   const onSave = (newJam) => {
     const parsedUser = JSON.parse(user);
@@ -135,10 +174,19 @@ export default function Dashboard() {
     setSearchTerm(searchValue);
   };
 
+  const handleCreateJamClick = () => {
+    setCreateJamModalOpen(true);
+  };
+
   return (
     <main style={mainStyle}>
-      {/* APP BAR COMPONENT HERE */}
-      <></>
+      {/* App Bar */}
+      <AppBarComponent
+        token={token}
+        handleChange={handleSelectedDataChange}
+        selectedData={selectedJamGroups}
+        onCreateJamClick={handleCreateJamClick}
+      />
       {/* main layout for dashboard */}
       <Grid
         xs={12}
@@ -146,11 +194,17 @@ export default function Dashboard() {
         container
         justifyContent="center"
         alignItems="flex-start"
+        mt={2}
       >
         {/* left side of dashboard */}
-        <Grid item margin={2} width="450px" sx={{
-          border: "1px solid black",
-        }}>
+        <Grid
+          item
+          margin={2}
+          width="450px"
+          sx={{
+            border: "1px solid black",
+          }}
+        >
           {/* calendar section */}
           <Grid
             container
