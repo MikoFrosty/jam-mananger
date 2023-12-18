@@ -4,6 +4,11 @@
   width: 100%;
 }
 
+/* Remove the focus outline for all MUI buttons */
+.MuiButton-root:focus {
+  outline: none;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

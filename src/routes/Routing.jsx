@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import ProtectedRoute from "./ProtectedRoute";
 import commonRoutes from "./commonRoutes";
-import Dashboard from "../features/Dashboard/Dashboard";
+import DashboardTest from "../features/Dashboard/DashBoard-Testing";
 
 //import StyledContainerMainWithOutlet from '@/pages/LayoutComponents/StyledContainerMainWithOutlet';
 //import StyledContainerModiimapWithOutlet from '@/pages/LayoutComponents/StyledContainerModiimapWithOutlet';
@@ -23,7 +23,7 @@ export default function Routing() {
         })}
 
         <Route path="/" element={<ProtectedRoute />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<DashboardTest />} />
         </Route>
       </Routes>
     </Suspense>
