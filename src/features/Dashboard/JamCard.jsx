@@ -55,17 +55,26 @@ export default function JamCard({ jam, onDelete }) {
           // window.location.href = 'https://' + jam.jam_url || "#No URL Provided"; // Don't do this here, open card first for editing
         }}
       >
-        <CardActionArea>
+        <CardActionArea
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            justifyContent: "flex-start",
+          }}
+        >
           <CardMedia
             component="div"
             sx={{
+              flexShrink: 0,
+              width: "100%",
               pt: "56.25%",
             }}
             image={
               jam?.image_url || "https://source.unsplash.com/random?wallpapers"
             }
           />
-          <CardContent sx={{ flexGrow: 1 }}>
+          <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               {jam.title}
             </Typography>
@@ -78,7 +87,15 @@ export default function JamCard({ jam, onDelete }) {
           </CardContent>
         </CardActionArea>
       </Card>
-      {open && <JamModal isCreate={false} jamData={jam} open={open} setOpen={setOpen} onDelete={onDelete} />}
+      {open && (
+        <JamModal
+          isCreate={false}
+          jamData={jam}
+          open={open}
+          setOpen={setOpen}
+          onDelete={onDelete}
+        />
+      )}
     </>
   );
 }
