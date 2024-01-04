@@ -29,7 +29,7 @@ const getJamCreatedDate = (jam) => {
   return "Created: " + date.toLocaleString();
 };
 
-export default function JamCard({ jam, onDelete }) {
+export default function JamCard({ jam }) {
   const [open, setOpen] = useState(false);
   //console.log(open);
 

@@ -3,11 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import ProtectedRoute from "./ProtectedRoute";
 import commonRoutes from "./commonRoutes";
-import Dashboard from "../features/Dashboard/Dashboard";
 
-//import StyledContainerMainWithOutlet from '@/pages/LayoutComponents/StyledContainerMainWithOutlet';
-//import StyledContainerModiimapWithOutlet from '@/pages/LayoutComponents/StyledContainerModiimapWithOutlet';
-//const Modiimap = lazy(() => import('@/pages/Modiimap/Modiimap'));
+const Dashboard = lazy(() => import("../features/Dashboard/Dashboard"))
 
 export default function Routing() {
   return (

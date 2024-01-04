@@ -1,0 +1,42 @@
+.AppBar {
+  position: static;
+  max-height: 75px;
+  margin-top: 0px;
+  box-shadow: none;
+  width: 100%;
+}
+
+.ToolBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+  box-shadow: none;
+  background-color: transparent;
+  align-items: center;
+}
+
+.Logo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.Logo:hover {
+  cursor: pointer;
+}
+
+.LogoImage {
+  width: 100%;
+  max-width: 50px;
+  max-height: 50px;
+}
+
+.ButtonGroupRow {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+  height: fit-content;
+  justify-content: end;
+  align-items: center;
+}

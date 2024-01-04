@@ -10,7 +10,7 @@ export default function JamSearch({ jamList, onJamSelect, onSearchChange }) {
         getOptionLabel={(option) => option.title || ""}
         fullWidth
         renderInput={(params) => (
-          <TextField {...params} label="Search Jams" variant="outlined" />
+          <TextField {...params} label="All Tasks" variant="outlined" />
         )}
         onChange={(event, newValue) => {
           if (newValue) {
@@ -26,17 +26,6 @@ export default function JamSearch({ jamList, onJamSelect, onSearchChange }) {
         onInputChange={(event, newInputValue) => {
           onSearchChange(newInputValue);
         }}
-        // sx={{
-        //   ".MuiOutlinedInput-notchedOutline": {
-        //     borderColor: "white",
-        //   },
-        //   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-        //     borderColor: "pink",
-        //   },
-        //   "&:hover .MuiOutlinedInput-notchedOutline": {
-        //     borderColor: "pink",
-        //   },
-        // }}
       />
     </div>
   );

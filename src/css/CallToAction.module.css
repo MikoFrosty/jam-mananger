@@ -1,0 +1,82 @@
+.callToActionContainer {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% + 20px);
+  height: 60vh;
+  background-color: #f1f1f1;
+  margin-left: -10px;
+  margin-right: -10px;
+  padding: 30px;
+}
+
+.flexRow {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-align: left;
+  justify-content: center;
+}
+
+.title {
+  margin: 0px;
+}
+
+.flexRowCenter {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.emailTextField {
+  flex: 2;
+  margin: 5px 5px;
+}
+
+.getStartedButton {
+  height: 48px;
+  width: fit-content;
+  border-radius: 5px;
+  border: 2px solid #6CE5E8;
+  flex: 1;
+}
+
+.getStartedButton:hover {
+  border-radius: 5px;
+  border: 2px solid #6CE5E8;
+}
+
+.graphicContainer {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.graphicImage {
+  max-width: 500px;
+  margin-bottom: 0px;
+}
+
+/* Media queries for mobile */
+@media (max-width: 600px) {
+  .callToActionContainer {
+    height: fit-content;
+  }
+
+  .flexRow {
+    flex-direction: column-reverse;
+  }
+
+  .graphicImage {
+    display: none;
+    max-width: 80%;
+    margin-bottom: 20px;
+  }
+}

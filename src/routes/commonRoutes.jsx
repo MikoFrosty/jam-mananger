@@ -1,11 +1,40 @@
-import Login from '../pages/Login';
+import TermsAndConditions from "../components/regulatory/terms";
+import Pricing from "../features/LandingPage/pricing";
+import Login from "../pages/Login";
+import Signup from "../pages/Signup";
+import Landing from "../pages/landing";
 
 const commonRoutes = [
   {
-    path: 'login',
+    path: "login",
     element: <Login />,
     children: <></>,
   },
+  {
+    path: "home",
+    element: <Landing />,
+    children: <></>,
+  },
+  {
+    path: "signup",
+    element: <Signup />,
+    children: <></>,
+  },
+  {
+    path: "pricing",
+    element: <Pricing />,
+    children: <></>,
+  },
+  {
+    path: "about-us",
+    element: <Pricing />,
+    children: <></>
+  },
+  {
+    path: "terms-and-conditions",
+    element: <TermsAndConditions />,
+    children: <></>
+  }
   // {
   //   path: 'reset-password',
   //   element: <ResetPassword />,

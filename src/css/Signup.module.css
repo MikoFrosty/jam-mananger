@@ -1,0 +1,52 @@
+.Signup {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 10px;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
+
+.Message {
+  flex: 1;
+  display: flex;
+  height: 80%;
+  width: 80%;
+  border-right: 2px solid #f1f1f1;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+}
+
+.MessageGraphic {
+  max-width: 300px;
+  max-height: 300px;
+  align-self: center;
+}
+
+.MessageText {
+  max-width: 80%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.SignupForm {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 1000px) {
+  .Signup {
+    flex-direction: column;
+  }
+  .Message {
+    display: none;
+  }
+}

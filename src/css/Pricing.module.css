@@ -1,0 +1,97 @@
+.PricingContainer {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% + 20px);
+  flex: 4;
+  padding: 30px;
+  justify-content: center;
+  align-items: center;
+  margin: 30px 0px 0px -10px;
+  text-align: left;
+}
+
+.PricingContainer h1 {
+  margin: 0px;
+  width: 100%;
+}
+
+.PricingContainer p {
+  margin: 10px;
+  width: 100%;
+}
+
+.ButtonRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: fit-content;
+  padding: 10px;
+  margin-bottom: 30px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  column-gap: 10px;
+  background-color: #f9f9f9;
+  justify-content: center;
+}
+
+.PlanButton {
+  width: fit-content;
+  height: fit-content;
+  padding: 5px;
+  background-color: transparent;
+  border: 2px solid none;
+  border-radius: 5px;
+}
+
+.PricingPlans {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: fit-content;
+  background-color: white;
+  box-shadow: 0px 0px 10px #e9e9e9;
+  column-gap: 10px;
+  padding: 10px;
+}
+
+.PlanSidebar {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  flex-direction: column;
+  border-right: 2px solid #f1f1f1;
+  padding-right: 10px;
+}
+
+.WithSubtext {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+  justify-content: center;
+  align-items: end;
+}
+
+.SidebarItem {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Plan {
+  flex: 2;
+  width: 100%;
+  text-align: left;
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.Plan h2 {
+  margin: 0px;
+  border-bottom: 2px solid #f1f1f1;
+}
+
+.SeatSelector {
+
+}

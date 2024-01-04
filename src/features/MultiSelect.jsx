@@ -21,7 +21,7 @@ export default function MultipleSelect({
   selectedData,
   label,
   children,
-  jam_groups,
+  sprints
 }) {
   return (
     <div style={{height: "fit-content"}}>
@@ -31,15 +31,15 @@ export default function MultipleSelect({
           size="small"
           sx={{
             ".MuiOutlinedInput-notchedOutline": {
-              borderColor: "#F3EDCD",
+              borderColor: "dodgerblue",
               borderWidth: 2,
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#F3EDCD",
+              borderColor: "dodgerblue",
               borderWidth: 2
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#F3EDCD",
+              borderColor: "dodgerblue",
               borderWidth: 2
             },
           }}

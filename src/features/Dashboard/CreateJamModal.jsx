@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
@@ -8,6 +8,8 @@ import {
   TextField,
 } from "@mui/material";
 import PropTypes from "prop-types";
+import BasicDatePicker from "../../components/DatePicker";
+import convert from "../../utils/dates/convertDates";
 
 CreateJamModal.propTypes = {
   onSave: PropTypes.func.isRequired,
@@ -24,6 +26,10 @@ export default function CreateJamModal({
   const [timeLimit, setTimeLimit] = useState("");
   const [jamUrl, setJamUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  // set starting date to tomorrow by default
+  const [startTime, setStartTime] = useState(
+    `${Date.now() + 24 * 60 * 60 * 1000}`
+  );
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -33,9 +39,19 @@ export default function CreateJamModal({
       time_limit: timeLimit,
       jam_url: jamUrl,
       image_url: imageUrl,
+      start_time: startTime,
     };
     onSave(newJam);
   };
+
+  const handleDateSelect = (newValue) => {
+    setStartTime(convert.formattedToUnix(newValue.$d));
+    console.log(convert.formattedToUnix(newValue.$d))
+  }
+
+  useEffect(() => {
+    console.log(startTime);
+  }, [startTime]);
 
   const isValidImageUrl = (url) => {
     return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
@@ -56,6 +72,10 @@ export default function CreateJamModal({
           type="text"
           fullWidth
           onChange={(e) => setTitle(e.target.value)}
+        />
+        <BasicDatePicker
+          time={startTime.toString()}
+          onChange={(e) => setStartTime(convert.formattedToUnix(e.$d))}
         />
         <TextField
           autoFocus

@@ -1,0 +1,16 @@
+.Kpis {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 200px;
+}
+
+.Kpi {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  text-align: left;
+  flex-direction: column;
+  flex: 1;
+  max-width: 300px;
+}

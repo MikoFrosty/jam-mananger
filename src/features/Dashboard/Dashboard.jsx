@@ -1,20 +1,18 @@
 import { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import jamManagerLogo from "../../assets/jam-manager-logo-500.png";
-import JamList from "./JamList";
 import CreateJamModal from "./CreateJamModal";
-import JamModal from "../../components/JamModal";
 import AuthContext from "../../Contexts/AuthContext";
 import { useContext } from "react";
 import fetchWrapper from "../../utils/fetchWrapper";
 import { Grid } from "@mui/material";
 import JamSearch from "../../components/JamSearch";
-import JamCalendar from "../../components/JamCalendar";
 import AppBarComponent from "../AppBar/AppBarComponent";
+import JamForecast from "../../components/JamForecast";
+import styles from "../../css/Dashboard.module.css";
+import Pie from "../../components/charts/pie";
+import SparkLine from "../../components/charts/sparkline";
+import KamariList from "../../components/list";
+import BasicTable from "./TaskList";
 
 const mainStyle = {
   fontFamily: "Arial",
@@ -29,56 +27,70 @@ const logoStyle = {
   height: "auto",
 };
 
-const API_URL = "https://jams-manager-2be71439fdcd.herokuapp.com/";
-
-const mockJamList = [
-  {
-    created_timestamp: "1702178798644",
-    jam_url: "facebook.com",
-    options: "",
-    time_limit: "1",
-    title: "MOCK JAM",
-    image_url: "",
+const PieChartOptions = {
+  responsive: true,
+  maintainAspectRatio: true,
+  plugins: {
+    title: {
+      display: false,
+    },
+    legend: {
+      display: false,
+    },
   },
-];
+};
+
+const API_URL = "https://jams-manager-2be71439fdcd.herokuapp.com/";
 
 export default function Dashboard() {
   const { user, setUserData, token, setTokenString } = useContext(AuthContext);
   const [createJamModalOpen, setCreateJamModalOpen] = useState(false);
   const [jamListData, setJamListData] = useState([]);
+  const [taskListData, setTaskListData] = useState([]);
   const [refetch, setRefetch] = useState(true);
   const [filteredJams, setFilteredJams] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedJamGroups, setSelectedJamGroups] = useState(["All"]);
-  // console.log('user from context', user);
-  // console.log("token from context", token);
+  const [alerts, setAlerts] = useState([]);
+
+  // useEffect(() => {
+  //   if (refetch) {
+  //     fetchWrapper("/jams", token, "GET", null).then((res) => {
+  //       console.log("fetchWrapper JamListData", res);
+  //       setJamListData(res.jams);
+  //     });
+  //     setRefetch(false);
+  //   }
+  // }, [refetch]);
+
+  //   // Check Jam Group filters
+  //   if (selectedJamGroups.includes("All")) {
+  //     setFilteredJams(filtered);
+  //   } else {
+  //     console.log("selectedJamGroups", selectedJamGroups);
+  //     const filteredByGroup = filtered.filter((jam) =>
+  //       selectedJamGroups.includes(jam.jam_group_id)
+  //     );
+  //     setFilteredJams(filteredByGroup);
+  //   }
+  // }, [searchTerm, jamListData]);
 
   useEffect(() => {
-    if (refetch) {
-      fetchWrapper("/jams", token, "GET", null).then((res) => {
-        console.log("fetchWrapper JamListData", res);
-        setJamListData(res.jams);
-      });
-      setRefetch(false);
-    }
-  }, [refetch]);
-
-  useEffect(() => {
-    const filtered = jamListData.filter((jam) =>
-      jam.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    // Ceck Jam Group filters
-    if (selectedJamGroups.includes("All")) {
-      setFilteredJams(filtered);
-    } else {
-      console.log("selectedJamGroups", selectedJamGroups);
-      const filteredByGroup = filtered.filter((jam) =>
-        selectedJamGroups.includes(jam.jam_group_id)
-      );
-      setFilteredJams(filteredByGroup);
-    }
-  }, [searchTerm, jamListData]);
+    fetchWrapper("/tasks", token, "GET", {
+      headers: {
+        Authorization: token,
+      },
+    }).then((res) => {
+      setTaskListData(res.tasks);
+    })
+    fetchWrapper("/alerts", token, "GET", {
+      headers: {
+        Authorization: token,
+      },
+    }).then((res) => {
+      setAlerts(res.alerts);
+    });
+  }, []);
 
   const handleSelectedDataChange = (event) => {
     const {
@@ -116,17 +128,8 @@ export default function Dashboard() {
       ...newJam,
       jam_group_id: parsedUser.jam_groups[0],
     };
-    // const saveData = async () => {
-    //   const result = await fetch(API_URL + "create_jam", {
-    //     method: "POST",
-    //     headers: {
-    //       Authorization: token,
-    //       "Content-Type": "application/json",
-    //     },
-    //     body,
-    //   });
-    //   return result.json();
-    // };
+
+    console.log("Logging New Jam Payload", body);
 
     fetchWrapper("/create_jam", token, "POST", body).then((res) => {
       console.log(res);
@@ -202,7 +205,8 @@ export default function Dashboard() {
           margin={2}
           width="450px"
           sx={{
-            border: "1px solid black",
+            borderRight: "2px solid #f4f4f4",
+            paddingRight: "5px",
           }}
         >
           {/* calendar section */}
@@ -213,29 +217,31 @@ export default function Dashboard() {
             justifyContent="center"
             alignItems="center"
             minHeight={"400px"}
+            width={"100%"}
           >
-            <JamCalendar />
+            {/* <JamCalendar /> */}
+            <JamForecast
+              jams={jamListData}
+              style={{ width: "100%", height: "100%" }}
+            />
           </Grid>
           {/* jam feed section */}
           <Grid
             container
             item
-            justifyContent="center"
-            alignItems="center"
-            minHeight={"300px"}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "start",
+              marginTop: "10px",
+            }}
           >
-            {/* <img src={jamManagerLogo} style={logoStyle} alt="logo" /> */}
-            <Typography
-              variant="h5"
-              align="center"
-              color="text.secondary"
-              paragraph
-            >
-              Jam Feed Section
-            </Typography>
+            <Typography variant="body1">Notifications</Typography>
+            <KamariList items={alerts} />
           </Grid>
         </Grid>
         {/* Search and jam list */}
+
         <Grid
           margin={2}
           item
@@ -244,16 +250,46 @@ export default function Dashboard() {
           justifyContent="flex-start"
           alignItems="center"
         >
+          <Grid item mb={2} textAlign={"left"}>
+            <Typography variant="caption">Performance</Typography>
+            <div className={styles.Kpis}>
+              <div className={styles.Kpi}>
+                <Typography variant="caption">Tasks</Typography>
+                <Pie
+                  colors={["#11d99b", "#00cefe", "#ff6c6c"]}
+                  height={200}
+                  width={200}
+                  tasks={taskListData}
+                />
+              </div>
+              <div className={styles.Kpi}>
+                <Typography variant="caption">Backlog Trend</Typography>
+                <SparkLine
+                  series={[1, 4, 2, 5, 7, 2, 4, 6]}
+                  height={100}
+                  plotType={"line"}
+                  colors={["#ff6c6c"]}
+                />
+              </div>
+            </div>
+          </Grid>
           {/* search bar */}
           <Grid item mb={2}>
             <JamSearch
-              jamList={jamListData}
+              jamList={taskListData}
               onJamSelect={handleJamSelect}
               onSearchChange={handleSearchChange}
             />
           </Grid>
-          <Grid container item justifyContent={"center"} alignItems={"center"}>
-            <JamList jamList={filteredJams} onDelete={handleDelete} />
+          <Grid
+            container
+            item
+            justifyContent={"center"}
+            alignItems={"center"}
+            overflow={"hidden"}
+          >
+            <BasicTable />
+            {/* <JamList jamList={filteredJams} onDelete={handleDelete} /> */}
           </Grid>
         </Grid>
       </Grid>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import jamManagerLogo from "../../assets/jam-manager-logo-500.png";
+import kamariLogo from "../../../public/kamari.png";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -12,6 +12,10 @@ import Checkbox from "@mui/material/Checkbox";
 import fetchWrapper from "../../utils/fetchWrapper";
 import MultipleSelect from "../MultiSelect";
 
+import styles from "../../css/AppBar.module.css";
+
+import MenuIcon from '@mui/icons-material/Menu';
+
 const logoStyle = {
   width: "100%",
   maxWidth: "50px",
@@ -19,14 +23,14 @@ const logoStyle = {
 };
 
 const ColorButton = styled(Button)(({ theme }) => ({
-  color: "#333",
+  color: "dodgerblue",
   backgroundColor: "white",
   boxShadow: "none",
-  border: "2px solid #F3EDCD",
+  border: "2px solid dodgerblue",
   "&:hover": {
     backgroundColor: "white",
     boxShadow: "none",
-    border: "2px solid #F3EDCD",
+    border: "2px solid dodgerblue",
   },
 }));
 
@@ -34,51 +38,35 @@ export default function AppBarComponent({ token, handleChange, selectedData, onC
   const [expandedUser, setExpandedUser] = useState({});
 
   useEffect(() => {
-    fetchWrapper("/user/true", token, "GET", {}).then((res) => {
+    fetchWrapper("/sprints", token, "GET", {}).then((res) => {
       console.log(res.compiled_user);
       setExpandedUser(res.compiled_user);
     });
   }, []);
 
+  function handleClick() {
+    navigate("/");
+  }
+
   return (
-    <AppBar
-      style={{ backgroundColor: "white", padding: "5px 0px" }}
-      position="sticky"
-    >
-      <Toolbar
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
+    <AppBar className={styles.AppBar}>
+      <Toolbar className={styles.ToolBar}>
         <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
+          className={styles.Logo}
+          onClick={handleClick}
         >
-          <img style={logoStyle} src={jamManagerLogo} alt="Jam Manager Logo" />
+          <img className={styles.LogoImage} src={kamariLogo} alt="Kamari Logo" />
           <Typography variant="h5" color="#333" noWrap>
-            Jam Manager
+            Kamari
           </Typography>
         </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "end",
-            alignItems: "center",
-            height: "fit-content",
-            columnGap: "10px",
-          }}
-        >
+        <MenuIcon className={styles.MenuIcon}/>
+        <div className={styles.ButtonGroupRow}>
           <MultipleSelect
-            label={"Groups"}
+            label={"Projects"}
             selectedData={selectedData}
             handleChange={handleChange}
-            jam_groups={expandedUser.user_groups}
+            sprints
           >
             {Object.keys(expandedUser).length > 0
               ? expandedUser.user_groups.map((group, index) => {
@@ -99,7 +87,7 @@ export default function AppBarComponent({ token, handleChange, selectedData, onC
             onClick={onCreateJamClick}
             variant="contained"
           >
-            Create Jam
+            Create Task
           </ColorButton>
           <AccountCircleIcon
             style={{ color: "#333", height: "40px", width: "40px" }}
