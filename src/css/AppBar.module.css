@@ -1,57 +1,57 @@
 .AppBar {
-  max-height: 75px;
-  margin-top: 0px;
-  box-shadow: none;
-  width: 100%;
-  background-color: white;
-  border-bottom: 2px solid #f1f1f1;
+  max-height: 75px !important;
+  margin-top: 0px !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  background-color: white !important;
+  border-bottom: 2px solid #f1f1f1 !important;
 }
 
 .ToolBar {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 10px;
-  box-shadow: none;
-  background-color: transparent;
-  align-items: center;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  padding: 10px !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  align-items: center !important;
 }
 
 .Logo {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
 }
 
 .Logo:hover {
-  cursor: pointer;
+  cursor: pointer !important;
 }
 
 .LogoImage {
-  width: 100%;
-  max-width: 50px;
-  max-height: 50px;
+  width: 100% !important;
+  max-width: 50px !important;
+  max-height: 50px !important;
 }
 
 .ButtonGroupRow {
-  display: flex;
-  flex-direction: row;
-  column-gap: 10px;
-  height: fit-content;
-  justify-content: end;
-  align-items: center;
+  display: flex !important;
+  flex-direction: row !important;
+  column-gap: 10px !important;
+  height: fit-content !important;
+  justify-content: end !important;
+  align-items: center !important;
 }
 
 .MenuIcon {
-  display: none;
+  display: none !important;
 }
 
 @media (max-width: 700px) {
   .ButtonGroupRow {
-    display: none;
+    display: none !important;
   }
   .MenuIcon {
-    display: flex;
-    color: #333;
+    display: flex !important;
+    color: #333 !important;
   }
 }
