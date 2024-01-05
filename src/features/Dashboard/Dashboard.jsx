@@ -12,7 +12,6 @@ import styles from "../../css/Dashboard.module.css";
 import Pie from "../../components/charts/pie";
 import SparkLine from "../../components/charts/sparkline";
 import KamariList from "../../components/list";
-import BasicTable from "./TaskList";
 
 const mainStyle = {
   fontFamily: "Arial",
@@ -135,7 +134,6 @@ export default function Dashboard() {
       console.log(res);
       if (!res) {
         console.log("Error saving data");
-        return;
       } else {
         setCreateJamModalOpen(false);
         setRefetch(true);
