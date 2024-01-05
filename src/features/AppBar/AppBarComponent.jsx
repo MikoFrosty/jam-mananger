@@ -37,12 +37,12 @@ const ColorButton = styled(Button)(({ theme }) => ({
 export default function AppBarComponent({ token, handleChange, selectedData, onCreateJamClick }) {
   const [expandedUser, setExpandedUser] = useState({});
 
-  useEffect(() => {
-    fetchWrapper("/user/true", token, "GET", {}).then((res) => {
-      console.log(res.compiled_user);
-      setExpandedUser(res.compiled_user);
-    });
-  }, []);
+  // useEffect(() => {
+  //   fetchWrapper("/user/true", token, "GET", {}).then((res) => {
+  //     console.log(res.compiled_user);
+  //     setExpandedUser(res.compiled_user);
+  //   });
+  // }, []);
 
   function handleClick() {
     navigate("/");
@@ -82,13 +82,13 @@ export default function AppBarComponent({ token, handleChange, selectedData, onC
                 })
               : null}
           </MultipleSelect> */}
-          <ColorButton
+          {/* <ColorButton
             disableTouchRipple
             onClick={onCreateJamClick}
             variant="contained"
           >
             Create Task
-          </ColorButton>
+          </ColorButton> */}
           <AccountCircleIcon
             style={{ color: "#333", height: "40px", width: "40px" }}
           />
