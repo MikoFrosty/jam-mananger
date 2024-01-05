@@ -5,7 +5,7 @@ export default function Pie({
   width,
   legend = true,
   colors,
-  tasks,
+  tasks = [],
 }) {
   const pie_data = {
     data: [
