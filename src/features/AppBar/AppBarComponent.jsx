@@ -49,7 +49,7 @@ export default function AppBarComponent({ token, handleChange, selectedData, onC
   }
 
   return (
-    <AppBar className={styles.AppBar}>
+    <AppBar className={styles.AppBar} position={"relative"}>
       <Toolbar className={styles.ToolBar}>
         <div
           className={styles.Logo}
