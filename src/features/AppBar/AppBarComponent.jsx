@@ -62,7 +62,7 @@ export default function AppBarComponent({ token, handleChange, selectedData, onC
         </div>
         <MenuIcon className={styles.MenuIcon}/>
         <div className={styles.ButtonGroupRow}>
-          <MultipleSelect
+          {/* <MultipleSelect
             label={"Projects"}
             selectedData={selectedData}
             handleChange={handleChange}
@@ -81,7 +81,7 @@ export default function AppBarComponent({ token, handleChange, selectedData, onC
                   );
                 })
               : null}
-          </MultipleSelect>
+          </MultipleSelect> */}
           <ColorButton
             disableTouchRipple
             onClick={onCreateJamClick}
