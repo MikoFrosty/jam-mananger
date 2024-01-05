@@ -21,7 +21,7 @@ export default function MultipleSelect({
   selectedData,
   label,
   children,
-  sprints
+  jam_groups,
 }) {
   return (
     <div style={{height: "fit-content"}}>

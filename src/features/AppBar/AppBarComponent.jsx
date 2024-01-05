@@ -38,7 +38,7 @@ export default function AppBarComponent({ token, handleChange, selectedData, onC
   const [expandedUser, setExpandedUser] = useState({});
 
   useEffect(() => {
-    fetchWrapper("/sprints", token, "GET", {}).then((res) => {
+    fetchWrapper("/user/true", token, "GET", {}).then((res) => {
       console.log(res.compiled_user);
       setExpandedUser(res.compiled_user);
     });
@@ -66,7 +66,7 @@ export default function AppBarComponent({ token, handleChange, selectedData, onC
             label={"Projects"}
             selectedData={selectedData}
             handleChange={handleChange}
-            sprints
+            jam_groups={expandedUser.user_groups}
           >
             {Object.keys(expandedUser).length > 0
               ? expandedUser.user_groups.map((group, index) => {

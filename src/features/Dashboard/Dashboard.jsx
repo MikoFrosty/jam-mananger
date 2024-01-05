@@ -288,7 +288,7 @@ export default function Dashboard() {
             alignItems={"center"}
             overflow={"hidden"}
           >
-            <BasicTable />
+            {/* <BasicTable /> */}
             {/* <JamList jamList={filteredJams} onDelete={handleDelete} /> */}
           </Grid>
         </Grid>

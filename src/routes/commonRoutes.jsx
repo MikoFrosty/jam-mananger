@@ -1,6 +1,6 @@
 import TermsAndConditions from "../components/regulatory/terms";
 import Pricing from "../features/LandingPage/pricing";
-import Login from "../pages/Login";
+import Login from "../pages/Landing.jsx";
 import Signup from "../pages/Signup";
 import Landing from "../pages/landing";
 
