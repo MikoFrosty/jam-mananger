@@ -1,0 +1,23 @@
+.LandingPage {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: fit-content;
+  min-height: 100vh;
+  background-color: white;
+  align-items: center;
+}
+
+.Main {
+  width: 90%;
+  height: fit-content;
+  min-height: 600px;
+}
+
+.ContentRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: fit-content;
+  min-height: 200px;
+}

@@ -1,0 +1,31 @@
+.DocumentView {
+  display: flex;
+  flex-direction: row;
+  column-gap: 20px;
+  width: 100%;
+  height: fit-content;
+  padding: 10px 10px;
+}
+
+.DocumentCard {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  flex: 1;
+  max-width: 200px;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px #e5e5e5;
+}
+
+.DocumentCard:hover {
+  cursor: pointer;
+}
+
+.DocumentCardIcon {
+  height: 150px;
+  width: 150px;
+}

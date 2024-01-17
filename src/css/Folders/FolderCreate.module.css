@@ -1,0 +1,9 @@
+.FolderCreation {
+  display: flex;
+  width: 100%;
+  margin-top: 10px;
+  height: 100%;
+  background-color: white;
+  box-shadow: 0px 0px 10px #e5e5e5;
+  padding: 10px;
+}

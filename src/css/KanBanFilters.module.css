@@ -1,0 +1,39 @@
+.FilterBar {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: fit-content;
+  min-height: 50px;
+  max-height: 61.5px;
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  align-items: center;
+  padding: 10px;
+  justify-content: space-between;
+}
+
+.FilterBarGroup {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  height: fit-content;
+  align-items: center;
+  column-gap: 20px;
+}
+
+.IconWithText {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 10px;
+  width: fit-content;
+  height: fit-content;
+}
+
+.IconWithText:hover {
+  cursor: pointer;
+}
+
+.Icon:hover {
+  cursor: pointer;
+}

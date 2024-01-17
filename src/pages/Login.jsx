@@ -2,8 +2,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -14,6 +12,8 @@ import AuthContext from "../Contexts/AuthContext";
 import { useContext } from "react";
 import fetchWrapper from "../utils/fetchWrapper";
 import { useNavigate } from "react-router-dom";
+import bcrypt from "bcryptjs";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function Copyright(props) {
   return (
@@ -33,11 +33,17 @@ function Copyright(props) {
   );
 }
 
+const iconHover = {
+  cursor: "pointer",
+  alignSelf: "start",
+  margin: "0px 0px 20px 0px",
+};
+
 export default function Login() {
   const { user, setUserData, token, setTokenString } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const payload = {
@@ -47,9 +53,16 @@ export default function Login() {
     fetchWrapper("/login", "", "POST", { ...payload }).then((res) => {
       setUserData(res.user);
       setTokenString(res.token);
-      navigate("/");
+
+      if (res?.token) {
+        navigate("/");
+      }
     });
   };
+
+  function handleBackClick() {
+    navigate("/");
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -62,6 +75,7 @@ export default function Login() {
           alignItems: "center",
         }}
       >
+        <ArrowBackIcon onClick={() => handleBackClick()} style={iconHover} />
         <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
           <LockOutlinedIcon />
         </Avatar>

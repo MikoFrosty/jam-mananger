@@ -13,7 +13,6 @@ import { useContext, useState, useEffect, lazy } from "react";
 import fetchWrapper from "../utils/fetchWrapper";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
-import bcrypt from "bcryptjs";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import styles from "../css/Signup.module.css";
@@ -42,11 +41,6 @@ const iconHover = {
   margin: "0px 0px 20px 0px",
 };
 
-async function hashPassword(password) {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
-}
-
 export default function Signup() {
   const { user, setUserData, token, setTokenString } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -57,11 +51,9 @@ export default function Signup() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const hashedPassword = await hashPassword(data.get("password"));
-
     const payload = {
       email: email ? email : data.get("email"),
-      password: hashedPassword,
+      password: data.get("password"),
       type: "standard",
       organization: data.get("organizationName"),
       name: {

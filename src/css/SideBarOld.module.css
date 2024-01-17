@@ -1,0 +1,20 @@
+.SideBar {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: calc(100% - 40px);
+  min-width: 100%;
+  background-color: #f1f1f1;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  margin: 20px 0px 20px 0px;
+  padding-left: 10px;
+  text-align: left;
+  row-gap: 10px;
+}
+
+.SideBarOption {
+  border-radius: 0px;
+  background-color: #e5e5e5;
+  color: #333;
+}

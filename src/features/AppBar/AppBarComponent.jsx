@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import kamariLogo from "../../../public/kamari.png";
+import kamariLogo from "../../../public/kamari-1000.png";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";

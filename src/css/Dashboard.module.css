@@ -1,16 +1,89 @@
-.Kpis {
+.Dashboard {
   display: flex;
   flex-direction: row;
-  width: 100%;
-  height: 200px;
+  height: 100vh;
+  width: 100vw;
+  background-color: white;
+  overflow: hidden;
 }
 
-.Kpi {
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  text-align: left;
-  flex-direction: column;
+.SideBar {
   flex: 1;
-  max-width: 300px;
+  height: calc(100% - 40px);
+  min-width: 240px;
+  max-width: 240px;
+  background-color: white;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border: none;
+}
+
+.HoverTrigger {
+  position: fixed;
+  left: 0;
+  width: 20px; /* Width of the sensitive area */
+  height: 100%;
+  z-index: 1001; /* Above other elements */
+  opacity: 0;
+  border: none;
+}
+
+.HoverSideBar {
+  position: fixed;
+  left: -240px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: fit-content;
+  width: 240px;
+  background-color: white; /* Ensuring background color is set */
+  transition: left 0.3s ease;
+  z-index: 1000;
+  border-right: none; /* Removing any border */
+  padding-right: 0; /* Resetting padding */
+}
+
+.HoverTrigger:hover + .HoverSideBar,
+.HoverSideBar:hover {
+  left: 0;
+}
+
+.HoverSideBarVisible {
+  opacity: 1;
+  visibility: visible;
+  width: 250px; /* Adjust as needed */
+}
+
+.SideBarCollapsed {
+  max-width: 0; /* Collapse to no width */
+  overflow: hidden; /* Hide inner content */
+  transition: max-width 0.2s ease-in; /* Smooth transition for collapsing */
+  background-color: white;
+  border: none;
+}
+
+.Main {
+  display: flex;
+  flex: 5;
+  height: 100%;
+  padding: 20px;
+  overflow-y: hidden;
+}
+
+.KanBanContainer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.KanBanRow {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  column-gap: 10px;
 }

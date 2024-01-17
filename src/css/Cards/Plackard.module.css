@@ -1,0 +1,39 @@
+.Plackard {
+  width: 100%;
+  height: fit-content;
+  padding: 5px 10px;
+  background-color: #f1f1f1;
+  display: flex;
+  flex-direction: row;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: center;
+}
+
+.PlackardImage {
+  display: flex;
+  background-color: purple;
+  color: white;
+  border-radius: 5px;
+  height: 50px;
+  width: 50px;
+  align-items: center;
+  justify-content: center;
+}
+
+.PlackardInfo {
+  display: flex;
+  flex-direction: column;
+  padding: 0px 10px;
+  max-height: 50px;
+}
+
+.InlineFlex {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.LogoutIcon:hover {
+  cursor: pointer;
+}
