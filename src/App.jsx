@@ -19,8 +19,9 @@ const theme = createTheme({
           // Add any other styles you want to apply to the root of the Select component
         },
         select: {
-          height: '44px', // Ensures the select field itself also has the desired height
-          padding: "8px 8px"
+          height: '23px', // Ensures the select field itself also has the desired height
+          padding: "8px 8px",
+          textAlign: "left"
           // You can add additional styles for the select field here if needed
         }
       },

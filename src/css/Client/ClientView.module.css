@@ -1,0 +1,47 @@
+.ClientView {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background-color: transparent;
+}
+
+.ClientInvite {
+  width: 100%;
+  height: fit-content;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  justify-content: center;
+}
+
+.ClientEmailRow {
+  display: flex;
+  flex-direction: row;
+  background-color: transparent;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.Icon {
+  height: 40px;
+  width: 40px;
+  align-items: center;
+}
+
+.Icon:hover {
+  cursor: pointer;
+}
+
+.ClientEmailInput {
+  width: 80%;
+}
+
+.ClientMain {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  padding: 10px;
+}

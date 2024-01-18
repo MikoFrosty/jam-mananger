@@ -4,12 +4,12 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import fetchWrapper from "../../utils/fetchWrapper";
-import DropdownSelect from '../../components/inputs/Dropdown';
+import DropdownSelect from "../../components/inputs/Dropdown";
 import { useDispatch } from "react-redux";
 import { toggleRefetch } from "../../StateManagement/Actions/actions";
 
 export default function FolderCreate({ toggleModal }) {
-  const [ selectedClient, setSelectedClient ] = useState({});
+  const [selectedClient, setSelectedClient] = useState({});
   const dispatch = useDispatch();
 
   const handleSubmit = async (event) => {
@@ -20,10 +20,12 @@ export default function FolderCreate({ toggleModal }) {
       name: data.get("folderName"),
       description: data.get("folderDescription"),
       client: selectedClient,
-      documents: []
+      documents: [],
     };
 
-    fetchWrapper("/folders", localStorage.getItem("token"), "POST", { ...payload }).then((res) => {
+    fetchWrapper("/folders", localStorage.getItem("token"), "POST", {
+      ...payload,
+    }).then((res) => {
       if (res.message === "Folder Created") {
         console.log(res);
         toggleModal();
@@ -55,7 +57,11 @@ export default function FolderCreate({ toggleModal }) {
             columnGap: "5px",
           }}
         >
-          <DropdownSelect onChange={handleClientSelect} fullWidth={true} label={'Client'}/>
+          <DropdownSelect
+            onChange={handleClientSelect}
+            fullWidth={true}
+            label={"Client"}
+          />
         </div>
         <TextField
           margin="normal"

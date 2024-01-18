@@ -13,3 +13,10 @@ export function toggleRefetch(refetch) {
     payload: refetch
   }
 }
+
+export function selectFolder(folder) {
+  return {
+    type: "SELECT_FOLDER",
+    payload: folder
+  }
+}

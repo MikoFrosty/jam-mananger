@@ -1,29 +1,24 @@
-import React, { useState } from 'react';
+// DropdownSelect.jsx
+import React from 'react';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function DropdownSelect({ label, valueList, fullWidth, onChange, focused }) {
-  const [age, setAge] = useState('');
-
+export default function DropdownSelect({ label, valueList, selectedValue, fullWidth, onChange, itemValueKey }) {
   return (
     <Box sx={{ minWidth: 220 }}>
-      <FormControl focused={focused} fullWidth={fullWidth}>
-        <InputLabel id="demo-simple-select-label">{label}</InputLabel>
+      <FormControl fullWidth={fullWidth}>
+        <InputLabel>{label}</InputLabel>
         <Select
-          value={age}
+          value={selectedValue}
           label={label}
           onChange={onChange}
         >
-          {/* {
-            valueList.map((value) => {
-              return (
-                <MenuItem value={value.value}>{value.label}</MenuItem>
-              )
-            })
-          } */}
+          {valueList.map((value, index) => (
+            <MenuItem key={index} value={value[itemValueKey]}>{value.name}</MenuItem>
+          ))}
         </Select>
       </FormControl>
     </Box>

@@ -7,6 +7,7 @@ import Documentation from "./Documentation/documentation";
 import DocumentCreator from "../DocumentComponents/DocumentCreator";
 import { toggleRefetch } from "../../StateManagement/Actions/actions";
 import fetchWrapper from "../../utils/fetchWrapper";
+import ClientView from "../Clients/ClientView";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -23,13 +24,20 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (refetch) {
-      fetchWrapper("/folders", localStorage.getItem("token"), "GET", null).then((res) => {
-        localStorage.setItem("folders", JSON.stringify(res.folders))
+      fetchWrapper("/folders", localStorage.getItem("token"), "GET", null).then(
+        (res) => {
+          localStorage.setItem("folders", JSON.stringify(res.folders));
+        }
+      );
+      fetchWrapper(
+        "/documents",
+        localStorage.getItem("token"),
+        "GET",
+        null
+      ).then((res) => {
+        localStorage.setItem("documents", JSON.stringify(res.documents));
       });
-      fetchWrapper("/documents", localStorage.getItem("token"), "GET", null).then((res) => {
-        localStorage.setItem("documents", JSON.stringify(res.documents))
-      });
-      dispatch(toggleRefetch(false))
+      dispatch(toggleRefetch(false));
     }
   }, [refetch]);
 
@@ -79,6 +87,8 @@ export default function Dashboard() {
           <Documentation withoutFirstCards={true} />
         ) : viewMode === "documentation-create" ? (
           <DocumentCreator isOpen={true} />
+        ) : viewMode === "clients" || viewMode === "clients-manage" ? (
+          <ClientView />
         ) : null}
       </div>
     </div>

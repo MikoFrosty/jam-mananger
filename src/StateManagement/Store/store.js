@@ -6,7 +6,8 @@ const initialState = {
     localStorage.getItem("lastView") === undefined
       ? "documentation"
       : localStorage.getItem("lastView"),
-  refetch: false
+  refetch: false,
+  folderSelectedForDocumentCreation: {},
 };
 
 function appReducer(state = initialState, action) {
@@ -21,6 +22,11 @@ function appReducer(state = initialState, action) {
         ...state,
         refetch: action.payload
       }
+    case "SELECT_FOLDER": 
+    return {
+      ...state,
+      folderSelectedForDocumentCreation: action.payload
+    }
     default:
       return state;
   }
