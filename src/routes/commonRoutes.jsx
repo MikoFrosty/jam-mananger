@@ -3,6 +3,7 @@ import Pricing from "../features/LandingPage/pricing";
 import Landing from "../pages/Landing.jsx";
 import Signup from "../pages/Signup.jsx";
 import Login from "../pages/Login.jsx";
+import ClientSignup from "../pages/ClientSignup.jsx";
 
 const commonRoutes = [
   {
@@ -33,6 +34,11 @@ const commonRoutes = [
   {
     path: "terms-and-conditions",
     element: <TermsAndConditions />,
+    children: <></>
+  },
+  {
+    path: "client-signup",
+    element: <ClientSignup />,
     children: <></>
   }
   // {
