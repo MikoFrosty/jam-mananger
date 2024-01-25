@@ -4,6 +4,7 @@ import Landing from "../pages/Landing.jsx";
 import Signup from "../pages/Signup.jsx";
 import Login from "../pages/Login.jsx";
 import ClientSignup from "../pages/ClientSignup.jsx";
+import ClientAdmin from "../pages/ClientAdmin.jsx";
 
 const commonRoutes = [
   {
@@ -29,18 +30,23 @@ const commonRoutes = [
   {
     path: "about-us",
     element: <Pricing />,
-    children: <></>
+    children: <></>,
   },
   {
     path: "terms-and-conditions",
     element: <TermsAndConditions />,
-    children: <></>
+    children: <></>,
   },
   {
     path: "client-signup",
     element: <ClientSignup />,
-    children: <></>
-  }
+    children: <></>,
+  },
+  {
+    path: "client-admin",
+    element: <ClientAdmin />,
+    children: <></>,
+  },
   // {
   //   path: 'reset-password',
   //   element: <ResetPassword />,

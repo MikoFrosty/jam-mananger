@@ -9,7 +9,7 @@ export default function HeaderDropdown({
   dropdownContent,
   onToggleSidebar,
 }) {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = localStorage.getItem("user") !== "undefined" ? JSON.parse(localStorage.getItem("user")) : {};
 
   return (
     <div className={styles.Dropdown}>

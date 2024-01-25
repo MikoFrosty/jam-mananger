@@ -3,6 +3,7 @@
   transition: 0.3s;
   height: 30px;
   align-items: center;
+  z-index: 10;
 }
 
 .DropdownButton {

@@ -57,11 +57,11 @@ export default function FolderCreate({ toggleModal }) {
             columnGap: "5px",
           }}
         >
-          <DropdownSelect
+          {/* <DropdownSelect
             onChange={handleClientSelect}
             fullWidth={true}
             label={"Client"}
-          />
+          /> */}
         </div>
         <TextField
           margin="normal"

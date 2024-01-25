@@ -1,9 +1,8 @@
-import React from 'react';
+import React from "react";
 
 import styles from "../../css/DocumentEditor.module.css";
-import EditorComponent from './Editor';
-import DocumentCreatorBar from './DocumentCreationBar';
-
+import EditorComponent from "./Editor";
+import DocumentCreatorBar from "./DocumentCreationBar";
 
 const fetchedBlocks = [
   {
@@ -23,15 +22,26 @@ const fetchedBlocks = [
     html: "/im",
     tag: "img",
     imageUrl: "images/test.png",
-  }
-]
+  },
+];
 
-function DocumentCreator({ isOpen }) {
+const handleSave = (editorContent) => {
+  console.log('Saved content:', editorContent);
+  // Here you can send the content to a backend server or store it as needed
+};
+
+function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
   return (
     <div className={styles.DocumentContainer}>
-      <DocumentCreatorBar />
+      {!noBar ? <DocumentCreatorBar /> : null}
       <div className={styles.DocumentWindow}>
-        <EditorComponent className={styles.Document} isOpen={isOpen}/>
+        <EditorComponent
+          isOpen={isOpen}
+          initialData={initialData}
+          customStyles={customStyles}
+          onSave={handleSave}
+          className={styles.Document}
+        />
       </div>
     </div>
   );

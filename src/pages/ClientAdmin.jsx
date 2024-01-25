@@ -1,11 +1,15 @@
 import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
+import AuthContext from "../Contexts/AuthContext";
+import { useContext, useState, useEffect, lazy } from "react";
 import fetchWrapper from "../utils/fetchWrapper";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
@@ -37,26 +41,33 @@ const iconHover = {
   margin: "0px 0px 20px 0px",
 };
 
-export default function ClientSignup() {
+export default function ClientAdmin() {
+  const { user, setUserData, token, setTokenString } = useContext(AuthContext);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const email = searchParams.get("email");
-  const org_id = searchParams.get("org_id");
+  const client = JSON.parse(searchParams.get("client"));
+
+  useEffect(() => {
+    console.log(client)
+  }, [])
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     const payload = {
-      client_name: data.get("organizationName"),
-      associated_org_id: org_id,
+      client,
+      client_user_name: {
+        first: data.get("firstName"),
+        last: data.get("lastName")
+      },
+      client_user_email: data.get("email"),
+      client_user_password: data.get("password"),
     };
 
-    fetchWrapper("/client", "", "POST", { ...payload }).then((res) => {
-      console.log(res);
-      if (res.message === 'Client created') {
-        const client = JSON.stringify(res.client);
-        navigate(`/client-admin/?client=${client}`);
+    fetchWrapper("/client-user", "", "POST", { ...payload }).then((res) => {
+      if (res.message === "Client User Created") {
+        console.log(res)
       }
     });
   };
@@ -69,11 +80,9 @@ export default function ClientSignup() {
     <div className={styles.Signup}>
       <div className={styles.Message}>
         <div className={styles.MessageText}>
-          <Typography variant="h2">Step. 1</Typography>
+          <Typography variant="h2">Step. 2</Typography>
           <Typography variant="body1">
-            Create the client account. This will be the organization that is
-            connected to the org that invited you. In the next step you will be
-            creating your admin account.
+            Create your admin account. This is the account that will be able to manage team members and will be listed as the point of contact on Kamari.
           </Typography>
         </div>
       </div>
@@ -98,14 +107,50 @@ export default function ClientSignup() {
               noValidate
               sx={{ mt: 1 }}
             >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  columnGap: "5px",
+                }}
+              >
+                <TextField
+                  margin="normal"
+                  required
+                  id="firstName"
+                  label="First Name"
+                  name="firstName"
+                  autoFocus
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  id="lastName"
+                  label="Last Name"
+                  name="lastName"
+                  autoFocus
+                />
+              </div>
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="organizationName"
-                label="Brand Name"
-                name="organizationName"
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
                 autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                style={{ WebkitBoxShadow: "0 0 0 1000px white inset" }}
               />
               <Button
                 type="submit"
@@ -113,7 +158,7 @@ export default function ClientSignup() {
                 variant="outlined"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Continue
+                Next
               </Button>
             </Box>
           </Box>

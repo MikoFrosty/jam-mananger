@@ -12,12 +12,94 @@
   width: 90%;
   height: fit-content;
   min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 30px;
 }
 
 .ContentRow {
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: fit-content;
+  height: calc(100vh - 40px);
   min-height: 200px;
+  margin: 20px 0px 20px 0px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px #e5e5e5;
+  padding: 20px;
+  justify-content: space-between;
+}
+
+.ContentRowTop {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: calc(100vh - 110px);
+  min-height: 200px;
+  margin: 20px 0px 20px 0px;
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  padding: 20px;
+  justify-content: space-between;
+}
+
+.ContentColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 20px;
+  text-align: left;
+  height: 100vh;
+}
+
+.ContentColumnBottom {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: space-between;
+  align-items: center;
+  row-gap: 20px;
+  text-align: left;
+  align-items: start;
+  padding: 20px 0px 10px 0px;
+}
+
+.ContentColumnBottomText {
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  justify-content: start;
+  align-items: center;
+  row-gap: 20px;
+  text-align: left;
+  align-items: start;
+}
+
+.ContentColumnNested {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 20px;
+  text-align: left;
+  align-items: start;
+}
+
+.ContentColumnAlignLeft {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  row-gap: 20px;
+}
+
+.RowImage {
+  width: 45%;
+  max-height: 400px;
+  align-self: center;
+}
+.ColumnImage {
+  width: 55%;
 }

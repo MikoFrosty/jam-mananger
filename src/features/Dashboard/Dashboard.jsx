@@ -17,7 +17,8 @@ export default function Dashboard() {
   const refetch = useSelector((state) => state.app.refetch);
 
   useEffect(() => {
-    if (!user) {
+    console.log(user);
+    if (!user || user === "undefined" || user === "null" || user === "{}") {
       navigate("/home");
     }
   }, [user]);

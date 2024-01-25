@@ -16,7 +16,7 @@ export default function SideBar({
   customStyles,
   switchToggleIcon,
 }) {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = localStorage.getItem("user") === "undefined" ? {} : JSON.parse(localStorage.getItem("user"));
   const dispatch = useDispatch();
   const viewMode = useSelector((state) => state.app.viewMode);
 
@@ -110,7 +110,7 @@ export default function SideBar({
           <HeaderDropdown
             onToggleSidebar={onToggleSidebar}
             buttonContent={
-              <Typography variant="body2">{user?.organization.name}</Typography>
+              <Typography variant="body2">{user?.organization?.name}</Typography>
             }
             dropdownContent={
               <div>

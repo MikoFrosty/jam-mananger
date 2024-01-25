@@ -48,11 +48,13 @@
   transition: 0.2s;
   padding: 10px;
   border-radius: 5px;
+  width: 100%;
 }
 
 .HoverDropdownContentChildren:hover {
   background-color: #f1f1f1;
   transition: 0.2s;
+  cursor: pointer;
 }
 
 .LandingAppBarButton {

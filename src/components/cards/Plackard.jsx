@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import LogoutIcon from "@mui/icons-material/Logout";
 
 export default function Plackard({ onLogout }) {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = localStorage.getItem("user") !== "undefined" ? JSON.parse(localStorage.getItem("user")) : {};
 
   function handleLogout() {
     localStorage.removeItem("user");
@@ -23,7 +23,7 @@ export default function Plackard({ onLogout }) {
       </div>
       <div className={styles.PlackardInfo}>
         <Typography className={styles.InlineFlex} variant="body2">Daniel Carmichael</Typography>
-        <Typography variant="caption">{user.type}</Typography>
+        <Typography variant="caption">{user?.type}</Typography>
       </div>
       <LogoutIcon className={styles.LogoutIcon} onClick={handleLogout}/>
     </div>

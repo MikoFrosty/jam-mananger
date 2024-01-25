@@ -63,11 +63,11 @@ export default function LandingAppBar() {
                 </div>
                 <div className={styles.HoverDropdownContentChildren}>
                   <Typography variant="body1">Project Management</Typography>
-                  <Typography color={"#a1a1a1"} variant="caption">Manage the entirety of your product pipeline</Typography>
+                  <Typography color={"#a1a1a1"} variant="caption">Coming Soon</Typography>
                 </div>
                 <div className={styles.HoverDropdownContentChildren}>
                   <Typography variant="body1">Reporting</Typography>
-                  <Typography color={"#a1a1a1"} variant="caption">Draft reports using AI or manual mode</Typography>
+                  <Typography color={"#a1a1a1"} variant="caption">Coming Soon</Typography>
                 </div>
               </>
             }
@@ -81,11 +81,11 @@ export default function LandingAppBar() {
                 <div className={styles.DropdownContentRowLeft}>
                   <div className={styles.HoverDropdownContentChildren}>
                     <Typography variant="body1">Integrations</Typography>
-                    <Typography color={"#a1a1a1"} variant="caption">Integrate with your preferred version control system to automate tasks</Typography>
+                    <Typography color={"#a1a1a1"} variant="caption">Coming Soon</Typography>
                   </div>
                   <div className={styles.HoverDropdownContentChildren}>
                     <Typography variant="body1">Pipelines</Typography>
-                    <Typography color={"#a1a1a1"} variant="caption">Closely monitor product pipelines</Typography>
+                    <Typography color={"#a1a1a1"} variant="caption">Coming Soon</Typography>
                   </div>
                   <div className={styles.HoverDropdownContentChildren}>
                     <Typography variant="body1">Client View</Typography>
