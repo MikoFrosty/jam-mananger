@@ -24,6 +24,7 @@ export default function SideBar({
     {
       id: 1,
       name: "Documentation",
+      view: "documentation",
       expanded: false,
       subdirectories: [
         { name: "Browse Docs", view: "documentation-browse" },
@@ -33,6 +34,7 @@ export default function SideBar({
     {
       id: 2,
       name: "Analytics",
+      view: "analytics",
       expanded: false,
       subdirectories: [
         { name: "KPIs", view: "analytics-kpis" },
@@ -42,9 +44,10 @@ export default function SideBar({
     {
       id: 3,
       name: "Sprint Management",
+      view: "sprint-management",
       expanded: false,
       subdirectories: [
-        { name: "All Sprints", view: "sprint-all" },
+        { name: "All Sprints", view: "sprint-management" },
         { name: "Create Sprint", view: "sprint-create" },
         { name: "Manage Sprints", view: "sprint-manage" },
       ],
@@ -52,6 +55,7 @@ export default function SideBar({
     {
       id: 4,
       name: "Reporting",
+      view: "reporting",
       expanded: false,
       subdirectories: [
         { name: "Automations", view: "reporting-automations" },
@@ -62,12 +66,14 @@ export default function SideBar({
     {
       id: 5,
       name: "Clients",
+      view: "clients",
       expanded: false,
       subdirectories: [{ name: "Manage", view: "clients-manage" }],
     },
     {
       id: 6,
       name: "Integrations",
+      view: "integrations",
       expanded: false,
       subdirectories: [
         { name: "Browse", view: "integrations-browse" },
@@ -85,6 +91,7 @@ export default function SideBar({
   }
 
   function handleNavigation(view) {
+    console.log(view)
     dispatch(toggleView(view.toLowerCase()));
     localStorage.setItem("lastView", view.toLowerCase());
   }
@@ -115,10 +122,10 @@ export default function SideBar({
             dropdownContent={
               <div>
                 <Plackard onLogout={onLogout} />
-                <button className={styles.HeaderDropdownButton}>
+                <button onClick={() => handleNavigation("clients")} className={styles.HeaderDropdownButton}>
                   Invite Clients
                 </button>
-                <button className={styles.HeaderDropdownButton}>
+                <button onClick={() => handleNavigation("account-details")} className={styles.HeaderDropdownButton}>
                   Account Details
                 </button>
               </div>
@@ -130,7 +137,7 @@ export default function SideBar({
             {directories.map((dir) => (
               <li key={dir.id} style={getDirectoryStyle(dir.name)}>
                 <div className={styles.directoryHeader}>
-                  <span onClick={() => handleNavigation(dir.name)}>
+                  <span onClick={() => handleNavigation(dir.view)}>
                     {dir.name}
                   </span>
                   <button onClick={() => toggleSubdirectory(dir.id)}>

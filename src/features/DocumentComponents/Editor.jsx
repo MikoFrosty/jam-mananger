@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import EditorJS from "@editorjs/editorjs";
-import Header from "@editorjs/header"; // If using the Header tool
+import Header from "@editorjs/header";
 import CodeTool from "@editorjs/code";
 import LinkTool from "@editorjs/link";
 import RawTool from "@editorjs/raw";
@@ -20,7 +20,13 @@ import Tooltip from "editorjs-tooltip";
 import ChangeCase from "editorjs-change-case";
 import ColorPlugin from "editorjs-text-color-plugin";
 
-const EditorComponent = ({ isOpen, initialData, customStyles }) => {
+const EditorComponent = ({
+  isOpen,
+  initialData,
+  customStyles,
+  setEditorInstance,
+  onContentChange,
+}) => {
   const ejInstance = useRef();
 
   useEffect(() => {
@@ -28,7 +34,7 @@ const EditorComponent = ({ isOpen, initialData, customStyles }) => {
       ejInstance.current = new EditorJS({
         holder: "editorjs",
         tools: {
-          header: Header, // Add other tools as needed
+          header: Header,
           code: CodeTool,
           list: {
             class: List,
@@ -72,8 +78,8 @@ const EditorComponent = ({ isOpen, initialData, customStyles }) => {
           changeCase: {
             class: ChangeCase,
             config: {
-              showLocaleOption: true, // enable locale case options
-              locale: "tr", // or ['tr', 'TR', 'tr-TR']
+              showLocaleOption: true,
+              locale: "tr",
             },
           },
           tooltip: {
@@ -88,7 +94,7 @@ const EditorComponent = ({ isOpen, initialData, customStyles }) => {
             },
           },
           Color: {
-            class: ColorPlugin, // if load from CDN, please try: window.ColorPlugin
+            class: ColorPlugin,
             config: {
               colorCollections: [
                 "#EC7878",
@@ -105,11 +111,11 @@ const EditorComponent = ({ isOpen, initialData, customStyles }) => {
               ],
               defaultColor: "#FF1300",
               type: "text",
-              customPicker: true, // add a button to allow selecting any colour
+              customPicker: true,
             },
           },
           Marker: {
-            class: ColorPlugin, // if load from CDN, please try: window.ColorPlugin
+            class: ColorPlugin,
             config: {
               defaultColor: "#FFBF00",
               type: "marker",
@@ -118,12 +124,38 @@ const EditorComponent = ({ isOpen, initialData, customStyles }) => {
           },
         },
         autofocus: true,
-        data: initialData ? Object.keys(initialData).length > 0 ? initialData : {} : {}
-        // Define other options and event handlers as needed
+        data: initialData
+          ? Object.keys(initialData).length > 0
+            ? initialData
+            : {}
+          : {
+            "time": 1707001381108,
+            "blocks": [
+                {
+                    "id": "P4QU_l1hOT",
+                    "type": "header",
+                    "data": {
+                        "text": "Untitled Doc",
+                        "level": 1
+                    }
+                },
+                {
+                    "id": "CdcZcSqIC7",
+                    "type": "delimiter"
+                }
+            ],
+            "version": "2.28.2"
+        },
+        onChange: () => {
+          if (onContentChange) {
+            onContentChange();
+          }
+        },
       });
+
+      setEditorInstance(ejInstance.current);
     }
 
-    // Cleanup function
     return () => {
       if (!isOpen) {
         if (
@@ -135,16 +167,13 @@ const EditorComponent = ({ isOpen, initialData, customStyles }) => {
         }
       }
     };
-  }, [isOpen]); // Dependency array includes isOpen
+  }, [isOpen, setEditorInstance, onContentChange]);
 
   return (
-    <>
-      <div
-        style={{ textAlign: "left", alignItems: "start", ...customStyles }}
-        id="editorjs"
-      >
-      </div>
-    </>
+    <div
+      style={{ textAlign: "left", alignItems: "start", ...customStyles }}
+      id="editorjs"
+    ></div>
   );
 };
 

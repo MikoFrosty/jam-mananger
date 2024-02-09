@@ -3,20 +3,23 @@
   transition: 0.3s;
   height: 30px;
   align-items: center;
-  z-index: 10;
 }
 
 .DropdownButton {
   height: fit-content;
   width: fit-content;
   padding: 5px;
-  background-color: transparent;
+  background-color: white;
   color: #333;
   display: flex;
   flex-direction: row;
   align-items: center;
   border: none;
   transition: 0.2s;
+}
+
+.DropdownButton:focus {
+  outline: none;
 }
 
 .DropdownContent {
@@ -44,6 +47,7 @@
   border: none;
   background-color: #e5e5e5;
   transition: 0.2s;
+  
 }
 
 .IconDown {

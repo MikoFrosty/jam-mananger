@@ -5,16 +5,23 @@ import styles from "../../css/Dashboard.module.css";
 import SideBar from "./SideBar";
 import Documentation from "./Documentation/documentation";
 import DocumentCreator from "../DocumentComponents/DocumentCreator";
-import { toggleRefetch } from "../../StateManagement/Actions/actions";
+import {
+  fetchClients,
+  fetchDocuments,
+  fetchFolders,
+  toggleRefetch,
+} from "../../StateManagement/Actions/actions";
 import fetchWrapper from "../../utils/fetchWrapper";
 import ClientView from "../Clients/ClientView";
+import DocumentEditor from "../DocumentComponents/DocumentEditor";
+import AllSprints from "./SprintManagement/AllSprints";
+import CreateSprint from "./SprintManagement/CreateSprint";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [user, setUser] = useState(localStorage.getItem("user"));
   const [sidebar, setSidebar] = useState(true);
-  const refetch = useSelector((state) => state.app.refetch);
 
   useEffect(() => {
     console.log(user);
@@ -24,23 +31,9 @@ export default function Dashboard() {
   }, [user]);
 
   useEffect(() => {
-    if (refetch) {
-      fetchWrapper("/folders", localStorage.getItem("token"), "GET", null).then(
-        (res) => {
-          localStorage.setItem("folders", JSON.stringify(res.folders));
-        }
-      );
-      fetchWrapper(
-        "/documents",
-        localStorage.getItem("token"),
-        "GET",
-        null
-      ).then((res) => {
-        localStorage.setItem("documents", JSON.stringify(res.documents));
-      });
-      dispatch(toggleRefetch(false));
-    }
-  }, [refetch]);
+    dispatch(fetchDocuments());
+    dispatch(fetchFolders());
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -52,7 +45,6 @@ export default function Dashboard() {
   }
 
   const viewMode = useSelector((state) => state.app.viewMode);
-  console.log(viewMode);
 
   const sidebarClass = sidebar ? styles.SideBar : styles.SideBarCollapsed;
 
@@ -88,8 +80,14 @@ export default function Dashboard() {
           <Documentation withoutFirstCards={true} />
         ) : viewMode === "documentation-create" ? (
           <DocumentCreator isOpen={true} />
+        ) : viewMode === "documentation-edit" ? (
+          <DocumentEditor isOpen={true}/>
         ) : viewMode === "clients" || viewMode === "clients-manage" ? (
           <ClientView />
+        ) : viewMode === "sprint-management" ? (
+          <AllSprints />
+        ) : viewMode === "sprint-create" ? (
+          <CreateSprint />
         ) : null}
       </div>
     </div>

@@ -26,10 +26,11 @@
   border-radius: 5px;
   padding: 5px;
   column-gap: 5px;
+  height: 35px;
 }
 
 .DocBarRightButton {
-  height: 44px;
+  height: 35px;
   width: fit-content;
   flex-wrap: nowrap;
   padding: 5px;
@@ -49,7 +50,6 @@
 }
 
 .TogglerButton {
-  height: fit-content;
   width: fit-content;
   padding: 5px;
   background-color: transparent;

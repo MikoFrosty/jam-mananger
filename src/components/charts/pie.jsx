@@ -6,14 +6,26 @@ export default function Pie({
   legend = true,
   colors,
   tasks = [],
+  documents = []
 }) {
   const pie_data = {
     data: [
-      { id: 0, value: 0, label: "Completed" },
-      { id: 1, value: 0, label: "Active" },
+      { id: 0, value: 0, label: "Public" },
+      { id: 1, value: 0, label: "Private" },
       { id: 2, value: 0, label: "Not Started" },
     ],
   };
+
+  documents.forEach((document) => {
+    switch (document.public) {
+      case true:
+        pie_data.data[0].value += 1;
+        break;
+      case false:
+        pie_data.data[1].value += 1;
+        break;
+    }
+  })
 
   tasks.forEach((task) => {
     switch (task.status) {

@@ -42,6 +42,7 @@ export default function ClientSignup() {
   const [searchParams, setSearchParams] = useSearchParams();
   const email = searchParams.get("email");
   const org_id = searchParams.get("org_id");
+  const invitation_id = searchParams.get("invitation_id");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -50,6 +51,7 @@ export default function ClientSignup() {
     const payload = {
       client_name: data.get("organizationName"),
       associated_org_id: org_id,
+      invitation_id: invitation_id
     };
 
     fetchWrapper("/client", "", "POST", { ...payload }).then((res) => {

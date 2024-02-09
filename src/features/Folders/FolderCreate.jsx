@@ -29,7 +29,7 @@ export default function FolderCreate({ toggleModal }) {
       if (res.message === "Folder Created") {
         console.log(res);
         toggleModal();
-        dispatch(toggleRefetch(true));
+        // dispatch(toggleRefetch(true));
       }
     });
   };

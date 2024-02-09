@@ -1,6 +1,49 @@
 .TableView {
   width: 100%;
-  height: auto;
-  padding: 10px 0px;
+  height: 100%;
+  overflow-y: auto; /* Enable vertical scrolling */
+  /* padding: 10px 0px; */
   background-color: transparent;
+}
+
+.Row {
+  transition: 0.2s;
+}
+
+.Row:hover {
+  cursor: pointer;
+  background-color: #f1f1f1;
+  transition: 0.2s;
+}
+
+.CreateButton {
+  height: 35px;
+  width: fit-content;
+  flex-wrap: nowrap;
+  padding: 5px;
+  background-color: transparent;
+  background-color: #f1f1f1;
+  color: #333;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  transition: 0.2s;
+  column-gap: 5px;
+  border-radius: 5px;
+  font-size: small;
+  min-width: 100px;
+}
+
+.CreateButton:hover {
+  background-color: #e5e5e5;
+}
+
+.CreateButton:focus {
+  outline: none;
+}
+
+.Icon:hover {
+  cursor: pointer;
 }

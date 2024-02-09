@@ -17,7 +17,7 @@
   flex-direction: column;
   align-items: flex-end; /* Align modal content to the right */
   right: 0;
-  animation: slide-in-from-right 0.2s forwards; /* Updated animation name */
+  animation: slide-in-from-right 0.1s forwards; /* Updated animation name */
 }
 
 .modalContent {

@@ -1,0 +1,30 @@
+.OptionBar {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: 0px 10%;
+  height: fit-content;
+  max-height: 50px;
+  min-height: 10px;
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent;
+}
+
+.Left {
+  display: flex;
+  flex-direction: row;
+  column-gap: 5px;
+  height: 100%;
+  width: fit-content;
+  align-items: center;
+}
+
+.Right {
+  display: flex;
+  flex-direction: row;
+  column-gap: 5px;
+  height: 100%;
+  width: fit-content;
+  align-items: center;
+}

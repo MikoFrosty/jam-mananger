@@ -5,7 +5,6 @@ import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import AuthContext from "../Contexts/AuthContext";
@@ -41,15 +40,18 @@ const iconHover = {
   margin: "0px 0px 20px 0px",
 };
 
-export default function ClientAdmin() {
+export default function ClientTeam() {
   const { user, setUserData, token, setTokenString } = useContext(AuthContext);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [teamEmails, setTeamEmails] = useState(["", "", "", ""]);
   const client = JSON.parse(searchParams.get("client"));
+  const clientAdmin = JSON.parse(searchParams.get("client_admin"));
 
   useEffect(() => {
-    console.log(client)
-  }, [])
+    console.log(client);
+    console.log(clientAdmin);
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -59,7 +61,7 @@ export default function ClientAdmin() {
       client,
       client_user_name: {
         first: data.get("firstName"),
-        last: data.get("lastName")
+        last: data.get("lastName"),
       },
       client_user_email: data.get("email"),
       client_user_password: data.get("password"),
@@ -67,8 +69,7 @@ export default function ClientAdmin() {
 
     fetchWrapper("/client-user", "", "POST", { ...payload }).then((res) => {
       if (res.message === "Client User Created") {
-        console.log(res)
-        navigate(`/client-team/?client=${JSON.stringify(client)}&client_admin=${JSON.stringify(res.client_user)}`);
+        console.log(res);
       }
     });
   };
@@ -81,9 +82,12 @@ export default function ClientAdmin() {
     <div className={styles.Signup}>
       <div className={styles.Message}>
         <div className={styles.MessageText}>
-          <Typography variant="h2">Step. 2</Typography>
+          <Typography variant="h2">Step. 3</Typography>
           <Typography variant="body1">
-            Create your admin account. This is the account that will be able to manage team members and will be listed as the point of contact on Kamari.
+            Last step! Invite up to 4 of your team members to manage the product
+            pipeline alongside you. Enter their emails, have them accept the
+            invite via email, and get started! You can manage admin privileges
+            later.
           </Typography>
         </div>
       </div>
@@ -106,60 +110,40 @@ export default function ClientAdmin() {
               component="form"
               onSubmit={handleSubmit}
               noValidate
-              sx={{ mt: 1 }}
+              sx={{
+                mt: 1,
+                width: "100%",
+                rowGap: "10px",
+                display: "flex",
+                flexDirection: "column",
+              }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  columnGap: "5px",
-                }}
-              >
-                <TextField
-                  margin="normal"
-                  required
-                  id="firstName"
-                  label="First Name"
-                  name="firstName"
-                  autoFocus
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoFocus
-                />
+              <div className={styles.Invitee}>
+                <Typography variant="caption">{`${clientAdmin?.client_user_name?.first} ${clientAdmin?.client_user_name.last}`} - Admin</Typography>
+                <Typography variant="body1">{clientAdmin?.client_user_email}</Typography>
               </div>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                style={{ WebkitBoxShadow: "0 0 0 1000px white inset" }}
-              />
+              {teamEmails.map((email) => {
+                return (
+                  <div className={styles.Invitee}>
+                    <Typography variant="caption">Team Member</Typography>
+                    <TextField
+                      margin="normal"
+                      fullWidth
+                      id="email"
+                      label="Team Email"
+                      name="email"
+                      autoComplete="email"
+                    />
+                  </div>
+                );
+              })}
               <Button
                 type="submit"
                 fullWidth
                 variant="outlined"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Next
+                Continue
               </Button>
             </Box>
           </Box>

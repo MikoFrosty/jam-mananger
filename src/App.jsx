@@ -11,6 +11,14 @@ import { Provider } from 'react-redux';
 
 const theme = createTheme({
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          height: "35px",
+          textTransform: "none"
+        }
+      }
+    },
     MuiSelect: {
       styleOverrides: {
         root: {

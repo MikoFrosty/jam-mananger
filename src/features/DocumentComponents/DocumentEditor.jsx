@@ -10,19 +10,25 @@ import fetchWrapper from "../../utils/fetchWrapper";
 import { useDispatch } from "react-redux";
 import {
   addDocument,
-  replaceDocument,
   toggleRefetch,
 } from "../../StateManagement/Actions/actions";
 import mapToDbFormat from "../../utils/mapToDbFormat";
+import { useSelector } from "react-redux";
+import { updateDocument } from "../../StateManagement/Actions/actions";
 
-function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
+function DocumentEditor({ isOpen, noBar, customStyles }) {
   const dispatch = useDispatch();
-  const [selectedFolder, setSelectedFolder] = useState({});
-  const [selectedClient, setSelectedClient] = useState({});
+  const selectedEditingDocument = useSelector(
+    (state) => state.app.editing_document
+  );
+  const [selectedFolder, setSelectedFolder] = useState(
+    selectedEditingDocument.folder || {}
+  );
+  const [selectedClient, setSelectedClient] = useState(
+    selectedEditingDocument.client || {}
+  );
   const [ejInstance, setEjInstance] = useState(null);
   const [needsSave, setNeedsSave] = useState(false);
-  const [previousDoc, setPreviousDoc] = useState({});
-  const [tempId, setTempId] = useState("");
 
   function handleFolderSelect(folder) {
     if (folder.folder_id === selectedFolder.folder_id) {
@@ -59,59 +65,59 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
       return;
     }
     try {
-      // Fetch the current content from the Editor.js instance
-      const temporary_id = tempId !== "" ? tempId : `document_${Date.now()}`;
       const editorContent = await ejInstance.save();
       const payload = {
         document_data: {
           associated_org: JSON.parse(localStorage.getItem("user")).organization,
-          contributors: previousDoc?.contributors || [
+          contributors: selectedEditingDocument.contributors || [
             JSON.parse(localStorage.getItem("user")),
           ],
-          updates: previousDoc?.updates || [],
+          updates: selectedEditingDocument.updates || [],
           content: editorContent,
           title: editorContent.blocks[0].data.text,
           blocks: editorContent.blocks,
           last_block_timestamp: editorContent.time,
           last_block_version: editorContent.version,
         },
-        document_id: previousDoc?.document_id,
+        document_id: selectedEditingDocument.document_id,
         document_client: selectedClient || {},
-        document_folder: selectedFolder,
-        temporary_id,
+        document_folder: selectedFolder || {},
       };
 
+      notify("Saving...");
+
+      console.log("payload for fetch",payload)
       const mappedPayload = mapToDbFormat(payload);
-      mappedPayload.temporary_id = temporary_id;
 
-      dispatch(addDocument(mappedPayload));
+      mappedPayload.document_id = selectedEditingDocument.document_id;
 
-      notify("Saving");
+      dispatch(updateDocument(mappedPayload))
 
-      // append temp id to payload
-
+      // API call to save the document
       fetchWrapper(
         "/autosave-document",
         localStorage.getItem("token"),
         "POST",
         { ...payload }
-      ).then((res) => {
-        setNeedsSave(false);
+      )
+        .then((res) => {
+          setNeedsSave(false);
+          console.log("result from fetch",res)
 
-        setPreviousDoc(res.document);
+          // Dispatch the updateDocument action with the response from the server
+          dispatch(updateDocument(res.document));
 
-        //  replace optimistic doc with real  document
-        if (res.message === "document saved") {
-          dispatch(replaceDocument(temporary_id, res.document));
-          notify("saved");
-        } else {
-          notify("there was an error saving your document");
-        }
-      });
+          notify("Document saved");
+        })
+        .catch((error) => {
+          console.error("Error saving document:", error);
+          // If the save fails, remove the optimistically added document
+          notify("Failed to save document");
+        });
     } catch (error) {
-      console.error("Error saving document:", error);
+      console.error("Error preparing document for save:", error);
     }
-  }, [ejInstance, selectedClient, selectedFolder, previousDoc]);
+  }, [ejInstance, selectedClient, selectedFolder, dispatch]);
 
   const debouncedSave = useCallback(_.debounce(handleSave, 5000), [handleSave]);
 
@@ -120,11 +126,6 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
       debouncedSave();
     }
   }, [needsSave, debouncedSave]);
-
-  // useEffect(() => {
-  //   setSelectedClient(previousDoc.client || {});
-  //   setSelectedFolder(previousDoc.folder || {});
-  // }, [previousDoc]);
 
   return (
     <div className={styles.DocumentContainer}>
@@ -141,7 +142,7 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
         {/* <DocumentOptionBar /> */}
         <EditorComponent
           isOpen={isOpen}
-          initialData={initialData}
+          initialData={selectedEditingDocument.content}
           customStyles={customStyles}
           setEditorInstance={setEjInstance} // Pass the callback
           onContentChange={handleEditorChange}
@@ -152,4 +153,4 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
   );
 }
 
-export default DocumentCreator;
+export default DocumentEditor;

@@ -1,0 +1,30 @@
+.Button {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background-color: white;
+  border: none;
+  border-radius: 5%; 
+  box-shadow: #e5e5e5 0px 0px 10px;
+  cursor: pointer;
+  padding: 15px;
+  font-size: 16px;
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  color: #333;
+  justify-content: center;
+  z-index: 10;
+  transition: 0.2s;
+  border: 1px solid transparent;
+}
+
+.Button:hover {
+  transition: 0.2s;
+  border: 1px solid purple;
+}
+
+.Button:focus {
+  outline: none;
+}
