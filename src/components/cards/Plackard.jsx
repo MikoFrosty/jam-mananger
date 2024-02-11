@@ -4,6 +4,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 
 export default function Plackard({ onLogout }) {
   const user = localStorage.getItem("user") !== "undefined" ? JSON.parse(localStorage.getItem("user")) : {};
+  console.log(user)
 
   function handleLogout() {
     localStorage.removeItem("user");
@@ -22,7 +23,7 @@ export default function Plackard({ onLogout }) {
         }
       </div>
       <div className={styles.PlackardInfo}>
-        <Typography className={styles.InlineFlex} variant="body2">Daniel Carmichael</Typography>
+        <Typography className={styles.InlineFlex} variant="body2">{`${user?.name?.first} ${user?.name?.last}`}</Typography>
         <Typography variant="caption">{user?.type}</Typography>
       </div>
       <LogoutIcon className={styles.LogoutIcon} onClick={handleLogout}/>

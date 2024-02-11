@@ -5,7 +5,6 @@ import Typography from "@mui/material/Typography";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchClients } from "../../../StateManagement/Actions/actions";
 import { useEffect } from "react";
-import RichTextEditor from "../../DocumentComponents/RichTextEditor";
 
 export default function CreateTask({
   selectedMember,
@@ -17,7 +16,12 @@ export default function CreateTask({
   handleStatusSelect,
   selectedStatus,
   selectedEscalation,
-  handleEscalationSelect
+  handleEscalationSelect,
+  handleTaskCreate,
+  handleTaskDescriptionChange,
+  handleTitleChange,
+  updateTask,
+  taskTitle,
 }) {
   const dispatch = useDispatch();
   const clients = useSelector((state) => state.app.clients);
@@ -40,23 +44,23 @@ export default function CreateTask({
     {
       title: "Low",
       color: "#2EC4B6",
-      softerColor: "rgba(46, 196, 182, 0.3)" // Softer color with reduced opacity
+      softerColor: "rgba(46, 196, 182, 0.3)", // Softer color with reduced opacity
     },
     {
       title: "Moderate",
       color: "#FFC914",
-      softerColor: "rgba(255, 201, 20, 0.3)"
+      softerColor: "rgba(255, 201, 20, 0.3)",
     },
     {
       title: "High",
       color: "#FF9F1C",
-      softerColor: "rgba(255, 159, 28, 0.3)"
+      softerColor: "rgba(255, 159, 28, 0.3)",
     },
     {
       title: "Severe",
       color: "#F5511F",
-      softerColor: "rgba(245, 81, 31, 0.3)"
-    }
+      softerColor: "rgba(245, 81, 31, 0.3)",
+    },
   ];
 
   useEffect(() => {
@@ -73,11 +77,8 @@ export default function CreateTask({
           <input
             id="TaskTitleInput"
             className={styles.SprintTitleInput}
-            defaultValue={
-              selectedMember
-                ? `${selectedMember.email}'s First Task`
-                : "First Task"
-            }
+            onChange={(e) => handleTitleChange(e.target.value)}
+            defaultValue={taskTitle}
             type="text"
           />
         </div>
@@ -92,7 +93,11 @@ export default function CreateTask({
               overflowY: "scroll",
             }}
             buttonContent={
-              <Typography sx={{padding: "1px 5px 1px 5px", borderRadius: "5px"}} backgroundColor={selectedEscalation.softerColor} variant="body1">
+              <Typography
+                sx={{ padding: "1px 5px 1px 5px", borderRadius: "5px" }}
+                backgroundColor={selectedEscalation.softerColor}
+                variant="body1"
+              >
                 {selectedEscalation ? selectedEscalation.title : "Escalation"}
               </Typography>
             }
@@ -103,7 +108,7 @@ export default function CreateTask({
                     <div
                       key={`escalation_${index}`}
                       onClick={() => handleEscalationSelect(escalation)}
-                      style={{backgroundColor: escalation.softerColor}}
+                      style={{ backgroundColor: escalation.softerColor }}
                       className={`${styles.HoverDropdownContentChildren} ${
                         escalation.title === selectedEscalation?.title
                           ? styles.Selected
@@ -261,7 +266,21 @@ export default function CreateTask({
           />
         </div>
       </div>
-      {/* <RichTextEditor /> */}
+      {/* // If users ask for it add a rich text editor otherwise we will do a messaging system as the comments */}
+      <div className={styles.SprintInput}>
+        <label className={styles.SprintLabel} htmlFor="TaskDescription">
+          Description
+        </label>
+        <textarea
+          id="TaskDescription"
+          rows={4}
+          className={styles.Description}
+          onChange={(e) => handleTaskDescriptionChange(e.target.value)}
+        />
+      </div>
+      <button onClick={handleTaskCreate}>
+        {updateTask ? "Update Task" : "Create Task"}
+      </button>
     </div>
   );
 }

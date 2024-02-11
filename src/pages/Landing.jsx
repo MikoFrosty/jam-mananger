@@ -124,7 +124,7 @@ function Landing() {
         <div className={styles.ContentRow}>
           <div className={styles.ContentColumn}>
             <Typography variant="h3">
-              What in the pipeline for Kamari?
+              What's in the pipeline for Kamari?
             </Typography>
           </div>
           <div className={styles.ContentColumnAlignLeft}>
@@ -136,7 +136,7 @@ function Landing() {
               3. Create an integration marketplace
             </Typography>
             <Typography variant="body2">
-              Think we need to add something else or focus other user needs?
+              Think we need to add something else or focus on other user needs?
               Please tell us!
             </Typography>
           </div>

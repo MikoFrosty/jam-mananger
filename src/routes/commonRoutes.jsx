@@ -6,6 +6,7 @@ import Login from "../pages/Login.jsx";
 import ClientSignup from "../pages/ClientSignup.jsx";
 import ClientAdmin from "../pages/ClientAdmin.jsx";
 import ClientTeam from "../pages/ClientTeam.jsx";
+import TeamSignup from "../pages/TeamSignup.jsx";
 
 const commonRoutes = [
   {
@@ -51,6 +52,11 @@ const commonRoutes = [
   {
     path: "client-team",
     element: <ClientTeam />,
+    children: <></>
+  },
+  {
+    path: "team-signup",
+    element: <TeamSignup />,
     children: <></>
   }
   // {

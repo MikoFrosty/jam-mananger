@@ -4,10 +4,10 @@ import styles from "../../../css/SprintManagement/CreateSprint.module.css";
 import fetchWrapper from "../../../utils/fetchWrapper";
 import HoverDropdown from "../../../components/HoverDropdown";
 import Typography from "@mui/material/Typography";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { fetchClients } from "../../../StateManagement/Actions/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { addMemberTask, fetchClients } from "../../../StateManagement/Actions/actions";
 import CreateTask from "./CreateTask";
+import AddIcon from "@mui/icons-material/Add";
 
 export default function CreateSprint() {
   const dispatch = useDispatch();
@@ -17,9 +17,22 @@ export default function CreateSprint() {
   const [currentMonthStart, setCurrentMonthStart] = useState(
     new Date().getMonth()
   );
+  const [tempSprintId, setTempSprintId] = useState(
+    `temporary_sprint_${Date.now()}`
+  );
+  const [sprintTaskQueue, setSprintTaskQueue] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
   const [currentYearStart, setCurrentYearStart] = useState(
     new Date().getFullYear()
+  );
+
+  const [tempTaskId, setTempTaskId] = useState(null);
+
+  const [createTask, setCreateTask] = useState(false);
+
+  const [taskDescription, setTaskDescription] = useState("");
+  const [taskTitle, setTaskTitle] = useState(
+    selectedMember ? `${selectedMember.email}'s First Task` : "First Task"
   );
 
   const [selectedStartDate, setSelectedStartDate] = useState(new Date());
@@ -28,17 +41,19 @@ export default function CreateSprint() {
     new Date().getFullYear()
   );
   const [selectedEndDate, setSelectedEndDate] = useState(null);
-  const [memberTasks, setMemberTasks] = useState([]);
+  const memberTasks = useSelector((state) => state.app.memberTasks)
+  const [updateTask, setUpdateTask] = useState(false);
 
   const [assignees, setAssignees] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState({
     status_title: "To Do",
   });
+
   const [selectedEscalation, setSelectedEscalation] = useState({
     title: "Low",
     color: "#2EC4B6",
-    softerColor: "rgba(46, 196, 182, 0.3)" // Softer color with reduced opacity
+    softerColor: "rgba(46, 196, 182, 0.3)", // Softer color with reduced opacity
   });
 
   const [organization, setOrganization] = useState(null);
@@ -47,17 +62,15 @@ export default function CreateSprint() {
     fetchWrapper("/organization", localStorage.getItem("token"), "GET").then(
       (res) => {
         setOrganization(res.organization);
-        console.log(res.organization);
         const initialUser = res.organization.members.find(
           (member) =>
             member.user_id === JSON.parse(localStorage.getItem("user"))?.user_id
         );
 
         if (initialUser) {
-          console.log(initialUser);
           setSelectedMember(initialUser);
           setMemberTasks(initialUser.tasks);
-          setAssignees([...assignees, initialUser]);
+          setAssignees([initialUser]);
         } else {
           console.log("no initial user");
         }
@@ -82,9 +95,9 @@ export default function CreateSprint() {
       setSelectedEscalation({
         title: "Low",
         color: "#2EC4B6",
-      })
+      });
     } else {
-      setSelectedEscalation(escalation)
+      setSelectedEscalation(escalation);
     }
   }
 
@@ -116,7 +129,6 @@ export default function CreateSprint() {
     fetchWrapper("/tasks", localStorage.getItem("token"), "GET", {
       ...payload,
     }).then((res) => {
-      console.log(res.tasks);
       setMemberTasks(res.tasks);
     });
   }
@@ -134,6 +146,63 @@ export default function CreateSprint() {
     setCurrentMonthEnd(defaultEndDate.getMonth());
     setCurrentYearEnd(defaultEndDate.getFullYear());
   };
+
+  function handleTaskCreate() {
+    const temporary_task_id = tempTaskId
+      ? tempTaskId
+      : `temporary_task_${Date.now()}`;
+    const payload = {
+      title: taskTitle,
+      assigned_by: JSON.parse(localStorage.getItem("user")),
+      assignees,
+      description: taskDescription,
+      client: selectedClient,
+      escalation: selectedEscalation,
+      status: selectedStatus,
+      start_time: Date.now(),
+      duration: 0,
+      hard_limit: false,
+      requires_authorization: selectedClient ? true : false,
+      temporary_sprint_id: tempSprintId,
+      temporary_task_id,
+    };
+
+    dispatch(addMemberTask(payload))
+
+    setCreateTask(false);
+    setUpdateTask(false);
+    setTempTaskId(null);
+  }
+
+  function handleTaskCreateToggleWithExisting(task) {
+    setCreateTask(true);
+    setUpdateTask(true);
+    setSelectedClient(task.client);
+    setAssignees(task.assignees);
+    setTaskDescription(task.description);
+    setSelectedEscalation(task.escalation);
+    setSelectedStatus(task.status);
+    setTempTaskId(task.temporary_task_id);
+    setTaskTitle(task.title);
+  }
+
+  function handleTaskTitleChange(value) {
+    setTaskTitle(value);
+  }
+
+  function handleCreateTaskToggle(status) {
+    setCreateTask(true);
+    setSelectedStatus(status);
+    setTaskTitle("Task Title");
+  }
+
+  function handleTaskDescriptionChange(value) {
+    setTaskDescription(value);
+  }
+
+  function handleTitleChange(value) {
+    setTaskTitle(value);
+  }
 
   const goToPrevMonthStart = () => {
     setCurrentMonthStart(currentMonthStart === 0 ? 11 : currentMonthStart - 1);
@@ -172,7 +241,9 @@ export default function CreateSprint() {
     } else {
       setSelectedClient(client);
     }
-  }
+  };
+
+  console.log(memberTasks)
 
   return (
     <div className={styles.CreateSprint}>
@@ -185,6 +256,7 @@ export default function CreateSprint() {
             id="SprintTitleInput"
             className={styles.SprintTitleInput}
             defaultValue={`New Sprint`}
+            onChange={handleTitleChange}
             type="text"
           />
         </div>
@@ -265,23 +337,6 @@ export default function CreateSprint() {
             </div>
           )}
         </div>
-        {/* <div className={styles.SprintInput}>
-          <label className={styles.SprintLabel} htmlFor="DurationDropdown">Duration</label>
-          <div className={styles.DurationInputWrapper}>
-            <input
-              id="DurationInput"
-              className={styles.DurationInput}
-              type="number"
-              min="1" // Assuming the minimum duration is 1 day/week/month
-              placeholder="Enter duration"
-            />
-            <select className={styles.DurationDropdown} defaultValue="weeks">
-              <option value="days">Days</option>
-              <option value="weeks">Weeks</option>
-              <option value="months">Months</option>
-            </select>
-          </div>
-        </div> */}
       </div>
       <div className={styles.SprintDescription}>
         <div className={styles.SprintInput}>
@@ -353,10 +408,7 @@ export default function CreateSprint() {
                     );
                   })
                 ) : (
-                  <div
-                    // add css styling
-                    className={styles.HoverDropdownContentChildren}
-                  >
+                  <div className={styles.HoverDropdownContentChildren}>
                     <Typography variant="body1">Fetching Team..</Typography>
                     <Typography color={"#a1a1a1"} variant="caption">
                       We are gathering your teammates!
@@ -368,7 +420,7 @@ export default function CreateSprint() {
           />
         </div>
         <div className={styles.TaskList}>
-          {memberTasks.length === 0 ? (
+          {memberTasks?.length === 0 ? (
             <div className={styles.TaskView}>
               <h6>{`No Tasks Found for ${selectedMember?.email}`}</h6>
               <CreateTask
@@ -382,28 +434,219 @@ export default function CreateSprint() {
                 selectedStatus={selectedStatus}
                 selectedEscalation={selectedEscalation}
                 handleEscalationSelect={handleEscalationSelection}
+                handleTaskDescriptionChange={handleTaskDescriptionChange}
+                handleTaskCreate={handleTaskCreate}
+                handleTitleChange={handleTaskTitleChange}
+                updateTask={updateTask}
               />
             </div>
-          ) : selectedMember ? (
-            memberTasks?.map((task) => {
-              return (
-                <>
-                  <h6>{JSON.stringify(task)}</h6>
-                  <CreateTask
-                    selectedMember={selectedMember}
-                    assignees={assignees}
-                    organization={organization}
-                    handleAssigneeSelect={handleAssigneeSelect}
-                    handleClientSelect={handleClientSelect}
-                    selectedClient={selectedClient}
-                    handleStatusSelect={handleStatusSelect}
-                    selectedStatus={selectedStatus}
-                    selectedEscalation={selectedEscalation}
-                    handleEscalationSelect={handleEscalationSelection}
-                  />
-                </>
-              );
-            })
+          ) : selectedMember && createTask === false ? (
+            <>
+              <div className={styles.KanBan}>
+                <div className={styles.KanBanColumn}>
+                  <label className={styles.SprintLabel} htmlFor="BacklogColumn">
+                    Backlog
+                  </label>
+                  <div className={styles.KanBanCard}>
+                    <AddIcon
+                      className={styles.Icon}
+                      onClick={() =>
+                        handleCreateTaskToggle({
+                          status_title: "Backlog",
+                        })
+                      }
+                    />
+                  </div>
+                  {memberTasks?.map((task) => {
+                    if (task.status.status_title === "Backlog") {
+                      return (
+                        <div
+                          onClick={() =>
+                            handleTaskCreateToggleWithExisting(task)
+                          }
+                          className={styles.KanBanCard}
+                        >
+                          <div className={styles.KanBanCardTextRow}>
+                            <Typography variant="body1">
+                              {task.title}
+                            </Typography>
+                            <Typography variant="caption">
+                              {task.client?.client_name}
+                            </Typography>
+                          </div>
+                          <Typography
+                            sx={{
+                              backgroundColor: task.escalation.softerColor,
+                              color: task.escalation.color,
+                              padding: "5px",
+                              borderRadius: "5px",
+                            }}
+                            variant="caption"
+                          ></Typography>
+                        </div>
+                      );
+                    }
+                    return null; // Ensure tasks not matching the condition are handled properly
+                  })}
+                </div>
+                <div className={styles.KanBanColumn}>
+                  <label className={styles.SprintLabel} htmlFor="BacklogColumn">
+                    To Do
+                  </label>
+                  <div className={styles.KanBanCard}>
+                    <AddIcon
+                      className={styles.Icon}
+                      onClick={() =>
+                        handleCreateTaskToggle({
+                          status_title: "To Do",
+                        })
+                      }
+                    />
+                  </div>
+                  {memberTasks?.map((task) => {
+                    if (task.status.status_title === "To Do") {
+                      return (
+                        <div
+                          onClick={() =>
+                            handleTaskCreateToggleWithExisting(task)
+                          }
+                          className={styles.KanBanCard}
+                        >
+                          <div className={styles.KanBanCardTextRow}>
+                            <Typography variant="body1">
+                              {task.title}
+                            </Typography>
+                            <Typography variant="caption">
+                              {task.client?.client_name}
+                            </Typography>
+                          </div>
+                          <Typography
+                            sx={{
+                              backgroundColor: task.escalation.softerColor,
+                              color: task.escalation.color,
+                              padding: "5px",
+                              borderRadius: "5px",
+                            }}
+                            variant="caption"
+                          ></Typography>
+                        </div>
+                      );
+                    }
+                    return null; // Ensure tasks not matching the condition are handled properly
+                  })}
+                </div>
+                <div className={styles.KanBanColumn}>
+                  <label className={styles.SprintLabel} htmlFor="BacklogColumn">
+                    In Progress
+                  </label>
+                  <div className={styles.KanBanCard}>
+                    <AddIcon
+                      className={styles.Icon}
+                      onClick={() =>
+                        handleCreateTaskToggle({
+                          status_title: "In Progress",
+                        })
+                      }
+                    />
+                  </div>
+                  {memberTasks?.map((task) => {
+                    if (task.status.status_title === "In Progress") {
+                      return (
+                        <div
+                          onClick={() =>
+                            handleTaskCreateToggleWithExisting(task)
+                          }
+                          className={styles.KanBanCard}
+                        >
+                          <div className={styles.KanBanCardTextRow}>
+                            <Typography variant="body1">
+                              {task.title}
+                            </Typography>
+                            <Typography variant="caption">
+                              {task.client?.client_name}
+                            </Typography>
+                          </div>
+                          <Typography
+                            sx={{
+                              backgroundColor: task.escalation.softerColor,
+                              color: task.escalation.color,
+                              padding: "5px",
+                              borderRadius: "5px",
+                            }}
+                            variant="caption"
+                          ></Typography>
+                        </div>
+                      );
+                    }
+                    return null; // Ensure tasks not matching the condition are handled properly
+                  })}
+                </div>
+                <div className={styles.KanBanColumn}>
+                  <label className={styles.SprintLabel} htmlFor="BacklogColumn">
+                    Done
+                  </label>
+                  <div className={styles.KanBanCard}>
+                    <AddIcon
+                      className={styles.Icon}
+                      onClick={() =>
+                        handleCreateTaskToggle({
+                          status_title: "Done",
+                        })
+                      }
+                    />
+                  </div>
+                  {memberTasks?.map((task) => {
+                    if (task.status.status_title === "Done") {
+                      return (
+                        <div
+                          onClick={() =>
+                            handleTaskCreateToggleWithExisting(task)
+                          }
+                          className={styles.KanBanCard}
+                        >
+                          <div className={styles.KanBanCardTextRow}>
+                            <Typography variant="body1">
+                              {task.title}
+                            </Typography>
+                            <Typography variant="caption">
+                              {task.client?.client_name}
+                            </Typography>
+                          </div>
+                          <Typography
+                            sx={{
+                              backgroundColor: task.escalation.softerColor,
+                              color: task.escalation.color,
+                              padding: "5px",
+                              borderRadius: "5px",
+                            }}
+                            variant="caption"
+                          ></Typography>
+                        </div>
+                      );
+                    }
+                    return null; // Ensure tasks not matching the condition are handled properly
+                  })}
+                </div>
+              </div>
+            </>
+          ) : createTask === true ? (
+            <CreateTask
+              selectedMember={selectedMember}
+              assignees={assignees}
+              organization={organization}
+              handleAssigneeSelect={handleAssigneeSelect}
+              handleClientSelect={handleClientSelect}
+              selectedClient={selectedClient}
+              handleStatusSelect={handleStatusSelect}
+              selectedStatus={selectedStatus}
+              selectedEscalation={selectedEscalation}
+              handleEscalationSelect={handleEscalationSelection}
+              handleTaskDescriptionChange={handleTaskDescriptionChange}
+              handleTaskCreate={handleTaskCreate}
+              handleTitleChange={handleTaskTitleChange}
+              taskTitle={taskTitle}
+              updateTask={updateTask}
+            />
           ) : (
             <h6>Please Select a Team Member to Manage Sprint Tasks</h6>
           )}

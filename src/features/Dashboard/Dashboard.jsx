@@ -16,6 +16,7 @@ import ClientView from "../Clients/ClientView";
 import DocumentEditor from "../DocumentComponents/DocumentEditor";
 import AllSprints from "./SprintManagement/AllSprints";
 import CreateSprint from "./SprintManagement/CreateSprint";
+import Account from "../Account/Account";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -88,6 +89,8 @@ export default function Dashboard() {
           <AllSprints />
         ) : viewMode === "sprint-create" ? (
           <CreateSprint />
+        ) : viewMode === "account-details" ? (
+          <Account />
         ) : null}
       </div>
     </div>

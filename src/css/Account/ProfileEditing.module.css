@@ -1,4 +1,14 @@
-.CreateSprint {
+.ProfileEditor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  padding: 10px;
+  border-radius: 5px;
+  row-gap: 10px;
+}
+
+.CreateProfile {
   width: 100%;
   height: 100%;
   background-color: white;
@@ -7,7 +17,7 @@
   overflow-y: scroll;
 }
 
-.SprintTitle {
+.ProfileTitle {
   display: flex;
   flex-direction: row;
   height: fit-content;
@@ -18,22 +28,22 @@
   column-gap: 10px;
 }
 
-.SprintInput {
+.ProfileInput {
   display: flex;
   flex-direction: column;
   align-items: start;
   position: relative;
 }
 
-.SprintLabel {
+.ProfileLabel {
   font-size: 12px;
   color: #696969;
 }
 
-.SprintTitleInput {
+.ProfileTitleInput {
   height: 35px;
   font-size: medium;
-  font-weight: 700;
+  font-weight: 500;
   background-color: #f1f1f1;
   border-radius: 5px;
   border: none;
@@ -42,21 +52,21 @@
   min-width: 300px;
   color: #333;
   justify-content: center;
-  text-align: center;
+  text-align: left;
 }
 
-.SprintTitleInput:focus {
+.ProfileTitleInput:focus {
   outline: none;
 }
 
-.SprintTimeline {
+.ProfileTimeline {
   display: flex;
   flex-direction: row;
   column-gap: 20px;
   margin-top: 10px;
 }
 
-.SprintDatePicker {
+.ProfileDatePicker {
   height: 35px;
   background-color: #f1f1f1;
 
@@ -117,7 +127,7 @@
   outline: none;
 }
 
-.SprintDescription {
+.ProfileDescription {
   margin-top: 10px;
   width: 100%;
   height: fit-content;
@@ -147,7 +157,7 @@
   outline: none;
 }
 
-.SprintLabelFooter {
+.ProfileLabelFooter {
   font-size: 10px;
   color: rgb(135, 135, 135);
   align-self: center;
@@ -167,12 +177,18 @@
   border-radius: 5px;
 }
 
+.TaskList {
+  width: 100%;
+  margin-top: 10px;
+}
+
 .TaskView {
   display: flex;
   flex-direction: column;
   row-gap: 20px;
   width: 100%;
   height: fit-content;
+  margin-top: 20px;
 }
 
 .CreateTask {
@@ -206,5 +222,95 @@
   flex-direction: row;
   height: fit-content;
   width: 100%;
-  column-gap: 30px;
+  column-gap: 10px;
+}
+
+.KanBan {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+  flex: 4;
+  height: 420px;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.KanBanColumn {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  height: fit-content;
+  height: 400px;
+  min-width: 250px;
+  background-color: #f1f1f1;
+  text-align: left;
+  overflow-y: scroll;
+}
+
+.KanBanCard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px #e5e5e5;
+  color: #333;
+  background-color: white;
+  padding: 10px;
+  row-gap: 5px;
+}
+
+.KanBanCardTextRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: fit-content;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Icon {
+  width: 25px;
+  height: 25px;
+}
+
+.Icon:hover {
+  cursor: pointer;
+}
+
+.ResetPasswordButton {
+  background-color: #5fa9fda1;
+  color: #333;
+  border-radius: 5px;
+  width: 33%;
+  border: none;
+  margin-top: 20px;
+}
+
+.ResetPasswordButton:hover {
+  border: none;
+}
+
+.ResetPasswordButton:focus {
+  outline: none;
+}
+
+.Button {
+  background-color: #5fa9fda1;
+  color: #333;
+  border-radius: 5px;
+  width: 33%;
+  border: none;
+}
+
+.Button:hover {
+  border: none;
+}
+
+.Button:focus {
+  outline: none;
 }

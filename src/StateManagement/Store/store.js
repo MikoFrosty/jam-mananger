@@ -13,6 +13,8 @@ const initialState = {
   clients: [],
   client_invitations: [],
   editing_document: {},
+  memberTasks: [],
+  organization: null
 };
 
 function appReducer(state = initialState, action) {
@@ -42,6 +44,12 @@ function appReducer(state = initialState, action) {
         ...state,
         folders: action.payload,
       };
+    case "GET_ORGANIZATION":
+      console.log(action.payload)
+      return {
+        ...state,
+        organization: action.payload
+      }
     case "SET_CLIENTS_AND_INVITATIONS":
       return {
         ...state,
@@ -62,8 +70,8 @@ function appReducer(state = initialState, action) {
       // Destructure documents from current state for clarity
       const { documents } = state;
 
-      console.log("add",documents)
-      console.log("add",action.payload)
+      console.log("add", documents);
+      console.log("add", action.payload);
 
       // Check if the document being added has a temporary_id and if a document with this temporary_id already exists
       const documentIndex = documents.findIndex(
@@ -141,13 +149,36 @@ function appReducer(state = initialState, action) {
       };
     }
 
-    // this needs a rework
+    case "ADD_MEMBER_TASK": {
+      // destructure member tasks
+      const { memberTasks } = state;
+
+      const existingTaskIndex = memberTasks.findIndex(
+        (task) => task.temporary_task_id === action.payload.temporary_task_id
+      );
+
+      if (existingTaskIndex !== -1) {
+        const updatedMemberTasks = [...memberTasks];
+        updatedMemberTasks[existingTaskIndex] = action.payload;
+
+        return {
+          ...state,
+          memberTasks: updatedMemberTasks
+        }
+      } else {
+        return {
+          ...state,
+          memberTasks: [...memberTasks, action.payload]
+        }
+      }
+    }
+
     case "UPDATE_DOCUMENT": {
       // Destructure documents from current state for clarity
       const { documents } = state;
 
-      console.log("update",action.payload)
-      console.log("update",documents)
+      console.log("update", action.payload);
+      console.log("update", documents);
 
       // Check if the document being added has a temporary_id and if a document with this temporary_id already exists
       const documentIndex = documents.findIndex(

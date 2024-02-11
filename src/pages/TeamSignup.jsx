@@ -46,6 +46,9 @@ export default function Signup() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const email = searchParams.get("email");
+  const type = searchParams.get("type") || null;
+  const org_id = searchParams.get("org_id") || null;
+  const invitation_id = searchParams.get("invitation_id") || null
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -55,7 +58,9 @@ export default function Signup() {
       email: email ? email : data.get("email"),
       password: data.get("password"),
       type: "standard",
-      organization: data.get("organizationName"),
+      role: type,
+      existing_org_id: org_id,
+      invitation_id,
       name: {
         first: data.get("firstName"),
         last: data.get("lastName"),
@@ -116,15 +121,6 @@ export default function Signup() {
               noValidate
               sx={{ mt: 1 }}
             >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="organizationName"
-                label="Organization Name"
-                name="organizationName"
-                autoFocus
-              />
               <div
                 style={{
                   display: "flex",

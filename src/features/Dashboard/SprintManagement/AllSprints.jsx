@@ -39,7 +39,7 @@ function handleCreateClick() {
       <div className={styles.SprintViewContent}>
 
       </div>
-      <FixedButton label={"Create Sprint"} handleClick={() => handleCreateClick}/>
+      <FixedButton label={"Create Sprint"} handleClick={handleCreateClick}/>
     </div>
   )
 }
