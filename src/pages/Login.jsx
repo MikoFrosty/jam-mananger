@@ -14,6 +14,8 @@ import fetchWrapper from "../utils/fetchWrapper";
 import { useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useDispatch } from "react-redux";
+import { setLogout, setUser } from "../StateManagement/Actions/actions";
 
 function Copyright(props) {
   return (
@@ -40,6 +42,7 @@ const iconHover = {
 };
 
 export default function Login() {
+  const dispatch = useDispatch();
   const { user, setUserData, token, setTokenString } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -53,6 +56,9 @@ export default function Login() {
     fetchWrapper("/login", "", "POST", { ...payload }).then((res) => {
       setUserData(res.user);
       setTokenString(res.token);
+
+      dispatch(setUser(res.user))
+      dispatch(setLogout(false))
 
       if (res?.token) {
         navigate("/");

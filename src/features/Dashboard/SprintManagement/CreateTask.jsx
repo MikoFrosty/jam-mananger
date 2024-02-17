@@ -7,7 +7,6 @@ import { fetchClients } from "../../../StateManagement/Actions/actions";
 import { useEffect } from "react";
 
 export default function CreateTask({
-  selectedMember,
   assignees,
   organization,
   handleAssigneeSelect,
@@ -159,7 +158,9 @@ export default function CreateTask({
                           : ""
                       }`}
                     >
-                      <Typography variant="body1">{assignee.name}</Typography>
+                      <Typography variant="body1">
+                        {assignee.name.first}
+                      </Typography>
                       <Typography color={"#a1a1a1"} variant="caption">
                         {assignee.email}
                       </Typography>
@@ -174,59 +175,65 @@ export default function CreateTask({
             }
           />
         </div>
-        <div className={styles.SprintInput}>
-          <label className={styles.SprintLabel} htmlFor="SprintClientSelect">
-            Client
-          </label>
-          {clients.length > 0 ? (
-            <HoverDropdown
-              id={"SprintClientSelect"}
-              customStyles={{
-                maxHeight: "300px",
-                overflowY: "scroll",
-              }}
-              buttonContent={
-                <Typography variant="body1">
-                  {selectedClient
-                    ? selectedClient.client_name
-                    : "Select Client"}
-                </Typography>
-              }
-              dropdownContent={
-                <>
-                  {clients ? (
-                    clients.map((client, index) => {
-                      return (
-                        <div
-                          key={`client_${index}`}
-                          onClick={() => handleClientSelect(client)}
-                          className={`${styles.HoverDropdownContentChildren} ${
-                            clients.some(
-                              (c) => c.client_id === selectedClient?.client_id
-                            )
-                              ? styles.Selected
-                              : ""
-                          }`}
-                        >
-                          <Typography variant="body1">
-                            {client.client_name}
-                          </Typography>
-                          <Typography color={"#a1a1a1"} variant="caption">
-                            {client.client_poc.client_user_email}
-                          </Typography>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className={styles.HoverDropdownContentChildren}>
-                      <Typography variant="body1">No Clients Found</Typography>
-                    </div>
-                  )}
-                </>
-              }
-            />
-          ) : null}
-        </div>
+        {clients.length > 0 ? (
+          <div className={styles.SprintInput}>
+            <label className={styles.SprintLabel} htmlFor="SprintClientSelect">
+              Client
+            </label>
+            {clients.length > 0 ? (
+              <HoverDropdown
+                id={"SprintClientSelect"}
+                customStyles={{
+                  maxHeight: "300px",
+                  overflowY: "scroll",
+                }}
+                buttonContent={
+                  <Typography variant="body1">
+                    {selectedClient
+                      ? selectedClient.client_name
+                      : "Select Client"}
+                  </Typography>
+                }
+                dropdownContent={
+                  <>
+                    {clients ? (
+                      clients.map((client, index) => {
+                        return (
+                          <div
+                            key={`client_${index}`}
+                            onClick={() => handleClientSelect(client)}
+                            className={`${
+                              styles.HoverDropdownContentChildren
+                            } ${
+                              clients.some(
+                                (c) => c.client_id === selectedClient?.client_id
+                              )
+                                ? styles.Selected
+                                : ""
+                            }`}
+                          >
+                            <Typography variant="body1">
+                              {client.client_name}
+                            </Typography>
+                            <Typography color={"#a1a1a1"} variant="caption">
+                              {client.client_poc.client_user_email}
+                            </Typography>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className={styles.HoverDropdownContentChildren}>
+                        <Typography variant="body1">
+                          No Clients Found
+                        </Typography>
+                      </div>
+                    )}
+                  </>
+                }
+              />
+            ) : null}
+          </div>
+        ) : null}
         <div className={styles.SprintInput}>
           <label className={styles.SprintLabel} htmlFor="SprintClientSelect">
             Status

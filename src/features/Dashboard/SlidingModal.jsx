@@ -3,7 +3,6 @@ import styles from "../../css/SlidingModal.module.css";
 import Button from "@mui/material/Button";
 
 function SlidingModal({ isOpen, toggleModal, children }) {
-
   const handleModalContentClick = (e) => {
     e.stopPropagation(); // Stop click event from reaching the backdrop
   };
@@ -20,7 +19,7 @@ function SlidingModal({ isOpen, toggleModal, children }) {
         <div className={styles.modalContent} onClick={handleModalContentClick}>
           <Button
             id="closeModalButton"
-            onClick={ toggleModal }
+            onClick={toggleModal}
             className={styles.Button}
           >
             Cancel

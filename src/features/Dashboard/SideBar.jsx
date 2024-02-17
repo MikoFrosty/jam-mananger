@@ -47,7 +47,7 @@ export default function SideBar({
       view: "sprint-management",
       expanded: false,
       subdirectories: [
-        { name: "All Sprints", view: "sprint-management" },
+        { name: "Current", view: "sprint-management" },
         { name: "Create Sprint", view: "sprint-create" },
         { name: "Manage Sprints", view: "sprint-manage" },
       ],

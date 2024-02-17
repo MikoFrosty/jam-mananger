@@ -1,13 +1,19 @@
 import { useState } from "react";
 import styles from "../../css/Account/ProfileEditing.module.css";
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import { useDispatch } from "react-redux";
+import { updateUser } from "../../StateManagement/Actions/actions";
+import { useSelector } from "react-redux";
 
 export default function ProfileEditing() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.app.user);
   const [editMode, setEditMode] = useState(true);
   const [email, setEmail] = useState(user?.email || "")
   const [firstName, setFirstName] = useState(user?.name?.first || "")
   const [lastName, setLastName] = useState(user?.name?.last || "")
+  const [profileUrl, setProfileUrl] = useState(user?.profile_image_url || "");
+  console.log(user)
   const [editModeStyles, setEditModeStyles] = useState({
     backgroundColor: "#5fa9fda1",
     borderRadius: '25%',
@@ -26,17 +32,21 @@ export default function ProfileEditing() {
     setLastName(value)
   }
 
+  function handleProfileUrlChange(value) {
+    setProfileUrl(value)
+  }
+
   function handleEditSubmit() {
     const payload = {
       user_id: user.user_id,
-      email,
       name: {
         first: firstName,
         last: lastName
-      }
+      },
+      profile_image_url: profileUrl
     }
 
-    console.log(payload)
+    dispatch(updateUser(payload));
     setEditMode(true)
   }
 
@@ -55,6 +65,10 @@ export default function ProfileEditing() {
       <div className={styles.ProfileInput}>
         <label className={styles.ProfileLabel} htmlFor="ProfileEmail">Email</label>
         <input onChange={(e) => handleEmailChange(e.target.value)} disabled={editMode} defaultValue={email} id="ProfileEmail" className={styles.ProfileTitleInput} type="email" />
+      </div>
+      <div className={styles.ProfileInput}>
+        <label className={styles.ProfileLabel} htmlFor="ProfileImageUrl">Profile Image URL</label>
+        <input onChange={(e) => handleProfileUrlChange(e.target.value)} disabled={editMode} defaultValue={profileUrl} id="ProfileImageUrl" className={styles.ProfileTitleInput} type="url" />
       </div>
       <div className={styles.InputRow}>
         <div className={styles.ProfileInput}>

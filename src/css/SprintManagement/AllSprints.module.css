@@ -4,7 +4,7 @@
   background-color: #f1f1f1;
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
+  overflow-y: hidden;;
 }
 
 .SprintViewContent {
@@ -13,8 +13,80 @@
   height: fit-content;
   width: 100%;
   min-height: calc(100% - 60px);
+  padding: 10px;
+  align-items: start;
+  justify-content: start;
+  text-align: left;
+  row-gap: 10px
+}
+
+.ActiveSprint {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  padding: 10px;
+  background-color: white;
+  border-radius: 5px;
+  row-gap: 10px;
+  border: 1px solid transparent;
+  transition: 0.2s;
+}
+
+.ActiveSprint:hover {
+  border: 1px solid purple;
+  transition: 0.2s;
+  cursor: pointer;
 }
 
 .Sprint {
   
+}
+
+.SprintDataRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex: 3;
+  column-gap: 10px;
+}
+
+.SprintData {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #e5e5e5;
+  justify-content: start;
+  align-items: center;
+  width: fit-content;
+}
+
+.LabelWithStatus {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: fit-content;
+}
+
+.SprintInput {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  position: relative;
+}
+
+.SprintLabel {
+  font-size: 12px;
+  color: #696969;
+}
+
+.InactiveSprints {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
 }

@@ -14,7 +14,13 @@ const initialState = {
   client_invitations: [],
   editing_document: {},
   memberTasks: [],
-  organization: null
+  organization: null,
+  editing_sprint: null,
+  editing_task: null,
+  sprints: null,
+  user: null,
+  logout: false,
+  team: null,
 };
 
 function appReducer(state = initialState, action) {
@@ -24,10 +30,30 @@ function appReducer(state = initialState, action) {
         ...state,
         viewMode: action.payload,
       };
+    case "SET_EDITING_TASK":
+      return {
+        ...state,
+        editing_task: action.payload,
+      };
+    case "CLEAR_EDITING_TASK":
+      return {
+        ...state,
+        editing_task: null,
+      };
     case "TOGGLE_REFETCH":
       return {
         ...state,
         refetch: action.payload,
+      };
+    case "SET_LOGOUT":
+      return {
+        ...state,
+        logout: action.payload,
+      };
+    case "SET_USER":
+      return {
+        ...state,
+        user: action.payload,
       };
     case "SELECT_FOLDER":
       return {
@@ -45,11 +71,17 @@ function appReducer(state = initialState, action) {
         folders: action.payload,
       };
     case "GET_ORGANIZATION":
-      console.log(action.payload)
+      console.log(action.payload);
       return {
         ...state,
-        organization: action.payload
-      }
+        organization: action.payload,
+      };
+    case "SET_MEMBER_TASKS":
+      console.log("fetched tasks for member", action.payload);
+      return {
+        ...state,
+        memberTasks: action.payload,
+      };
     case "SET_CLIENTS_AND_INVITATIONS":
       return {
         ...state,
@@ -65,6 +97,11 @@ function appReducer(state = initialState, action) {
       return {
         ...state,
         folders: [...state.folders, action.payload],
+      };
+    case "SET_EDITING_SPRINT":
+      return {
+        ...state,
+        editing_sprint: action.payload,
       };
     case "ADD_DOCUMENT": {
       // Destructure documents from current state for clarity
@@ -97,12 +134,14 @@ function appReducer(state = initialState, action) {
         documents: updatedDocuments,
       };
     }
-    case "REPLACE_DOCUMENT":
+    case "REPLACE_DOCUMENT": {
       const { documents } = state;
       const document = action.payload.document;
       const temporary_id = action.payload.temporary_id;
 
       let updatedDocuments = [];
+
+      console.log(document)
 
       const document_index = documents.findIndex(
         (doc) => doc.temporary_id === temporary_id
@@ -122,12 +161,13 @@ function appReducer(state = initialState, action) {
         ...state,
         documents: updatedDocuments,
       };
-
-    case "SET_EDITING_DOCUMENT":
+    }
+    case "SET_EDITING_DOCUMENT": {
       return {
         ...state,
         editing_document: action.payload,
       };
+    }
     case "REMOVE_DOCUMENT": {
       // Filter out the document to be removed
       const updatedDocuments = state.documents.filter(
@@ -148,10 +188,58 @@ function appReducer(state = initialState, action) {
         folders: updatedFolders,
       };
     }
+    case "SET_SPRINTS": {
+      return {
+        ...state,
+        sprints: action.payload,
+      };
+    }
+    case "UPDATE_MEMBER_TASK_OPTIMISTICALLY": {
+      const updatedTasks = state.memberTasks.map(task =>
+        task.task_id === action.payload.taskId ? { ...task, ...action.payload.updatedTask } : task
+      );
+      return {
+        ...state,
+        memberTasks: updatedTasks,
+      };
+    }
+    case "SET_TEAM":
+      return {
+        ...state,
+        team: action.payload,
+      };
+    case "UPDATE_MEMBER_TASK": {
+      const { memberTasks } = state;
 
+      console.log(action.payload.task);
+      const updating_task = action.payload.task;
+      const updating_task_id = action.payload.task_id;
+
+      console.log(updating_task_id);
+
+      console.log(memberTasks);
+
+      const existingTaskIndex = memberTasks.findIndex(
+        (task) => task.task_id === updating_task_id
+      );
+
+      if (existingTaskIndex !== -1) {
+        const updatedMemberTasks = [...memberTasks];
+        updatedMemberTasks[existingTaskIndex] = updating_task;
+
+        console.log("Updated Task Array", updatedMemberTasks);
+
+        return {
+          ...state,
+          memberTasks: updatedMemberTasks,
+        };
+      }
+    }
     case "ADD_MEMBER_TASK": {
       // destructure member tasks
       const { memberTasks } = state;
+
+      console.log(action.payload);
 
       const existingTaskIndex = memberTasks.findIndex(
         (task) => task.temporary_task_id === action.payload.temporary_task_id
@@ -163,13 +251,13 @@ function appReducer(state = initialState, action) {
 
         return {
           ...state,
-          memberTasks: updatedMemberTasks
-        }
+          memberTasks: updatedMemberTasks,
+        };
       } else {
         return {
           ...state,
-          memberTasks: [...memberTasks, action.payload]
-        }
+          memberTasks: [...memberTasks, action.payload],
+        };
       }
     }
 

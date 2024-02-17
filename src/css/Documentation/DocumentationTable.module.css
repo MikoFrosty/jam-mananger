@@ -6,6 +6,10 @@
   background-color: transparent;
 }
 
+.ToastContainerStyle {
+  width: fit-content !important;
+}
+
 .Row {
   transition: 0.2s;
 }
@@ -14,6 +18,19 @@
   cursor: pointer;
   background-color: #f1f1f1;
   transition: 0.2s;
+}
+
+.RowCell {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  column-gap: 1px;
+}
+
+.MemberImage {
+  height: 20px;
+  width: 20px;
+  border-radius: 10px;
 }
 
 .CreateButton {
@@ -44,6 +61,26 @@
   outline: none;
 }
 
+.Icon {
+  height: 30px;
+  width: 30px;
+  padding: 5px;
+  color: rgba(159, 0, 159, 0.551);
+  border-radius: 2px;
+  transition: 0.2s;
+}
+
 .Icon:hover {
   cursor: pointer;
+  background-color: white;
+  transition: 0.2s;
+}
+
+.StatusText {
+  background-color: rgba(255, 159, 28, 0.3);
+  border-radius: 5px;
+  padding: 5px;
+  width: fit-content;
+  align-self: end;
+  text-align: right;
 }

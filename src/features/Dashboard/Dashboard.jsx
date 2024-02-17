@@ -9,6 +9,11 @@ import {
   fetchClients,
   fetchDocuments,
   fetchFolders,
+  fetchTeam,
+  getOrganization,
+  getUser,
+  setLogout,
+  setUser,
   toggleRefetch,
 } from "../../StateManagement/Actions/actions";
 import fetchWrapper from "../../utils/fetchWrapper";
@@ -17,28 +22,43 @@ import DocumentEditor from "../DocumentComponents/DocumentEditor";
 import AllSprints from "./SprintManagement/AllSprints";
 import CreateSprint from "./SprintManagement/CreateSprint";
 import Account from "../Account/Account";
+import KanBan from "./SprintManagement/KanBan";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [user, setUser] = useState(localStorage.getItem("user"));
+  const user = useSelector((state) => state.app.user);
+  const organization = useSelector((state) => state.app.organization);
+  const team = useSelector((state) => state.app.team);
+  const logout = useSelector((state) => state.app.logout)
   const [sidebar, setSidebar] = useState(true);
 
   useEffect(() => {
     console.log(user);
-    if (!user || user === "undefined" || user === "null" || user === "{}") {
-      navigate("/home");
+    console.log(logout)
+    if (!user && logout === false) {
+      console.log("no user but trying refetch")
+      dispatch(getUser())
+    } else if (!user && logout === true) {
+      navigate("/home")
     }
-  }, [user]);
+  }, [user, logout]);
 
   useEffect(() => {
     dispatch(fetchDocuments());
     dispatch(fetchFolders());
+
+    if (!organization) {
+      dispatch(getOrganization())
+    }
+    if (!team) {
+    }
+    dispatch(fetchTeam());
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
+    dispatch(setUser(null))
+    dispatch(setLogout(true))
   };
 
   function handleToggleSidebar() {
@@ -86,9 +106,11 @@ export default function Dashboard() {
         ) : viewMode === "clients" || viewMode === "clients-manage" ? (
           <ClientView />
         ) : viewMode === "sprint-management" ? (
-          <AllSprints />
+          <KanBan />
         ) : viewMode === "sprint-create" ? (
           <CreateSprint />
+        ) : viewMode === "sprint-manage" ? (
+          <AllSprints />
         ) : viewMode === "account-details" ? (
           <Account />
         ) : null}

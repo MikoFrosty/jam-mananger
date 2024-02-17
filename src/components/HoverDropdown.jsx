@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import styles from "../css/HoverDropdown.module.css";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 function HoverDropdown({ buttonContent, dropdownContent, customStyles = {} }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -17,12 +19,12 @@ function HoverDropdown({ buttonContent, dropdownContent, customStyles = {} }) {
       style={dynamicStyle} // Apply the dynamic style here
     >
       <button className={styles.DropdownButton}>
-        {buttonContent}
+        {buttonContent || <Skeleton />}
         <KeyboardArrowDownIcon fontSize={"small"} className={styles.IconDown}/>
         <KeyboardArrowUpIcon fontSize={"small"} className={styles.IconUp}/>
       </button>
       <div style={{...customStyles, ...dynamicStyle}} className={styles.DropdownContent}>
-        {dropdownContent}
+        {dropdownContent || <Skeleton />}
       </div>
     </div>
   );

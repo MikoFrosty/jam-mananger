@@ -21,12 +21,17 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
   const selectedEditingDocument = useSelector(
     (state) => state.app.editing_document
   );
+
+  console.log(selectedEditingDocument)
   const [selectedFolder, setSelectedFolder] = useState(
     selectedEditingDocument.folder || {}
   );
   const [selectedClient, setSelectedClient] = useState(
     selectedEditingDocument.client || {}
   );
+  const [isPublic, setIsPublic] = useState(
+    selectedEditingDocument.is_public || false
+  )
   const [ejInstance, setEjInstance] = useState(null);
   const [needsSave, setNeedsSave] = useState(false);
 
@@ -43,6 +48,15 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
       setSelectedClient({});
     } else {
       setSelectedClient(client);
+    }
+  }
+
+  function handleVisibilitySelect(option) {
+    if (option === isPublic) {
+      return;
+    } else {
+      setIsPublic(option)
+      setNeedsSave(true)
     }
   }
 
@@ -78,6 +92,7 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
           blocks: editorContent.blocks,
           last_block_timestamp: editorContent.time,
           last_block_version: editorContent.version,
+          is_public: isPublic
         },
         document_id: selectedEditingDocument.document_id,
         document_client: selectedClient || {},
@@ -117,7 +132,7 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
     } catch (error) {
       console.error("Error preparing document for save:", error);
     }
-  }, [ejInstance, selectedClient, selectedFolder, dispatch]);
+  }, [ejInstance, selectedClient, selectedFolder, isPublic, dispatch]);
 
   const debouncedSave = useCallback(_.debounce(handleSave, 5000), [handleSave]);
 
@@ -133,8 +148,10 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
         <DocumentCreatorBar
           handleClientSelect={handleClientSelect}
           handleFolderSelect={handleFolderSelect}
+          handleVisibilitySelect={handleVisibilitySelect}
           selectedFolder={selectedFolder}
           selectedClient={selectedClient}
+          isPublic={isPublic}
           onSave={handleSave}
         />
       ) : null}

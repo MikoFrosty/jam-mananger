@@ -15,13 +15,14 @@ import {
 } from "../../StateManagement/Actions/actions";
 import mapToDbFormat from "../../utils/mapToDbFormat";
 
-function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
+function DocumentCreator({ isOpen, noBar, initialData, customStyles, readOnly = false }) {
   const dispatch = useDispatch();
   const [selectedFolder, setSelectedFolder] = useState({});
   const [selectedClient, setSelectedClient] = useState({});
   const [ejInstance, setEjInstance] = useState(null);
   const [needsSave, setNeedsSave] = useState(false);
   const [previousDoc, setPreviousDoc] = useState({});
+  const [isPublic, setIsPublic] = useState(false)
   const [tempId, setTempId] = useState("");
 
   function handleFolderSelect(folder) {
@@ -38,6 +39,10 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
     } else {
       setSelectedClient(client);
     }
+  }
+
+  function handleVisibilitySelect(option) {
+    setIsPublic(option)
   }
 
   const handleEditorChange = () => {
@@ -74,6 +79,7 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
           blocks: editorContent.blocks,
           last_block_timestamp: editorContent.time,
           last_block_version: editorContent.version,
+          is_public: isPublic
         },
         document_id: previousDoc?.document_id,
         document_client: selectedClient || {},
@@ -102,6 +108,7 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
 
         //  replace optimistic doc with real  document
         if (res.message === "document saved") {
+          console.log(res)
           dispatch(replaceDocument(temporary_id, res.document));
           notify("saved");
         } else {
@@ -111,7 +118,7 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
     } catch (error) {
       console.error("Error saving document:", error);
     }
-  }, [ejInstance, selectedClient, selectedFolder, previousDoc]);
+  }, [ejInstance, selectedClient, selectedFolder, previousDoc, isPublic]);
 
   const debouncedSave = useCallback(_.debounce(handleSave, 5000), [handleSave]);
 
@@ -121,19 +128,16 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
     }
   }, [needsSave, debouncedSave]);
 
-  // useEffect(() => {
-  //   setSelectedClient(previousDoc.client || {});
-  //   setSelectedFolder(previousDoc.folder || {});
-  // }, [previousDoc]);
-
   return (
     <div className={styles.DocumentContainer}>
       {!noBar ? (
         <DocumentCreatorBar
           handleClientSelect={handleClientSelect}
           handleFolderSelect={handleFolderSelect}
+          handleVisibilitySelect={handleVisibilitySelect}
           selectedFolder={selectedFolder}
           selectedClient={selectedClient}
+          isPublic={isPublic}
           onSave={handleSave}
         />
       ) : null}
@@ -145,6 +149,7 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles }) {
           customStyles={customStyles}
           setEditorInstance={setEjInstance} // Pass the callback
           onContentChange={handleEditorChange}
+          readOnly={readOnly}
         />
       </div>
       <ToastContainer className={styles.ToastContainerStyle} />

@@ -7,9 +7,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import SettingsIcon from "@mui/icons-material/Settings";
-import ToggleButton from "@mui/material/ToggleButton";
-import Button from "@mui/material/Button";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import {
   deleteDocument,
   fetchDocuments,
@@ -23,7 +24,7 @@ export default function DocumentTable({ searchTerm }) {
 
   const documents = useSelector((state) => state.app.documents) || [];
 
-  console.log(documents)
+  console.log(documents);
 
   // Filter rows based on the searchTerm
   const rows = documents
@@ -49,6 +50,7 @@ export default function DocumentTable({ searchTerm }) {
       client_name: item.client?.client_name,
       contributors: item.contributors,
       joined_contributors: item.contributors.length,
+      document: item,
     }));
 
   function handleDocCreate() {
@@ -61,9 +63,35 @@ export default function DocumentTable({ searchTerm }) {
     dispatch(deleteDocument(document));
   }
 
+  function notify(message) {
+    toast(message, {
+      className: styles.SmallToast,
+      hideProgressBar: true,
+      // You can also adjust the toast duration (auto-close time) here, if needed
+      autoClose: 1000,
+    });
+  }
+
   function handleDocEdit(document) {
-    dispatch(setEditingDocument(document))
+    dispatch(setEditingDocument(document.document));
     dispatch(toggleView("documentation-edit"));
+  }
+
+  function handleDocURLCopy(e, doc_id) {
+    // https://kamariteams.com/public_docs?doc_id=${doc_id}
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard
+      .writeText(`http://localhost:5173/public-docs?doc_id=${doc_id}`)
+      .then(() => {
+        console.log("Document ID copied to clipboard successfully!");
+        // Optionally, show a success message to the user.
+        notify("Copied to Clipboard");
+      })
+      .catch((err) => {
+        console.error("Failed to copy document ID to clipboard: ", err);
+        // Optionally, show an error message to the user.
+      });
   }
 
   return (
@@ -91,7 +119,7 @@ export default function DocumentTable({ searchTerm }) {
                   display: "flex",
                   flexDirection: "row-reverse",
                   alignItems: "end",
-                  py: 1
+                  py: 1,
                 }}
               >
                 <button
@@ -112,7 +140,14 @@ export default function DocumentTable({ searchTerm }) {
                 onClick={() => handleDocEdit(row)}
               >
                 <TableCell align="right">
-                  <ToggleButton size={"small"} />
+                  {row.document.is_public ? (
+                    <ContentCopyIcon
+                      className={styles.Icon}
+                      onClick={(e) =>
+                        handleDocURLCopy(e, row.document.document_id)
+                      }
+                    />
+                  ) : null}
                 </TableCell>
                 <TableCell component="th" scope="row">
                   {row.title}
@@ -121,7 +156,7 @@ export default function DocumentTable({ searchTerm }) {
                 <TableCell align="right">{row.client_name}</TableCell>
                 <TableCell align="right">{row.joined_contributors}</TableCell>
                 <TableCell align="right">
-                  <SettingsIcon
+                  <DeleteForeverIcon
                     className={styles.Icon}
                     onClick={(e) => handleDocDelete(row, e)}
                     fontSize={"small"}
@@ -132,6 +167,7 @@ export default function DocumentTable({ searchTerm }) {
           </TableBody>
         </Table>
       </TableContainer>
+      <ToastContainer className={styles.ToastContainerStyle} />
     </div>
   );
 }

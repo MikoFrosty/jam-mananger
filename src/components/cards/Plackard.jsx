@@ -1,13 +1,12 @@
 import styles from "../../css/Cards/Plackard.module.css";
 import Typography from '@mui/material/Typography';
 import LogoutIcon from "@mui/icons-material/Logout";
+import { useSelector } from "react-redux";
 
 export default function Plackard({ onLogout }) {
-  const user = localStorage.getItem("user") !== "undefined" ? JSON.parse(localStorage.getItem("user")) : {};
-  console.log(user)
+  const user = useSelector((state) => state.app.user);
 
   function handleLogout() {
-    localStorage.removeItem("user");
     onLogout();
   };
 

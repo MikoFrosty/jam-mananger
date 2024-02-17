@@ -31,7 +31,7 @@ export function getOrganization() {
         localStorage.getItem("token"),
         "GET"
       ).then((res) => {
-        return res.organization
+        return res.organization;
       });
 
       dispatch({
@@ -214,8 +214,180 @@ export function setEditingDocument(document) {
 }
 
 export function addMemberTask(task) {
+  console.log("Updated task", task)
   return {
     type: "ADD_MEMBER_TASK",
     payload: task,
   };
+}
+
+export function updateMemberTask(payload) {
+  console.log(payload)
+  return {
+    type: "UPDATE_MEMBER_TASK",
+    payload: payload
+  }
+}
+
+export function setUser(user) {
+  console.log(user)
+  return {
+    type: "SET_USER",
+    payload: user
+  }
+}
+
+export function updateMemberTaskOptimistically(taskId, updatedTask) {
+  return {
+    type: "UPDATE_MEMBER_TASK_OPTIMISTICALLY",
+    payload: { taskId, updatedTask },
+  };
+}
+
+export function getUser() {
+  return async function (dispatch) {
+    try {
+      const response = await fetchWrapper("/user", localStorage.getItem("token"), "GET");
+
+      console.log(response)
+
+      if (response.message === "User found") {
+        dispatch({
+          type: "SET_USER",
+          payload: response.user
+        })
+      }
+    } catch (error) {
+      console.error("Could not fetch user:", error);
+      // Optionally, dispatch an error action here
+    }
+  }
+}
+
+export function setLogout(bool) {
+  return {
+    type: "SET_LOGOUT",
+    payload: bool
+  }
+}
+
+export function fetchTasks(payload) {
+  return async function (dispatch) {
+    try {
+      console.log("fetch task payload", payload)
+      const res = await fetchWrapper(
+        "/tasks",
+        localStorage.getItem("token"),
+        "GET",
+        { ...payload }
+      );
+
+      console.log("fetched member tasks", res)
+      // Assuming the response from fetchWrapper is the actual data you want to set
+      dispatch({
+        type: "SET_MEMBER_TASKS",
+        payload: res.tasks,
+      });
+    } catch (error) {
+      console.error("Error fetching tasks", error);
+      // Optionally, dispatch an error action here
+    }
+  };
+}
+
+export function updateUser(payload) {
+  return async function (dispatch) {
+    const response = await fetchWrapper(
+      "/user",
+      localStorage.getItem("token"),
+      "PUT",
+      { ...payload }
+    );
+
+    console.log(response)
+
+    if (response.message === "User Updated") {
+      dispatch({
+        type: "SET_USER",
+        payload: response.user
+      })
+    }
+
+  };
+}
+
+export function fetchTeam() {
+  return async function (dispatch) {
+    try {
+      const response = await fetchWrapper("/team", localStorage.getItem("token"), "GET");
+
+      console.log(response)
+      
+      dispatch({
+        type: "SET_TEAM",
+        payload: response.team
+      })
+    } catch (error) {
+      console.error("Error fetching team data:", error);
+      // Optionally, dispatch an error action here
+    }
+  }
+}
+
+export function fetchSprints() {
+  return async function (dispatch) {
+    try {
+      const response = await fetchWrapper(
+        "/sprints",
+        localStorage.getItem("token"),
+        "GET"
+      );
+      dispatch({
+        type: "SET_SPRINTS",
+        payload: response.sprints,
+      });
+    } catch (error) {
+      console.error("Error fetching sprints:", error);
+      // Optionally, dispatch an error action here
+    }
+  };
+}
+
+export function createSprint(payload) {
+  return async function (dispatch) {
+    try {
+      console.log(payload);
+      const res = await fetchWrapper(
+        "/sprints",
+        localStorage.getItem("token"),
+        "POST",
+        { ...payload }
+      );
+
+      console.log(payload);
+      console.log(res);
+
+      dispatch({
+        type: "SET_EDITING_SPRINT",
+        payload: res.sprint,
+      });
+    } catch (error) {
+      console.error("Error creating sprint:", error);
+      // Optionally, dispatch an error action here
+    }
+  };
+}
+
+export function setEditingSprint(sprint) {
+  return {
+    type: "SET_EDITING_SPRINT",
+    payload: sprint
+  }
+}
+
+export function setEditingTask(task) {
+  return {
+    type: "SET_EDITING_TASK",
+    payload: task
+  }
 }

@@ -10,46 +10,41 @@ import { getOrganization } from "../../StateManagement/Actions/actions";
 
 export default function Account() {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.app.user);
+  const organization = useSelector((state) => state.app.organization);
   const [view, setView] = useState("General");
   const [toggleOptions, setToggleOptions] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
-  const user = JSON.parse(localStorage.getItem("user"));
-  const organization = useSelector((state) => state.app.organization)
-  console.log(organization)
-  const [members, setMembers] = useState(organization?.members || [])
-  const [admins, setAdmins] = useState(organization?.admins || [])
+  console.log(organization);
+  const [members, setMembers] = useState(organization?.members || []);
+  const [admins, setAdmins] = useState(organization?.admins || []);
 
   useEffect(() => {
-    setIsAdmin(admins.some(admin => admin.email === user?.email))
+    setIsAdmin(admins.some((admin) => admin.email === user?.email));
     if (!organization) {
-      dispatch(getOrganization())
+      dispatch(getOrganization());
     }
-  }, []);
+  }, [organization]);
+
+  console.log("Is the current user an admin", isAdmin);
 
   useEffect(() => {
     if (organization) {
       setMembers(organization.members);
-      setAdmins(organization.admins)
+      setAdmins(organization.admins);
     }
-  }, [organization])
+  }, [organization]);
 
   useEffect(() => {
     if (isAdmin) {
-      setToggleOptions([
-        "General",
-        "Billing",
-        "Team",
-        "Settings"
-      ])
+      setToggleOptions(["General", "Billing", "Team", "Settings"]);
+    } else {
+      setToggleOptions(["General", "Team", "Settings"]);
     }
-    else {
-      setToggleOptions([
-        "General",
-        "Team",
-        "Settings"
-      ])
-    }
-  }, [isAdmin])
+  }, [isAdmin]);
+
+  console.log("Org Admins ", organization?.admins);
+  console.log("Current User", user);
 
   function toggleView(view) {
     setView(view);
@@ -65,18 +60,14 @@ export default function Account() {
         label={"Account Details"}
       />
       <div className={styles.AccountContent}>
-        {
-          view === "General" ? (
-            <>
-              <ProfileDetails />
-              <ProfileEditing />
-            </>
-          ) : view === "Team" ? (
-            <Team />
-          ) : (
-            null
-          )
-        }
+        {view === "General" ? (
+          <>
+            <ProfileDetails />
+            <ProfileEditing />
+          </>
+        ) : view === "Team" ? (
+          <Team />
+        ) : null}
       </div>
     </div>
   );

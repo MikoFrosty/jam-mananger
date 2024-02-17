@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
 
 export default function ProfileDetails() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = useSelector((state) => state.app.user);
   const organization = useSelector((state) => state.app.organization);
   const isAdmin = organization?.admins?.some((admin) => admin.email === user?.email);
   const isBillableUser = organization?.billable_user.email === user?.email;
@@ -37,7 +37,7 @@ export default function ProfileDetails() {
   return (
     <div className={styles.ProfileDetails}>
       <div className={styles.ProfileImage}>
-        {user.profile_image_url ? (
+        {user?.profile_image_url ? (
           <img
             className={styles.Image}
             src={user.profile_image_url}

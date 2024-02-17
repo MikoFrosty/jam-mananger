@@ -26,12 +26,15 @@ const EditorComponent = ({
   customStyles,
   setEditorInstance,
   onContentChange,
+  readOnly,
+  placeholder
 }) => {
   const ejInstance = useRef();
 
   useEffect(() => {
     if (!ejInstance.current) {
       ejInstance.current = new EditorJS({
+        readOnly: readOnly,
         holder: "editorjs",
         tools: {
           header: Header,
@@ -124,7 +127,8 @@ const EditorComponent = ({
           },
         },
         autofocus: true,
-        data: initialData
+        ...(placeholder ? {placeholder} : {}),
+        ...(initialData ? {data: initialData
           ? Object.keys(initialData).length > 0
             ? initialData
             : {}
@@ -145,7 +149,7 @@ const EditorComponent = ({
                 }
             ],
             "version": "2.28.2"
-        },
+        }} : {}),
         onChange: () => {
           if (onContentChange) {
             onContentChange();
@@ -167,7 +171,7 @@ const EditorComponent = ({
         }
       }
     };
-  }, [isOpen, setEditorInstance, onContentChange]);
+  }, [isOpen, initialData, setEditorInstance, onContentChange]);
 
   return (
     <div

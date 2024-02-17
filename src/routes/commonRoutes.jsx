@@ -7,6 +7,15 @@ import ClientSignup from "../pages/ClientSignup.jsx";
 import ClientAdmin from "../pages/ClientAdmin.jsx";
 import ClientTeam from "../pages/ClientTeam.jsx";
 import TeamSignup from "../pages/TeamSignup.jsx";
+import PublicDocs from "../pages/PublicDocs.jsx";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+
+
+const stripePromise = loadStripe(
+  "pk_test_51OU8cxDhEC7QrbhyXNDZFKnFjl1rM9eqZElMdnx5tqaw2xDrCmAH4InT78qJO7V88S2HihXphcY2xA6Ff3mMvNtv00SgSHNfGL"
+);
 
 const commonRoutes = [
   {
@@ -31,7 +40,11 @@ const commonRoutes = [
   },
   {
     path: "about-us",
-    element: <Pricing />,
+    element: (
+      <Elements stripe={stripePromise}>
+        <Pricing />
+      </Elements>
+    ),
     children: <></>,
   },
   {
@@ -52,13 +65,18 @@ const commonRoutes = [
   {
     path: "client-team",
     element: <ClientTeam />,
-    children: <></>
+    children: <></>,
   },
   {
     path: "team-signup",
     element: <TeamSignup />,
-    children: <></>
-  }
+    children: <></>,
+  },
+  {
+    path: "public-docs",
+    element: <PublicDocs />,
+    children: <></>,
+  },
   // {
   //   path: 'reset-password',
   //   element: <ResetPassword />,
