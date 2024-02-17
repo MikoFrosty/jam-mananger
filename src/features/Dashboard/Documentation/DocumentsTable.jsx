@@ -78,11 +78,11 @@ export default function DocumentTable({ searchTerm }) {
   }
 
   function handleDocURLCopy(e, doc_id) {
-    // https://kamariteams.com/public_docs?doc_id=${doc_id}
+    // http://localhost:5173/public-docs?doc_id=${doc_id}
     e.preventDefault();
     e.stopPropagation();
     navigator.clipboard
-      .writeText(`http://localhost:5173/public-docs?doc_id=${doc_id}`)
+      .writeText(`https://kamariteams.com/public_docs?doc_id=${doc_id}`)
       .then(() => {
         console.log("Document ID copied to clipboard successfully!");
         // Optionally, show a success message to the user.
