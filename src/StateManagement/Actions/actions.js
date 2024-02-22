@@ -284,6 +284,7 @@ export function setEditingDocument(document) {
 
 export function fetchTasks(payload) {
   return async function (dispatch) {
+    console.log("FETCH TASK PAYLOAD", payload)
     try {
       console.log("fetch task payload", payload)
       const res = await fetchWrapper(
@@ -400,5 +401,12 @@ export function setEditingTask(task) {
   return {
     type: "SET_EDITING_TASK",
     payload: task
+  }
+}
+
+export function setSelectedMemberTasks(member) {
+  return {
+    type: "SET_SELECTED_MEMBER_TASKS",
+    payload: member
   }
 }

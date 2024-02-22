@@ -21,6 +21,7 @@ const initialState = {
   user: null,
   logout: false,
   team: null,
+  selectedMember_Tasks: null
 };
 
 function appReducer(state = initialState, action) {
@@ -30,6 +31,12 @@ function appReducer(state = initialState, action) {
         ...state,
         viewMode: action.payload,
       };
+    case "SET_SELECTED_MEMBER_TASKS": {
+      return {
+        ...state,
+        selectedMember_Tasks: action.payload
+      }
+    }
     case "SET_EDITING_TASK":
       return {
         ...state,

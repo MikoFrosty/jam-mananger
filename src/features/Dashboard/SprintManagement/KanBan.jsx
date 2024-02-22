@@ -12,6 +12,7 @@ import {
   // fetchSprints,
   fetchTasks,
   getUser,
+  setSelectedMemberTasks,
   updateMemberTaskOptimistically,
 } from "../../../StateManagement/Actions/actions";
 
@@ -22,7 +23,7 @@ import {
   useDroppable,
   useSensors,
   useSensor,
-  PointerSensor
+  PointerSensor,
 } from "@dnd-kit/core";
 
 import fetchWrapper from "../../../utils/fetchWrapper";
@@ -36,10 +37,10 @@ export default function KanBan() {
   const organization = useSelector((state) => state.app.organization);
   const user = useSelector((state) => state.app.user);
   const memberTasks = useSelector((state) => state.app.memberTasks);
+  const selectedMember = useSelector((state) => state.app.selectedMember_Tasks)
+  console.log(memberTasks);
 
   const startPosition = useRef({ x: 0, y: 0 });
-
-  const [selectedMember, setSelectedMember] = useState(null);
   // const [selectedSprint, setSelectedSprint] = useState(null);
   const [createTask, setCreateTask] = useState(false);
   const [selectedTaskStatus, setSelectedTaskStatus] = useState(null);
@@ -53,7 +54,33 @@ export default function KanBan() {
         distance: 8,
       },
     })
-  )
+  );
+
+  useEffect(() => {
+    if (user && !selectedMember) {
+      dispatch(setSelectedMemberTasks(user));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (selectedMember) {
+      dispatch(fetchTasks({ email: selectedMember.email }));
+    }
+  }, [selectedMember]);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     console.log("Setting Selected Member", user)
+  //     setSelectedMember(user);
+  //   }
+  // }, [user])
+
+  // useEffect(() => {
+  //   if (selectedMember && memberTasks) {
+  //     console.log("Selected Member", selectedMember)
+  //     console.log("Member Tasks", memberTasks)
+  //   }
+  // }, [memberTasks])
 
   // useEffect(() => {
   //   if (!sprints) {
@@ -65,17 +92,28 @@ export default function KanBan() {
   //   }
   // }, [user]);
 
-  useEffect(() => {
-    if (user) {
-      setSelectedMember(user);
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     setSelectedMember(user);
+  //   }
+  // }, [user]);
 
-  useEffect(() => {
-    if (selectedTask) {
-      setCreateTask(true);
-    }
-  }, [selectedTask]);
+  // useEffect(() => {
+  //   if (selectedTask) {
+  //     setCreateTask(true);
+  //   }
+  // }, [selectedTask]);
+
+  // useEffect(() => {
+  //   if (selectedMember) {
+  //     console.log("FETCHING TASKS FOR SIGNED IN USER")
+  //     console.log(selectedMember.email)
+  //     fetchTasks({
+  //       email: selectedMember.email,
+  //     });
+  //     console.log(memberTasks)
+  //   }
+  // }, [selectedMember]);
 
   // useEffect(() => {
   //   if (selectedSprint) {
@@ -89,7 +127,7 @@ export default function KanBan() {
   // }, [selectedSprint]);
 
   function handleMemberSelect(member) {
-    setSelectedMember(member);
+    dispatch(setSelectedMemberTasks(member))
     if (member.user_id === "all") {
       dispatch(
         fetchTasks({
@@ -370,7 +408,11 @@ export default function KanBan() {
           }
         /> */}
       </div>
-      <DndContext sensors={sensors} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+      <DndContext
+        sensors={sensors}
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+      >
         <div className={styles.KanBan}>
           <DroppableColumn status="Backlog">
             <label className={styles.SprintLabel} htmlFor="BacklogColumn">
@@ -430,7 +472,10 @@ export default function KanBan() {
             </div>
             {memberTasks ? (
               memberTasks.map((task, index) => {
-                if (task?.status?.status_title === "In Progress" && task.task_id) {
+                if (
+                  task?.status?.status_title === "In Progress" &&
+                  task.task_id
+                ) {
                   return (
                     <DraggableTask key={`in_progress_${index}`} task={task} />
                   );
