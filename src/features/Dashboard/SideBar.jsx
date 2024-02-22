@@ -31,38 +31,37 @@ export default function SideBar({
         { name: "Create Docs", view: "documentation-create" },
       ],
     },
-    {
-      id: 2,
-      name: "Analytics",
-      view: "analytics",
-      expanded: false,
-      subdirectories: [
-        { name: "KPIs", view: "analytics-kpis" },
-        { name: "Team Overview", view: "analytics-team-overview" },
-      ],
-    },
+    // {
+    //   id: 2,
+    //   name: "Analytics",
+    //   view: "analytics",
+    //   expanded: false,
+    //   subdirectories: [
+    //     { name: "KPIs", view: "analytics-kpis" },
+    //     { name: "Team Overview", view: "analytics-team-overview" },
+    //   ],
+    // },
     {
       id: 3,
-      name: "Sprint Management",
+      name: "Task Board",
       view: "sprint-management",
       expanded: false,
       subdirectories: [
-        { name: "Current", view: "sprint-management" },
-        { name: "Create Sprint", view: "sprint-create" },
-        { name: "Manage Sprints", view: "sprint-manage" },
+        // { name: "Tasks", view: "sprint-management" },
+        // { name: "Manage Sprints", view: "sprint-manage" },
       ],
     },
-    {
-      id: 4,
-      name: "Reporting",
-      view: "reporting",
-      expanded: false,
-      subdirectories: [
-        { name: "Automations", view: "reporting-automations" },
-        { name: "Create Report", view: "reporting-create" },
-        { name: "Ask AI", view: "reporting-ask-ai" },
-      ],
-    },
+    // {
+    //   id: 4,
+    //   name: "Reporting",
+    //   view: "reporting",
+    //   expanded: false,
+    //   subdirectories: [
+    //     { name: "Automations", view: "reporting-automations" },
+    //     { name: "Create Report", view: "reporting-create" },
+    //     { name: "Ask AI", view: "reporting-ask-ai" },
+    //   ],
+    // },
     {
       id: 5,
       name: "Clients",
@@ -70,16 +69,16 @@ export default function SideBar({
       expanded: false,
       subdirectories: [{ name: "Manage", view: "clients-manage" }],
     },
-    {
-      id: 6,
-      name: "Integrations",
-      view: "integrations",
-      expanded: false,
-      subdirectories: [
-        { name: "Browse", view: "integrations-browse" },
-        { name: "Manage", view: "integrations-manage" },
-      ],
-    },
+    // {
+    //   id: 6,
+    //   name: "Integrations",
+    //   view: "integrations",
+    //   expanded: false,
+    //   subdirectories: [
+    //     { name: "Browse", view: "integrations-browse" },
+    //     { name: "Manage", view: "integrations-manage" },
+    //   ],
+    // },
   ]);
 
   function toggleSubdirectory(id) {
@@ -140,20 +139,20 @@ export default function SideBar({
                   <span onClick={() => handleNavigation(dir.view)}>
                     {dir.name}
                   </span>
-                  <button onClick={() => toggleSubdirectory(dir.id)}>
+                  {dir.subdirectories.length !== 0 ? <button onClick={() => toggleSubdirectory(dir.id)}>
                     {dir.expanded ? (
                       <KeyboardArrowDownIcon className={styles.Icon} />
                     ) : (
                       <KeyboardArrowUpIcon className={styles.Icon} />
                     )}
-                  </button>
+                  </button> : null }
                 </div>
                 <ul
                   className={`${styles.subdirectoryList} ${
                     dir.expanded ? styles.expanded : ""
                   }`}
                 >
-                  {dir.subdirectories.map((sub, index) => (
+                  {dir.subdirectories?.map((sub, index) => (
                     <li key={index} style={getSubdirectoryStyle(sub.view)}>
                       <Typography onClick={() => handleNavigation(sub.view)} variant="body2">{sub.name}</Typography>
                     </li>

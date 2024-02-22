@@ -20,7 +20,6 @@ import { DoughnutChart } from "../../../components/charts/doughnut";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import SprintTable from "./SprintsTable";
-import KanBan from "./KanBan";
 
 export default function AllSprints() {
   const dispatch = useDispatch();

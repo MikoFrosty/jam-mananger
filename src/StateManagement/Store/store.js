@@ -10,9 +10,9 @@ const initialState = {
   folderSelectedForDocumentCreation: {},
   documents: [],
   folders: [],
-  clients: [],
+  clients: null,
   client_invitations: [],
-  editing_document: {},
+  editing_document: null,
   memberTasks: [],
   organization: null,
   editing_sprint: null,
@@ -138,29 +138,55 @@ function appReducer(state = initialState, action) {
       const { documents } = state;
       const document = action.payload.document;
       const temporary_id = action.payload.temporary_id;
+      const status = action.payload.status;
 
       let updatedDocuments = [];
 
-      console.log(document)
+      console.log(document);
 
-      const document_index = documents.findIndex(
-        (doc) => doc.temporary_id === temporary_id
-      );
+      if (status === "new") {
+        const document_index = documents.findIndex(
+          (doc) => doc.temporary_id === temporary_id
+        );
 
-      if (document_index !== -1) {
-        updatedDocuments = [
-          ...documents.slice(0, document_index),
-          document,
-          ...documents.slice(document_index + 1),
-        ];
-      } else {
-        updatedDocuments = documents;
+        if (document_index !== -1) {
+          updatedDocuments = [
+            ...documents.slice(0, document_index),
+            document,
+            ...documents.slice(document_index + 1),
+          ];
+        } else {
+          updatedDocuments = documents;
+        }
+
+        console.log(updatedDocuments);
+
+        return {
+          ...state,
+          documents: updatedDocuments,
+        };
+      } else if (status === "old") {
+        const document_index = documents.findIndex(
+          (doc) => doc.document_id === document.document_id
+        );
+
+        if (document_index !== -1) {
+          updatedDocuments = [
+            ...documents.slice(0, document_index),
+            document,
+            ...documents.slice(document_index + 1),
+          ];
+        } else {
+          updatedDocuments = documents;
+        }
+
+        console.log(updatedDocuments);
+
+        return {
+          ...state,
+          documents: updatedDocuments,
+        };
       }
-
-      return {
-        ...state,
-        documents: updatedDocuments,
-      };
     }
     case "SET_EDITING_DOCUMENT": {
       return {
@@ -171,7 +197,7 @@ function appReducer(state = initialState, action) {
     case "REMOVE_DOCUMENT": {
       // Filter out the document to be removed
       const updatedDocuments = state.documents.filter(
-        (doc) => doc.document_id !== action.payload.document_id
+        (doc) => doc.document_id !== action.payload
       );
       return {
         ...state,
@@ -195,8 +221,10 @@ function appReducer(state = initialState, action) {
       };
     }
     case "UPDATE_MEMBER_TASK_OPTIMISTICALLY": {
-      const updatedTasks = state.memberTasks.map(task =>
-        task.task_id === action.payload.taskId ? { ...task, ...action.payload.updatedTask } : task
+      const updatedTasks = state.memberTasks.map((task) =>
+        task.task_id === action.payload.taskId
+          ? { ...task, ...action.payload.updatedTask }
+          : task
       );
       return {
         ...state,

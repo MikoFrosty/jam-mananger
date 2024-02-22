@@ -1,3 +1,4 @@
+import React, { useRef } from "react";
 import { useSelector } from "react-redux";
 import styles from "../../../css/SprintManagement/CreateSprint.module.css";
 import AddIcon from "@mui/icons-material/Add";
@@ -8,14 +9,21 @@ import HoverDropdown from "../../../components/HoverDropdown";
 import SlidingModal from "../SlidingModal";
 import TaskCreate from "./CreateTaskForm";
 import {
-  fetchSprints,
+  // fetchSprints,
   fetchTasks,
   getUser,
   updateMemberTaskOptimistically,
 } from "../../../StateManagement/Actions/actions";
 
-import { DndContext, DragOverlay } from "@dnd-kit/core";
-import { useDraggable, useDroppable } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  useDraggable,
+  useDroppable,
+  useSensors,
+  useSensor,
+  PointerSensor
+} from "@dnd-kit/core";
 
 import fetchWrapper from "../../../utils/fetchWrapper";
 
@@ -24,28 +32,38 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 export default function KanBan() {
   const dispatch = useDispatch();
-  const sprints = useSelector((state) => state.app.sprints);
+  // const sprints = useSelector((state) => state.app.sprints);
   const organization = useSelector((state) => state.app.organization);
   const user = useSelector((state) => state.app.user);
   const memberTasks = useSelector((state) => state.app.memberTasks);
 
+  const startPosition = useRef({ x: 0, y: 0 });
+
   const [selectedMember, setSelectedMember] = useState(null);
-  const [selectedSprint, setSelectedSprint] = useState(null);
+  // const [selectedSprint, setSelectedSprint] = useState(null);
   const [createTask, setCreateTask] = useState(false);
   const [selectedTaskStatus, setSelectedTaskStatus] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
 
   const [draggedItem, setDraggedItem] = useState(null); // Track the currently dragged item
 
-  useEffect(() => {
-    if (!sprints) {
-      dispatch(fetchSprints());
-    } else {
-      setSelectedSprint(
-        sprints.filter((sprint) => sprint.status === "Active")[0]
-      );
-    }
-  }, [user]);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  )
+
+  // useEffect(() => {
+  //   if (!sprints) {
+  //     dispatch(fetchSprints());
+  //   } else {
+  //     setSelectedSprint(
+  //       sprints.filter((sprint) => sprint.status === "Active")[0]
+  //     );
+  //   }
+  // }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -59,16 +77,16 @@ export default function KanBan() {
     }
   }, [selectedTask]);
 
-  useEffect(() => {
-    if (selectedSprint) {
-      dispatch(
-        fetchTasks({
-          email: selectedMember.email,
-          sprint_id: selectedSprint.sprint_id,
-        })
-      );
-    }
-  }, [selectedSprint]);
+  // useEffect(() => {
+  //   if (selectedSprint) {
+  //     dispatch(
+  //       fetchTasks({
+  //         email: selectedMember.email,
+  //         sprint_id: selectedSprint.sprint_id,
+  //       })
+  //     );
+  //   }
+  // }, [selectedSprint]);
 
   function handleMemberSelect(member) {
     setSelectedMember(member);
@@ -76,26 +94,26 @@ export default function KanBan() {
       dispatch(
         fetchTasks({
           email: "All",
-          ...{
-            sprint_id: `${selectedSprint ? selectedSprint.sprint_id : null}`,
-          },
+          // ...{
+          //   sprint_id: `${selectedSprint ? selectedSprint.sprint_id : null}`,
+          // },
         })
       );
     } else {
       dispatch(
         fetchTasks({
           email: member.email,
-          ...{
-            sprint_id: `${selectedSprint ? selectedSprint.sprint_id : null}`,
-          },
+          // ...{
+          //   sprint_id: `${selectedSprint ? selectedSprint.sprint_id : null}`,
+          // },
         })
       );
     }
   }
 
-  function handleSprintSelect(sprint) {
-    setSelectedSprint(sprint);
-  }
+  // function handleSprintSelect(sprint) {
+  //   setSelectedSprint(sprint);
+  // }
 
   function toggleTaskCreateModal(status = null) {
     if (createTask) {
@@ -132,34 +150,34 @@ export default function KanBan() {
     const { attributes, listeners, setNodeRef } = useDraggable({
       id: task.task_id.toString(),
     });
-    const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
 
-    // Custom handler to set start position
-    const handlePointerDown = (event) => {
-      setStartPosition({ x: event.pageX, y: event.pageY });
-      listeners.onPointerDown(event);
-    };
-
-    // Custom handler to detect clicks
-    const handlePointerUp = (event) => {
+    function handleUp(event) {
+      console.log("pointer up", event);
+      const lastStartPosition = startPosition.current;
       const endPosition = { x: event.pageX, y: event.pageY };
       if (
-        Math.abs(startPosition.x - endPosition.x) < 5 &&
-        Math.abs(startPosition.y - endPosition.y) < 5
+        Math.abs(lastStartPosition.x - endPosition.x) < 5 &&
+        Math.abs(lastStartPosition.y - endPosition.y) < 5
       ) {
         // This was more of a click than a drag, so call your click handler
         handleTaskCreateToggleWithExisting(task);
       }
-      listeners.onPointerUp(event);
-    };
+    }
+
+    function handleDown(event) {
+      startPosition.current = { x: event.pageX, y: event.pageY };
+      listeners.onPointerDown(event);
+    }
 
     return (
       <div
         ref={setNodeRef}
         {...attributes}
         {...listeners}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
+        onPointerUp={(event) => handleUp(event)}
+        onPointerDown={(event) => handleDown(event)}
+        // onPointerDown={handlePointerDown}
+        // onPointerUp={handlePointerUp}
         className={styles.KanBanCard}
       >
         <div className={styles.KanBanCardTextRow}>
@@ -180,28 +198,33 @@ export default function KanBan() {
   }
 
   function handleDragStart(event) {
+    console.log("Drag Started");
     const { active } = event;
     const item = memberTasks.find(
       (task) => task.task_id.toString() === active.id
     );
+    console.log(item);
     setDraggedItem(item);
   }
 
   const handleDragEnd = (event) => {
+    console.log("Drag Ended");
     const { active, over } = event;
-  
+
     // Find the task by ID without directly modifying it
-    const existing_task = memberTasks.find((task) => task.task_id === active.id);
-  
+    const existing_task = memberTasks.find(
+      (task) => task.task_id === active.id
+    );
+
     if (existing_task) {
       // Create a new object with the updated status
-      console.log("Existing Task", existing_task)
+      console.log("Existing Task", existing_task);
       const updatedTask = {
         ...existing_task,
         status: { status_title: over.id },
       };
-      console.log("Updated Task", updatedTask)
-  
+      console.log("Updated Task", updatedTask);
+
       dispatch(updateMemberTaskOptimistically(active.id, updatedTask));
 
       const payload = {
@@ -220,7 +243,7 @@ export default function KanBan() {
         ...payload,
       })
         .then((res) => {
-          console.log(res)
+          console.log(res);
           dispatch(updateMemberTaskOptimistically(res.task.task_id, res.task));
         })
         .catch((error) => {
@@ -235,23 +258,6 @@ export default function KanBan() {
 
   return (
     <div className={styles.KanBanMain}>
-      {createTask ? (
-        <SlidingModal isOpen={createTask} toggleModal={toggleTaskCreateModal}>
-          <TaskCreate
-            toggleModal={toggleTaskCreateModal}
-            taskStatus={selectedTaskStatus}
-            selectedMember={selectedMember}
-            isOpen={createTask}
-            selectedTask={selectedTask}
-            setSelectedTask={setSelectedTask}
-            selectedSprint={
-              !selectedSprint || (selectedSprint.sprint_id === "All" && sprints)
-                ? sprints?.filter((sprint) => sprint.status === "Active")[0]
-                : selectedSprint
-            }
-          />
-        </SlidingModal>
-      ) : null}
       <div className={styles.KanBanBar}>
         <HoverDropdown
           id={"TaskMemberSelect"}
@@ -260,7 +266,7 @@ export default function KanBan() {
             selectedMember ? (
               <Typography variant="body1">{selectedMember.email}</Typography>
             ) : (
-              <Skeleton width={100} height={24} />
+              <Skeleton width="100%" height="100%" />
             )
           }
           dropdownContent={
@@ -306,7 +312,7 @@ export default function KanBan() {
             </>
           }
         />
-        <HoverDropdown
+        {/* <HoverDropdown
           id={"SprintSelect"}
           customStyles={{ maxHeight: "300px", overflowY: "scroll" }}
           buttonContent={
@@ -362,9 +368,9 @@ export default function KanBan() {
               )}
             </>
           }
-        />
+        /> */}
       </div>
-      <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
         <div className={styles.KanBan}>
           <DroppableColumn status="Backlog">
             <label className={styles.SprintLabel} htmlFor="BacklogColumn">
@@ -380,7 +386,7 @@ export default function KanBan() {
             </div>
             {memberTasks ? (
               memberTasks.map((task, index) => {
-                if (task?.status?.status_title === "Backlog") {
+                if (task?.status?.status_title === "Backlog" && task.task_id) {
                   return <DraggableTask key={`backlog_${index}`} task={task} />;
                 }
                 return null; // Ensure tasks not matching the condition are handled properly
@@ -401,7 +407,7 @@ export default function KanBan() {
             </div>
             {memberTasks ? (
               memberTasks.map((task, index) => {
-                if (task?.status?.status_title === "To Do") {
+                if (task?.status?.status_title === "To Do" && task.task_id) {
                   return <DraggableTask key={`to_do_${index}`} task={task} />;
                 }
                 return null; // Ensure tasks not matching the condition are handled properly
@@ -424,7 +430,7 @@ export default function KanBan() {
             </div>
             {memberTasks ? (
               memberTasks.map((task, index) => {
-                if (task?.status?.status_title === "In Progress") {
+                if (task?.status?.status_title === "In Progress" && task.task_id) {
                   return (
                     <DraggableTask key={`in_progress_${index}`} task={task} />
                   );
@@ -447,7 +453,7 @@ export default function KanBan() {
             </div>
             {memberTasks ? (
               memberTasks.map((task, index) => {
-                if (task?.status?.status_title === "Done") {
+                if (task?.status?.status_title === "Done" && task.task_id) {
                   return <DraggableTask key={`done_${index}`} task={task} />;
                 }
                 return null; // Ensure tasks not matching the condition are handled properly
@@ -479,6 +485,23 @@ export default function KanBan() {
           )}
         </DragOverlay>
       </DndContext>
+      {createTask ? (
+        <SlidingModal isOpen={createTask} toggleModal={toggleTaskCreateModal}>
+          <TaskCreate
+            toggleModal={toggleTaskCreateModal}
+            taskStatus={selectedTaskStatus}
+            selectedMember={selectedMember}
+            isOpen={createTask}
+            selectedTask={selectedTask}
+            setSelectedTask={setSelectedTask}
+            // selectedSprint={
+            //   !selectedSprint || (selectedSprint.sprint_id === "All" && sprints)
+            //     ? sprints?.filter((sprint) => sprint.status === "Active")[0]
+            //     : selectedSprint
+            // }
+          />
+        </SlidingModal>
+      ) : null}
     </div>
   );
 }

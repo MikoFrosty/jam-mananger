@@ -57,27 +57,35 @@ export default function ClientTeam() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const payload = {
-      client,
-      client_user_name: {
-        first: data.get("firstName"),
-        last: data.get("lastName"),
-      },
-      client_user_email: data.get("email"),
-      client_user_password: data.get("password"),
-    };
-
-    fetchWrapper("/client-user", "", "POST", { ...payload }).then((res) => {
-      if (res.message === "Client User Created") {
-        console.log(res);
-      }
+    const payloads = teamEmails.filter((email) => email && email !== "").map((email) => {
+      return {
+        team_member_email: email,
+        type: "team-member",
+      };
     });
+
+    for (let payload of payloads) {
+      console.log(payload)
+      fetchWrapper("/client-invitation", "", "POST", { ...payload });
+    }
+
+    navigate("/client-dashboard");
   };
 
   function handleBackClick() {
-    navigate("/");
+    navigate("/client-admin");
   }
 
+  function handleTeamEmailChange(value, index) {
+    // Create a new array by copying the current teamEmails state
+    const updatedEmails = [...teamEmails];
+
+    // Update the email at the specific index with the new value
+    updatedEmails[index] = value;
+
+    // Set the updated emails array as the new state
+    setTeamEmails(updatedEmails);
+  }
   return (
     <div className={styles.Signup}>
       <div className={styles.Message}>
@@ -119,10 +127,15 @@ export default function ClientTeam() {
               }}
             >
               <div className={styles.Invitee}>
-                <Typography variant="caption">{`${clientAdmin?.client_user_name?.first} ${clientAdmin?.client_user_name.last}`} - Admin</Typography>
-                <Typography variant="body1">{clientAdmin?.client_user_email}</Typography>
+                <Typography variant="caption">
+                  {`${clientAdmin?.client_user_name?.first} ${clientAdmin?.client_user_name.last}`}{" "}
+                  - Admin
+                </Typography>
+                <Typography variant="body1">
+                  {clientAdmin?.client_user_email}
+                </Typography>
               </div>
-              {teamEmails.map((email) => {
+              {teamEmails.map((email, index) => {
                 return (
                   <div className={styles.Invitee}>
                     <Typography variant="caption">Team Member</Typography>
@@ -133,6 +146,10 @@ export default function ClientTeam() {
                       label="Team Email"
                       name="email"
                       autoComplete="email"
+                      value={teamEmails[index]}
+                      onChange={(e) =>
+                        handleTeamEmailChange(e.target.value, index)
+                      }
                     />
                   </div>
                 );

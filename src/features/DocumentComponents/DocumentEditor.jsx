@@ -15,6 +15,8 @@ import {
 import mapToDbFormat from "../../utils/mapToDbFormat";
 import { useSelector } from "react-redux";
 import { updateDocument } from "../../StateManagement/Actions/actions";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 function DocumentEditor({ isOpen, noBar, customStyles }) {
   const dispatch = useDispatch();
@@ -22,18 +24,22 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
     (state) => state.app.editing_document
   );
 
-  console.log(selectedEditingDocument)
-  const [selectedFolder, setSelectedFolder] = useState(
-    selectedEditingDocument.folder || {}
-  );
-  const [selectedClient, setSelectedClient] = useState(
-    selectedEditingDocument.client || {}
-  );
-  const [isPublic, setIsPublic] = useState(
-    selectedEditingDocument.is_public || false
-  )
+  console.log(selectedEditingDocument);
+  const [selectedFolder, setSelectedFolder] = useState();
+  const [selectedClient, setSelectedClient] = useState();
+  const [isPublic, setIsPublic] = useState(false);
   const [ejInstance, setEjInstance] = useState(null);
   const [needsSave, setNeedsSave] = useState(false);
+  const [initialData, setInitialData] = useState(null);
+
+  useEffect(() => {
+    if (selectedEditingDocument) {
+      setSelectedClient(selectedEditingDocument.client || {});
+      setSelectedFolder(selectedEditingDocument.folder || {});
+      setIsPublic(selectedEditingDocument.is_public);
+      setInitialData(selectedEditingDocument.content);
+    }
+  }, [selectedEditingDocument]);
 
   function handleFolderSelect(folder) {
     if (folder.folder_id === selectedFolder.folder_id) {
@@ -55,12 +61,13 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
     if (option === isPublic) {
       return;
     } else {
-      setIsPublic(option)
-      setNeedsSave(true)
+      setIsPublic(option);
+      setNeedsSave(true);
     }
   }
 
   const handleEditorChange = () => {
+    console.log("Detected a change");
     setNeedsSave(true);
   };
 
@@ -74,61 +81,68 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
   }
 
   const handleSave = useCallback(async () => {
+    console.log("saving");
     if (!ejInstance) {
       console.error("Editor instance is not available.");
       return;
     }
     try {
-      const editorContent = await ejInstance.save();
-      const payload = {
-        document_data: {
-          associated_org: JSON.parse(localStorage.getItem("user")).organization,
-          contributors: selectedEditingDocument.contributors || [
-            JSON.parse(localStorage.getItem("user")),
-          ],
-          updates: selectedEditingDocument.updates || [],
-          content: editorContent,
-          title: editorContent.blocks[0].data.text,
-          blocks: editorContent.blocks,
-          last_block_timestamp: editorContent.time,
-          last_block_version: editorContent.version,
-          is_public: isPublic
-        },
-        document_id: selectedEditingDocument.document_id,
-        document_client: selectedClient || {},
-        document_folder: selectedFolder || {},
-      };
+      console.log(ejInstance);
+      if (ejInstance && typeof ejInstance.save === "function") {
+        const editorContent = await ejInstance.save();
+        const payload = {
+          document_data: {
+            associated_org: JSON.parse(localStorage.getItem("user"))
+              .organization,
+            contributors: selectedEditingDocument.contributors || [
+              JSON.parse(localStorage.getItem("user")),
+            ],
+            updates: selectedEditingDocument.updates || [],
+            content: editorContent,
+            title: editorContent.blocks[0].data.text,
+            blocks: editorContent.blocks,
+            last_block_timestamp: editorContent.time,
+            last_block_version: editorContent.version,
+            is_public: isPublic,
+          },
+          document_id: selectedEditingDocument.document_id,
+          document_client: selectedClient || {},
+          document_folder: selectedFolder || {},
+        };
 
-      notify("Saving...");
+        notify("Saving...");
 
-      console.log("payload for fetch",payload)
-      const mappedPayload = mapToDbFormat(payload);
+        console.log("payload for fetch", payload);
+        const mappedPayload = mapToDbFormat(payload);
 
-      mappedPayload.document_id = selectedEditingDocument.document_id;
+        mappedPayload.document_id = selectedEditingDocument.document_id;
 
-      dispatch(updateDocument(mappedPayload))
+        dispatch(updateDocument(mappedPayload));
 
-      // API call to save the document
-      fetchWrapper(
-        "/autosave-document",
-        localStorage.getItem("token"),
-        "POST",
-        { ...payload }
-      )
-        .then((res) => {
-          setNeedsSave(false);
-          console.log("result from fetch",res)
+        // API call to save the document
+        fetchWrapper(
+          "/autosave-document",
+          localStorage.getItem("token"),
+          "POST",
+          { ...payload }
+        )
+          .then((res) => {
+            setNeedsSave(false);
+            console.log("result from fetch", res);
 
-          // Dispatch the updateDocument action with the response from the server
-          dispatch(updateDocument(res.document));
+            // Dispatch the updateDocument action with the response from the server
+            dispatch(updateDocument(res.document));
 
-          notify("Document saved");
-        })
-        .catch((error) => {
-          console.error("Error saving document:", error);
-          // If the save fails, remove the optimistically added document
-          notify("Failed to save document");
-        });
+            notify("Document saved");
+          })
+          .catch((error) => {
+            console.error("Error saving document:", error);
+            // If the save fails, remove the optimistically added document
+            notify("Failed to save document");
+          });
+      } else {
+        console.error("Editor instance is not ready or available.");
+      }
     } catch (error) {
       console.error("Error preparing document for save:", error);
     }
@@ -137,6 +151,8 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
   const debouncedSave = useCallback(_.debounce(handleSave, 5000), [handleSave]);
 
   useEffect(() => {
+    console.log(needsSave);
+    console.log("attempting to save");
     if (needsSave) {
       debouncedSave();
     }
@@ -157,13 +173,17 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
       ) : null}
       <div className={styles.DocumentWindow}>
         {/* <DocumentOptionBar /> */}
-        <EditorComponent
-          isOpen={isOpen}
-          initialData={selectedEditingDocument.content}
-          customStyles={customStyles}
-          setEditorInstance={setEjInstance} // Pass the callback
-          onContentChange={handleEditorChange}
-        />
+        {!initialData ? (
+          <Skeleton width="100%" height="100%" />
+        ) : (
+          <EditorComponent
+            isOpen={isOpen}
+            initialData={initialData}
+            customStyles={customStyles}
+            setEditorInstance={setEjInstance} // Pass the callback
+            onContentChange={handleEditorChange}
+          />
+        )}
       </div>
       <ToastContainer className={styles.ToastContainerStyle} />
     </div>

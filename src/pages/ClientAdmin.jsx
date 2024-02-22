@@ -45,18 +45,21 @@ export default function ClientAdmin() {
   const { user, setUserData, token, setTokenString } = useContext(AuthContext);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const client = JSON.parse(searchParams.get("client"));
+  const client = (searchParams.get("client"));
+  const client_obj = JSON.parse(decodeURIComponent(client))
+  console.log(client_obj)
+  // const client = JSON.parse(decodeURIComponent(searchParams.get("client")));
 
-  useEffect(() => {
-    console.log(client)
-  }, [])
+  // useEffect(() => {
+  //   console.log(client_obj)
+  // }, [])
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     const payload = {
-      client,
+      client: client_obj,
       client_user_name: {
         first: data.get("firstName"),
         last: data.get("lastName")
@@ -68,7 +71,11 @@ export default function ClientAdmin() {
     fetchWrapper("/client-user", "", "POST", { ...payload }).then((res) => {
       if (res.message === "Client User Created") {
         console.log(res)
-        navigate(`/client-team/?client=${JSON.stringify(client)}&client_admin=${JSON.stringify(res.client_user)}`);
+        const client_admin = encodeURIComponent(JSON.stringify(res.client_user));
+        const url_client = encodeURIComponent(JSON.stringify(client_obj));
+        console.log(client_admin, url_client)
+        // navigate(`/client-team/?client=${url_client}&client_admin=${client_admin}`);
+        navigate("/client-dashboard")
       }
     });
   };

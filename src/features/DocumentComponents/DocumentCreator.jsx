@@ -24,6 +24,7 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles, readOnly = 
   const [previousDoc, setPreviousDoc] = useState({});
   const [isPublic, setIsPublic] = useState(false)
   const [tempId, setTempId] = useState("");
+  const [docExists, setDocExists] = useState(false);
 
   function handleFolderSelect(folder) {
     if (folder.folder_id === selectedFolder.folder_id) {
@@ -43,6 +44,7 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles, readOnly = 
 
   function handleVisibilitySelect(option) {
     setIsPublic(option)
+    setNeedsSave(true)
   }
 
   const handleEditorChange = () => {
@@ -90,12 +92,11 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles, readOnly = 
       const mappedPayload = mapToDbFormat(payload);
       mappedPayload.temporary_id = temporary_id;
 
-      dispatch(addDocument(mappedPayload));
-
-      notify("Saving");
-
-      // append temp id to payload
-
+      if (!docExists) {
+        dispatch(addDocument(mappedPayload));
+        setDocExists(true)
+      }
+    
       fetchWrapper(
         "/autosave-document",
         localStorage.getItem("token"),
@@ -103,13 +104,13 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles, readOnly = 
         { ...payload }
       ).then((res) => {
         setNeedsSave(false);
+        console.log(res)
 
         setPreviousDoc(res.document);
 
         //  replace optimistic doc with real  document
         if (res.message === "document saved") {
-          console.log(res)
-          dispatch(replaceDocument(temporary_id, res.document));
+          dispatch(replaceDocument(temporary_id, res.status, res.document));
           notify("saved");
         } else {
           notify("there was an error saving your document");

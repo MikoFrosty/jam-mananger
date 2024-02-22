@@ -23,7 +23,7 @@ export default function TaskCreate({
   selectedMember,
   isOpen,
   selectedTask,
-  selectedSprint,
+  // selectedSprint,
 }) {
   const dispatch = useDispatch();
   const clients = useSelector((state) => state.app.clients);
@@ -110,7 +110,7 @@ export default function TaskCreate({
           start_time: Date.now(),
           hard_limit: false,
           requires_authorization: selectedClient ? true : false,
-          sprint_id: selectedSprint.sprint_id,
+          // sprint_id: selectedSprint.sprint_id,
           organization,
           duration: 0,
           temporary_task_id,
@@ -157,6 +157,7 @@ export default function TaskCreate({
       setSelectedEscalation(null);
     }
     if (selectedTask) {
+      console.log("selected task found")
       setTaskTitle(selectedTask.title);
       setTitlePlaceholder(selectedTask.title)
       setAssignees(selectedTask.assignees);
@@ -198,6 +199,18 @@ export default function TaskCreate({
     }, 3000), //3000ms delay
     []
   );
+
+  function handleTaskDelete() {
+    const payload = {
+      task_ids: [
+        selectedTask.task_id
+      ],
+      type: "one"
+    }
+    fetchWrapper("/tasks", localStorage.getItem("token"), "DELETE", { ...payload }).then((res) => {
+      console.log(res)
+    })
+  }
 
   function handleTaskTitleChange(value) {
     setTitlePlaceholder(value); // Immediately set the placeholder value")
@@ -402,7 +415,7 @@ export default function TaskCreate({
             }
           />
         </div>
-        {clients.length > 0 ? (
+        {clients && clients.length > 0 ? (
           <div className={styles.SprintInput}>
             <label className={styles.SprintLabel} htmlFor="SprintClientSelect">
               Client
@@ -455,9 +468,10 @@ export default function TaskCreate({
             />
           </div>
         ) : null}
+        {!updateTask ? 
         <button className={styles.CreateButton} onClick={handleTaskCreate}>
-          {updateTask ? "Update Task" : "Create Task"}
-        </button>
+          Create Task
+        </button> : <button onClick={handleTaskDelete} className={styles.DeleteButton}>Delete Task</button>}
       </div>
     </div>
   );

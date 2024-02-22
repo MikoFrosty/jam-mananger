@@ -114,11 +114,11 @@ export function fetchFolders() {
   };
 }
 
-export function deleteDocument(document) {
+export function deleteDocument(document_id) {
   return async function (dispatch) {
     try {
       const payload = {
-        document_id: document.document_id,
+        document_id
       };
       const response = fetchWrapper(
         "/document",
@@ -129,7 +129,7 @@ export function deleteDocument(document) {
       // Assuming the response from fetchWrapper is the actual data you want to set
       dispatch({
         type: "REMOVE_DOCUMENT",
-        payload: document,
+        payload: document_id,
       });
     } catch (error) {
       console.error("Error deleting document:", error);
@@ -195,9 +195,9 @@ export function updateDocument(document) {
 }
 
 // Action to replace a temporary document with the one from the server
-export const replaceDocument = (temporary_id, document) => ({
+export const replaceDocument = (temporary_id, status, document) => ({
   type: "REPLACE_DOCUMENT",
-  payload: { temporary_id, document },
+  payload: { temporary_id, status, document },
 });
 
 // Action to remove a temporary document if the save operation fails
@@ -205,13 +205,6 @@ export const removeTemporaryDocument = (temporary_id) => ({
   type: "REMOVE_TEMPORARY_DOCUMENT",
   payload: { temporary_id },
 });
-
-export function setEditingDocument(document) {
-  return {
-    type: "SET_EDITING_DOCUMENT",
-    payload: document,
-  };
-}
 
 export function addMemberTask(task) {
   console.log("Updated task", task)
@@ -268,6 +261,24 @@ export function setLogout(bool) {
   return {
     type: "SET_LOGOUT",
     payload: bool
+  }
+}
+
+export function setEditingDocument(document) {
+  return async function (dispatch) {
+    try {
+      console.log("fetch document by id", document.document_id);
+
+      const res = await fetchWrapper(`/documents?doc_id=${document.document_id}`, localStorage.getItem("token"), "GET");
+
+      dispatch({
+        type: "SET_EDITING_DOCUMENT",
+        payload: res.documents
+      })
+    } catch (error) {
+      console.error("Error fetching tasks", error);
+      // Optionally, dispatch an error action here
+    }
   }
 }
 

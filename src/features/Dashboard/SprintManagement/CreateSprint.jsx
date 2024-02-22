@@ -12,12 +12,22 @@ import {
   getOrganization,
 } from "../../../StateManagement/Actions/actions";
 
+import SlidingModal from "../SlidingModal";
+import TaskCreate from "./CreateTaskForm";
+
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 export default function CreateSprint() {
   const dispatch = useDispatch();
   const editingSprint = useSelector((state) => state.app.editing_sprint);
   const memberTasks = useSelector((state) => state.app.memberTasks);
+  console.log(editingSprint)
+  //const newSprintTasks = useSelector((state) => state.app.memberTasks).filter((task) => task.sprint_id === editingSprint.sprint_id);
   const organization = useSelector((state) => state.app.organization);
   const clients = useSelector((state) => state.app.clients);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [tempSprintTasks, setTempSprintTasks] = useState([]);
 
   const [selectedMember, setSelectedMember] = useState({
     email: "All",
@@ -47,14 +57,18 @@ export default function CreateSprint() {
   );
 
   const [sprintTitle, setSprintTitle] = useState("");
-  const [sprintDescription, setSprintDescription] = useState("")
+  const [sprintDescription, setSprintDescription] = useState("");
   const [objective, setObjective] = useState("");
-  const [selectedStartDate, setSelectedStartDate] = useState(new Date());
   const [currentMonthEnd, setCurrentMonthEnd] = useState(new Date().getMonth());
   const [currentYearEnd, setCurrentYearEnd] = useState(
     new Date().getFullYear()
   );
-  const [selectedEndDate, setSelectedEndDate] = useState(null);
+  const today = new Date();
+  // Add 14 days to today
+  const endDate = new Date(today.setDate(today.getDate() + 14));
+
+  const [selectedEndDate, setSelectedEndDate] = useState(endDate);
+  const [selectedStartDate, setSelectedStartDate] = useState(new Date());
   const [updateTask, setUpdateTask] = useState(false);
 
   const [assignees, setAssignees] = useState([]);
@@ -77,51 +91,17 @@ export default function CreateSprint() {
       dispatch(fetchClients());
     }
     if (editingSprint) {
-      dispatch(fetchTasks({
-        email: "All",
-        sprint_id: editingSprint.sprint_id
-      }))
+      dispatch(
+        fetchTasks({
+          email: "All",
+          sprint_id: editingSprint.sprint_id,
+        })
+      );
+    }
+    if (memberTasks.length === 0 && selectedMember) {
+      dispatch(fetchTasks(selectedMember))
     }
   }, [editingSprint]);
-
-  function handleStatusSelect(status) {
-    if (selectedStatus && selectedStatus.status_title === status.status_title) {
-      setSelectedStatus({
-        status_title: "To Do",
-      });
-    } else {
-      setSelectedStatus(status);
-    }
-  }
-
-  function handleEscalationSelection(escalation) {
-    if (selectedEscalation && selectedEscalation.title === escalation.title) {
-      setSelectedEscalation({
-        title: "Low",
-        color: "#2EC4B6",
-      });
-    } else {
-      setSelectedEscalation(escalation);
-    }
-  }
-
-  function handleAssigneeSelect(selectedAssignee) {
-    setAssignees((prevAssignees) => {
-      const isAlreadySelected = prevAssignees.some(
-        (assignee) => assignee.user_id === selectedAssignee.user_id
-      );
-
-      if (isAlreadySelected) {
-        // Remove the assignee from the state
-        return prevAssignees.filter(
-          (assignee) => assignee.user_id !== selectedAssignee.user_id
-        );
-      } else {
-        // Add the assignee to the state
-        return [...prevAssignees, selectedAssignee];
-      }
-    });
-  }
 
   function handleMemberSelect(member) {
     if (member.user_id === "all") {
@@ -145,75 +125,6 @@ export default function CreateSprint() {
     setCurrentMonthEnd(defaultEndDate.getMonth());
     setCurrentYearEnd(defaultEndDate.getFullYear());
   };
-
-  function handleTaskCreate() {
-    const temporary_task_id = tempTaskId
-      ? tempTaskId
-      : `temporary_task_${Date.now()}`;
-
-    console.log(assignees);
-
-    const payload = {
-      title: taskTitle,
-      assigned_by: JSON.parse(localStorage.getItem("user")),
-      assignees,
-      description: taskDescription,
-      client: selectedClient,
-      status: selectedStatus,
-      escalation: selectedEscalation,
-      start_time: Date.now(),
-      duration: 0,
-      hard_limit: false,
-      requires_authorization: selectedClient ? true : false,
-      sprint_id: editingSprint.sprint_id,
-      organization,
-      temporary_task_id,
-    };
-
-    dispatch(addMemberTask(payload));
-
-    try {
-      fetchWrapper(
-        "/tasks",
-        localStorage.getItem("token"),
-        "POST",
-        { ...payload }
-      ).then((res) => {
-        const task = res.task;
-        task.temporary_task_id = res.temporary_task_id;
-        dispatch(addMemberTask(res.task));
-        setCreateTask(false)
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  function handleTaskCreateToggleWithExisting(task) {
-    setCreateTask(true);
-    setUpdateTask(true);
-    setSelectedClient(task.client);
-    setAssignees(task.assignees);
-    setTaskDescription(task.description);
-    setSelectedEscalation(task.escalation);
-    setSelectedStatus(task.status);
-    setTempTaskId(task.temporary_task_id);
-    setTaskTitle(task.title);
-  }
-
-  function handleTaskTitleChange(value) {
-    setTaskTitle(value);
-  }
-
-  function handleCreateTaskToggle(status) {
-    setCreateTask(true);
-    setSelectedStatus(status);
-    setTaskTitle("Task Title");
-  }
-
-  function handleTaskDescriptionChange(value) {
-    setTaskDescription(value);
-  }
 
   function handleTitleChange(value) {
     setTaskTitle(value);
@@ -258,8 +169,29 @@ export default function CreateSprint() {
     }
   }
 
+  function handleTaskCreateToggleWithExisting(task) {
+    setSelectedTask(task);
+  }
+
   return (
     <div className={styles.CreateSprint}>
+      {createTask ? (
+        <SlidingModal isOpen={createTask} toggleModal={toggleTaskCreateModal}>
+          <TaskCreate
+            toggleModal={toggleTaskCreateModal}
+            taskStatus={{status_title: "Backlog"}}
+            selectedMember={selectedMember}
+            isOpen={createTask}
+            selectedTask={selectedTask}
+            setSelectedTask={setSelectedTask}
+            selectedSprint={
+              !selectedSprint || (selectedSprint.sprint_id === "All" && sprints)
+                ? sprints?.filter((sprint) => sprint.status === "Active")[0]
+                : selectedSprint
+            }
+          />
+        </SlidingModal>
+      ) : null}
       <div className={styles.SprintTitle}>
         <div className={styles.SprintInput}>
           <label className={styles.SprintLabel} htmlFor="SprintTitleInput">
@@ -441,9 +373,6 @@ export default function CreateSprint() {
               </>
             }
           />
-        </div>
-        <div className={styles.TaskList}>
-          <div className={styles.AllTasks}></div>
         </div>
       </div>
     </div>

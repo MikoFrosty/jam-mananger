@@ -20,7 +20,7 @@ import fetchWrapper from "../../utils/fetchWrapper";
 import ClientView from "../Clients/ClientView";
 import DocumentEditor from "../DocumentComponents/DocumentEditor";
 import AllSprints from "./SprintManagement/AllSprints";
-import CreateSprint from "./SprintManagement/CreateSprint";
+//import CreateSprint from "./SprintManagement/CreateSprint";
 import Account from "../Account/Account";
 import KanBan from "./SprintManagement/KanBan";
 
@@ -107,10 +107,6 @@ export default function Dashboard() {
           <ClientView />
         ) : viewMode === "sprint-management" ? (
           <KanBan />
-        ) : viewMode === "sprint-create" ? (
-          <CreateSprint />
-        ) : viewMode === "sprint-manage" ? (
-          <AllSprints />
         ) : viewMode === "account-details" ? (
           <Account />
         ) : null}

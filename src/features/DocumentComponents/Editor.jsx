@@ -126,7 +126,7 @@ const EditorComponent = ({
             },
           },
         },
-        autofocus: true,
+        autofocus: placeholder ? false : true,
         ...(placeholder ? {placeholder} : {}),
         ...(initialData ? {data: initialData
           ? Object.keys(initialData).length > 0

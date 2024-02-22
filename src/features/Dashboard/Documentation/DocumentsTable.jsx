@@ -41,8 +41,7 @@ export default function DocumentTable({ searchTerm }) {
     )
     .map((item) => ({
       document_id: item.document_id,
-      content: item.content,
-      updates: item.updates,
+      is_public: item.is_public,
       title: item.title,
       client: item.client || {},
       folder: item.folder || {},
@@ -50,17 +49,16 @@ export default function DocumentTable({ searchTerm }) {
       client_name: item.client?.client_name,
       contributors: item.contributors,
       joined_contributors: item.contributors.length,
-      document: item,
     }));
 
   function handleDocCreate() {
     dispatch(toggleView("documentation-create"));
   }
 
-  function handleDocDelete(document, e) {
+  function handleDocDelete(document_id, e) {
     e.preventDefault();
     e.stopPropagation();
-    dispatch(deleteDocument(document));
+    dispatch(deleteDocument(document_id));
   }
 
   function notify(message) {
@@ -72,17 +70,17 @@ export default function DocumentTable({ searchTerm }) {
     });
   }
 
-  function handleDocEdit(document) {
-    dispatch(setEditingDocument(document.document));
+  function handleDocEdit(document_id) {
+    dispatch(setEditingDocument(document_id));
     dispatch(toggleView("documentation-edit"));
   }
 
   function handleDocURLCopy(e, doc_id) {
-    // http://localhost:5173/public-docs?doc_id=${doc_id}
+    // https://kamariteams.com/public_docs?doc_id=${doc_id}
     e.preventDefault();
     e.stopPropagation();
     navigator.clipboard
-      .writeText(`https://kamariteams.com/public_docs?doc_id=${doc_id}`)
+      .writeText(`http://localhost:5173/public-docs?doc_id=${doc_id}`)
       .then(() => {
         console.log("Document ID copied to clipboard successfully!");
         // Optionally, show a success message to the user.
@@ -134,17 +132,17 @@ export default function DocumentTable({ searchTerm }) {
           <TableBody>
             {rows.map((row, index) => (
               <TableRow
-                key={`${row.title}_${index}`}
+                key={`document_${index}`}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 className={styles.Row}
                 onClick={() => handleDocEdit(row)}
               >
                 <TableCell align="right">
-                  {row.document.is_public ? (
+                  {row.is_public ? (
                     <ContentCopyIcon
                       className={styles.Icon}
                       onClick={(e) =>
-                        handleDocURLCopy(e, row.document.document_id)
+                        handleDocURLCopy(e, row.document_id)
                       }
                     />
                   ) : null}
@@ -158,7 +156,7 @@ export default function DocumentTable({ searchTerm }) {
                 <TableCell align="right">
                   <DeleteForeverIcon
                     className={styles.Icon}
-                    onClick={(e) => handleDocDelete(row, e)}
+                    onClick={(e) => handleDocDelete(row.document_id, e)}
                     fontSize={"small"}
                   />
                 </TableCell>
