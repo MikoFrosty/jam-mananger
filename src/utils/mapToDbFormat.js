@@ -1,6 +1,6 @@
 function mapToDbFormat(input) {
   // Extracting necessary parts from the input
-  const { document_data } = input;
+  const { document_data, document_client } = input;
   console.log("document data", document_data)
   console.log("input", input)
 
@@ -17,6 +17,7 @@ function mapToDbFormat(input) {
               ...block
           }))
       },
+      document_client,
       // Assuming the associated_org and creator can be directly copied
       associated_org: { ...document_data.associated_org },
       creator: { ...document_data.contributors[0] }, // Assuming the first contributor is the creator
@@ -24,7 +25,7 @@ function mapToDbFormat(input) {
 
   // Remove properties not present in the database object
   delete mappedObject.document_data;
-  delete mappedObject.document_client;
+//   delete mappedObject.document_client;
   delete mappedObject.document_folder;
 
   // Any additional transformations needed to match the DB object exactly

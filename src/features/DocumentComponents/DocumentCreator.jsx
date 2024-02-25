@@ -40,6 +40,7 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles, readOnly = 
     } else {
       setSelectedClient(client);
     }
+    setNeedsSave(true)
   }
 
   function handleVisibilitySelect(option) {
@@ -81,7 +82,8 @@ function DocumentCreator({ isOpen, noBar, initialData, customStyles, readOnly = 
           blocks: editorContent.blocks,
           last_block_timestamp: editorContent.time,
           last_block_version: editorContent.version,
-          is_public: isPublic
+          is_public: isPublic,
+          document_client: selectedClient
         },
         document_id: previousDoc?.document_id,
         document_client: selectedClient || {},

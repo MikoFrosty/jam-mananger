@@ -15,6 +15,7 @@ import {
   setLogout,
   setUser,
   toggleRefetch,
+  toggleView,
 } from "../../StateManagement/Actions/actions";
 import fetchWrapper from "../../utils/fetchWrapper";
 import ClientView from "../Clients/ClientView";
@@ -32,6 +33,9 @@ export default function Dashboard() {
   const team = useSelector((state) => state.app.team);
   const logout = useSelector((state) => state.app.logout)
   const [sidebar, setSidebar] = useState(true);
+  const viewMode = useSelector((state) => state.app.viewMode);
+
+  console.log(logout)
 
   useEffect(() => {
     console.log(user);
@@ -41,8 +45,15 @@ export default function Dashboard() {
       dispatch(getUser())
     } else if (!user && logout === true) {
       navigate("/home")
+      localStorage.clear()
     }
   }, [user, logout]);
+
+  useEffect(() => {
+    if (logout) {
+      localStorage.clear();
+    }
+  }, [logout])
 
   useEffect(() => {
     dispatch(fetchDocuments());
@@ -52,8 +63,12 @@ export default function Dashboard() {
       dispatch(getOrganization())
     }
     if (!team) {
+      dispatch(fetchTeam());
     }
-    dispatch(fetchTeam());
+    if (!viewMode) {
+      dispatch(toggleView("sprint-management"))
+      localStorage.setItem("lastView", "sprint-management")
+    }
   }, []);
 
   const handleLogout = () => {
@@ -64,8 +79,6 @@ export default function Dashboard() {
   function handleToggleSidebar() {
     setSidebar(!sidebar);
   }
-
-  const viewMode = useSelector((state) => state.app.viewMode);
 
   const sidebarClass = sidebar ? styles.SideBar : styles.SideBarCollapsed;
 

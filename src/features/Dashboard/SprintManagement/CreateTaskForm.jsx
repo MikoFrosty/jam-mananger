@@ -5,13 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import HoverDropdown from "../../../components/HoverDropdown";
 
 import Typography from "@mui/material/Typography";
-import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import DocumentEditor from "../../DocumentComponents/DocumentEditor";
-import DocumentCreator from "../../DocumentComponents/DocumentCreator";
 
 import TaskDescriptionCreator from "../../DocumentComponents/TaskDescription";
-import { addMemberTask } from "../../../StateManagement/Actions/actions";
+import {
+  addMemberTask,
+  fetchClientUser,
+  fetchPartners,
+  getOrganization,
+  setSelectedMemberTasks,
+} from "../../../StateManagement/Actions/actions";
 
 import fetchWrapper from "../../../utils/fetchWrapper";
 import TaskDescriptionEditor from "../../DocumentComponents/TaskDescriptionEditor";
@@ -20,15 +23,19 @@ import _ from "lodash";
 export default function TaskCreate({
   toggleModal,
   taskStatus,
-  selectedMember,
   isOpen,
   selectedTask,
+  type,
   // selectedSprint,
 }) {
   const dispatch = useDispatch();
   const clients = useSelector((state) => state.app.clients);
   const organization = useSelector((state) => state.app.organization);
+  const clientPartner = useSelector((state) => state.app.client_partner);
   const user = useSelector((state) => state.app.user);
+  const clientUser = useSelector((state) => state.app.client_user);
+
+  const selectedMember = useSelector((state) => state.app.selectedMember_Tasks);
 
   const [ejInstance, setEjInstance] = useState(null);
 
@@ -39,6 +46,17 @@ export default function TaskCreate({
   const [updateTask, setUpdateTask] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState();
   const [selectedEscalation, setSelectedEscalation] = useState();
+
+  useEffect(() => {
+    if (type) {
+      if (type === "user") {
+        dispatch(getOrganization());
+      }
+      else if (type === "client") {
+        dispatch(fetchPartners());
+      }
+    }
+  }, [type])
 
   const statusOptions = [
     {
@@ -78,6 +96,16 @@ export default function TaskCreate({
     },
   ];
 
+  useEffect(() => {
+    if (selectedMember?.email === "All" && assignees) {
+      dispatch(setSelectedMemberTasks(assignees[0]));
+    }
+  }, [selectedMember]);
+
+  useEffect(() => {
+    console.log(selectedClient);
+  }, [selectedClient]);
+
   const handleTaskCreate = async (event) => {
     event.preventDefault();
 
@@ -95,10 +123,10 @@ export default function TaskCreate({
         const temporary_task_id = `temporary_task_${Date.now()}`;
         const payload = {
           title: taskTitle === "" ? "Untitled Task" : taskTitle,
-          assigned_by: user,
+          assigned_by: user || clientUser || {},
           assignees,
           description: editorContent,
-          client: selectedClient || {},
+          client: (selectedClient || clientUser?.client || {}),
           status: selectedStatus || {
             status_title: "Backlog",
           },
@@ -111,10 +139,14 @@ export default function TaskCreate({
           hard_limit: false,
           requires_authorization: selectedClient ? true : false,
           // sprint_id: selectedSprint.sprint_id,
-          organization,
+          organization: (type === "user" ? organization : clientPartner),
           duration: 0,
           temporary_task_id,
         };
+
+        console.log(payload)
+        console.log(clientPartner)
+        console.log(clientUser)
 
         dispatch(addMemberTask(payload));
 
@@ -157,21 +189,20 @@ export default function TaskCreate({
       setSelectedEscalation(null);
     }
     if (selectedTask) {
-      console.log("selected task found")
+      console.log("selected task found");
       setTaskTitle(selectedTask.title);
-      setTitlePlaceholder(selectedTask.title)
+      setTitlePlaceholder(selectedTask.title);
       setAssignees(selectedTask.assignees);
       setSelectedClient(selectedTask.client);
       setSelectedStatus(selectedTask.status);
       setSelectedEscalation(selectedTask.escalation);
       setUpdateTask(true);
-    }
-    else if (!selectedTask) {
+    } else if (!selectedTask) {
       setSelectedEscalation({
         title: "Low",
         color: "#2EC4B6",
         softerColor: "rgba(46, 196, 182, 0.3)", // Softer color with reduced opacity
-      })
+      });
     }
   }, [isOpen, selectedTask]);
 
@@ -202,14 +233,14 @@ export default function TaskCreate({
 
   function handleTaskDelete() {
     const payload = {
-      task_ids: [
-        selectedTask.task_id
-      ],
-      type: "one"
-    }
-    fetchWrapper("/tasks", localStorage.getItem("token"), "DELETE", { ...payload }).then((res) => {
-      console.log(res)
-    })
+      task_ids: [selectedTask.task_id],
+      type: "one",
+    };
+    fetchWrapper("/tasks", localStorage.getItem("token"), "DELETE", {
+      ...payload,
+    }).then((res) => {
+      console.log(res);
+    });
   }
 
   function handleTaskTitleChange(value) {
@@ -218,11 +249,12 @@ export default function TaskCreate({
   }
 
   function handleClientSelect(value) {
-    setSelectedClient(value);
-  }
-
-  function handleClientSelect(client) {
-    setSelectedClient(client);
+    console.log(value);
+    if (value.client_id === selectedClient?.client_id) {
+      setSelectedClient(null);
+    } else {
+      setSelectedClient(value);
+    }
   }
 
   function handleStatusSelect(status) {
@@ -245,6 +277,7 @@ export default function TaskCreate({
             isOpen={isOpen}
             selectedTask={selectedTask}
             selectedEscalation={selectedEscalation}
+            selectedClient={selectedClient}
             selectedStatus={selectedStatus}
             assignees={assignees}
             title={taskTitle}
@@ -468,10 +501,15 @@ export default function TaskCreate({
             />
           </div>
         ) : null}
-        {!updateTask ? 
-        <button className={styles.CreateButton} onClick={handleTaskCreate}>
-          Create Task
-        </button> : <button onClick={handleTaskDelete} className={styles.DeleteButton}>Delete Task</button>}
+        {!updateTask ? (
+          <button className={styles.CreateButton} onClick={handleTaskCreate}>
+            Create Task
+          </button>
+        ) : (
+          <button onClick={handleTaskDelete} className={styles.DeleteButton}>
+            Delete Task
+          </button>
+        )}
       </div>
     </div>
   );

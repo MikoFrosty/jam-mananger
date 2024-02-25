@@ -19,9 +19,11 @@ const initialState = {
   editing_task: null,
   sprints: null,
   user: null,
+  client_user: null,
   logout: false,
   team: null,
-  selectedMember_Tasks: null
+  selectedMember_Tasks: null,
+  client_partner: null
 };
 
 function appReducer(state = initialState, action) {
@@ -42,6 +44,12 @@ function appReducer(state = initialState, action) {
         ...state,
         editing_task: action.payload,
       };
+    case "SET_CLIENT_PARTNERS": {
+      return {
+        ...state,
+        client_partner: action.payload
+      }
+    }
     case "CLEAR_EDITING_TASK":
       return {
         ...state,
@@ -52,6 +60,12 @@ function appReducer(state = initialState, action) {
         ...state,
         refetch: action.payload,
       };
+    case "SET_CLIENT_USER": {
+      return {
+        ...state,
+        client_user: action.payload
+      }
+    }
     case "SET_LOGOUT":
       return {
         ...state,

@@ -4,7 +4,7 @@ import FolderTable from "./FolderTable";
 import SlidingModal from "../SlidingModal";
 const FolderCreate = React.lazy(() => import("../../Folders/FolderCreate")); // Lazy-loaded
 
-export default function TableView({ searchTerm, view }) {
+export default function TableView({ type, searchTerm, view }) {
   const [createFolder, setCreateFolder] = useState(false);
 
   function toggleModal() {
@@ -21,7 +21,7 @@ export default function TableView({ searchTerm, view }) {
         </SlidingModal>
       )}
       {view === "Docs" ? (
-        <DocumentTable searchTerm={searchTerm} />
+        <DocumentTable type={type} searchTerm={searchTerm} />
       ) : view === "Folders" ? (
         <FolderTable searchTerm={searchTerm} toggleModal={toggleModal} />
       ) : (

@@ -41,11 +41,11 @@ function TaskDescriptionEditor({
   //  the useEffect should run and update the selected task with new prop data
   useEffect(() => {
     console.log(renderCount.current)
-    if (renderCount.current < 2) {
+    if (renderCount.current < 3) {
       renderCount.current += 1;
       return;
     }
-    else if (renderCount.current >= 2) {
+    else if (renderCount.current >= 3) {
       if (initialRender.current) {
         initialRender.current = false;
         return;
@@ -64,6 +64,10 @@ function TaskDescriptionEditor({
       autoClose: 1000,
     });
   }
+
+  useEffect(() => {
+    setNeedsSave(true)
+  }, [selectedClient])
 
   const handleSave = useCallback(async () => {
     if (!ejInstance) {

@@ -18,15 +18,17 @@ import { updateDocument } from "../../StateManagement/Actions/actions";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-function DocumentEditor({ isOpen, noBar, customStyles }) {
+function DocumentEditor({ isOpen, noBar, customStyles, readOnly = false }) {
   const dispatch = useDispatch();
   const selectedEditingDocument = useSelector(
     (state) => state.app.editing_document
   );
 
+  const clientUser = useSelector((state) => state.app.client_user);
+
   console.log(selectedEditingDocument);
-  const [selectedFolder, setSelectedFolder] = useState();
-  const [selectedClient, setSelectedClient] = useState();
+  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
   const [isPublic, setIsPublic] = useState(false);
   const [ejInstance, setEjInstance] = useState(null);
   const [needsSave, setNeedsSave] = useState(false);
@@ -34,6 +36,7 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
 
   useEffect(() => {
     if (selectedEditingDocument) {
+      console.log(selectedEditingDocument.client)
       setSelectedClient(selectedEditingDocument.client || {});
       setSelectedFolder(selectedEditingDocument.folder || {});
       setIsPublic(selectedEditingDocument.is_public);
@@ -55,6 +58,7 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
     } else {
       setSelectedClient(client);
     }
+    setNeedsSave(true)
   }
 
   function handleVisibilitySelect(option) {
@@ -81,6 +85,7 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
   }
 
   const handleSave = useCallback(async () => {
+    console.log(selectedClient)
     console.log("saving");
     if (!ejInstance) {
       console.error("Editor instance is not available.");
@@ -106,14 +111,18 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
             is_public: isPublic,
           },
           document_id: selectedEditingDocument.document_id,
-          document_client: selectedClient || {},
-          document_folder: selectedFolder || {},
+          document_client: selectedClient,
+          document_folder: selectedFolder,
         };
+
+        console.log(payload)
 
         notify("Saving...");
 
         console.log("payload for fetch", payload);
         const mappedPayload = mapToDbFormat(payload);
+
+        console.log("MAPPED PAYLOAD FOR DB INSERT", mappedPayload)
 
         mappedPayload.document_id = selectedEditingDocument.document_id;
 
@@ -180,6 +189,7 @@ function DocumentEditor({ isOpen, noBar, customStyles }) {
             isOpen={isOpen}
             initialData={initialData}
             customStyles={customStyles}
+            readOnly={readOnly}
             setEditorInstance={setEjInstance} // Pass the callback
             onContentChange={handleEditorChange}
           />

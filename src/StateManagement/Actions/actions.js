@@ -93,6 +93,65 @@ export function fetchDocuments() {
   };
 }
 
+export function fetchClientUser() {
+  return async function (dispatch) {
+    try {
+      const response = await fetchWrapper("/client-user", localStorage.getItem("token"), "GET");
+
+      dispatch({
+        type: "SET_CLIENT_USER",
+        payload: response.client_user
+      })
+    } catch (error) {
+      console.error("Error fetching client user:", error);
+      // Optionally, dispatch an error action here
+    }
+  }
+}
+
+export function fetchPartners() {
+  return async function (dispatch) {
+    try {
+      const response = await fetchWrapper(
+        "/client-partners",
+        localStorage.getItem("token"),
+        "GET"
+      );
+
+      console.log(response);
+
+      dispatch({
+        type: "SET_CLIENT_PARTNERS",
+        payload: response.partners[0]
+      })
+    } catch (error) {
+      console.error("Error fetching client partners:", error);
+      // Optionally, dispatch an error action here
+    }
+  };
+}
+
+export function fetchClientDocuments() {
+  return async function (dispatch) {
+    try {
+      const response = await fetchWrapper(
+        "/client-documents",
+        localStorage.getItem("token"),
+        "GET"
+      );
+      // Assuming the response from fetchWrapper is the actual data you want to set
+      console.log(response);
+      dispatch({
+        type: "SET_DOCUMENTS",
+        payload: response.documents,
+      });
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      // Optionally, dispatch an error action here
+    }
+  };
+}
+
 export function fetchFolders() {
   return async function (dispatch) {
     try {
@@ -118,7 +177,7 @@ export function deleteDocument(document_id) {
   return async function (dispatch) {
     try {
       const payload = {
-        document_id
+        document_id,
       };
       const response = fetchWrapper(
         "/document",
@@ -207,7 +266,7 @@ export const removeTemporaryDocument = (temporary_id) => ({
 });
 
 export function addMemberTask(task) {
-  console.log("Updated task", task)
+  console.log("Updated task", task);
   return {
     type: "ADD_MEMBER_TASK",
     payload: task,
@@ -215,19 +274,19 @@ export function addMemberTask(task) {
 }
 
 export function updateMemberTask(payload) {
-  console.log(payload)
+  console.log(payload);
   return {
     type: "UPDATE_MEMBER_TASK",
-    payload: payload
-  }
+    payload: payload,
+  };
 }
 
 export function setUser(user) {
-  console.log(user)
+  console.log(user);
   return {
     type: "SET_USER",
-    payload: user
-  }
+    payload: user,
+  };
 }
 
 export function updateMemberTaskOptimistically(taskId, updatedTask) {
@@ -240,28 +299,32 @@ export function updateMemberTaskOptimistically(taskId, updatedTask) {
 export function getUser() {
   return async function (dispatch) {
     try {
-      const response = await fetchWrapper("/user", localStorage.getItem("token"), "GET");
+      const response = await fetchWrapper(
+        "/user",
+        localStorage.getItem("token"),
+        "GET"
+      );
 
-      console.log(response)
+      console.log(response);
 
       if (response.message === "User found") {
         dispatch({
           type: "SET_USER",
-          payload: response.user
-        })
+          payload: response.user,
+        });
       }
     } catch (error) {
       console.error("Could not fetch user:", error);
       // Optionally, dispatch an error action here
     }
-  }
+  };
 }
 
 export function setLogout(bool) {
   return {
     type: "SET_LOGOUT",
-    payload: bool
-  }
+    payload: bool,
+  };
 }
 
 export function setEditingDocument(document) {
@@ -269,24 +332,28 @@ export function setEditingDocument(document) {
     try {
       console.log("fetch document by id", document.document_id);
 
-      const res = await fetchWrapper(`/documents?doc_id=${document.document_id}`, localStorage.getItem("token"), "GET");
+      const res = await fetchWrapper(
+        `/documents?doc_id=${document.document_id}`,
+        localStorage.getItem("token"),
+        "GET"
+      );
 
       dispatch({
         type: "SET_EDITING_DOCUMENT",
-        payload: res.documents
-      })
+        payload: res.documents,
+      });
     } catch (error) {
       console.error("Error fetching tasks", error);
       // Optionally, dispatch an error action here
     }
-  }
+  };
 }
 
 export function fetchTasks(payload) {
   return async function (dispatch) {
-    console.log("FETCH TASK PAYLOAD", payload)
+    console.log("FETCH TASK PAYLOAD", payload);
     try {
-      console.log("fetch task payload", payload)
+      console.log("fetch task payload", payload);
       const res = await fetchWrapper(
         "/tasks",
         localStorage.getItem("token"),
@@ -294,7 +361,7 @@ export function fetchTasks(payload) {
         { ...payload }
       );
 
-      console.log("fetched member tasks", res)
+      console.log("fetched member tasks", res);
       // Assuming the response from fetchWrapper is the actual data you want to set
       dispatch({
         type: "SET_MEMBER_TASKS",
@@ -316,34 +383,37 @@ export function updateUser(payload) {
       { ...payload }
     );
 
-    console.log(response)
+    console.log(response);
 
     if (response.message === "User Updated") {
       dispatch({
         type: "SET_USER",
-        payload: response.user
-      })
+        payload: response.user,
+      });
     }
-
   };
 }
 
 export function fetchTeam() {
   return async function (dispatch) {
     try {
-      const response = await fetchWrapper("/team", localStorage.getItem("token"), "GET");
+      const response = await fetchWrapper(
+        "/team",
+        localStorage.getItem("token"),
+        "GET"
+      );
 
-      console.log(response)
-      
+      console.log(response);
+
       dispatch({
         type: "SET_TEAM",
-        payload: response.team
-      })
+        payload: response.team,
+      });
     } catch (error) {
       console.error("Error fetching team data:", error);
       // Optionally, dispatch an error action here
     }
-  }
+  };
 }
 
 export function fetchSprints() {
@@ -393,20 +463,27 @@ export function createSprint(payload) {
 export function setEditingSprint(sprint) {
   return {
     type: "SET_EDITING_SPRINT",
-    payload: sprint
-  }
+    payload: sprint,
+  };
 }
 
 export function setEditingTask(task) {
   return {
     type: "SET_EDITING_TASK",
-    payload: task
-  }
+    payload: task,
+  };
 }
 
 export function setSelectedMemberTasks(member) {
   return {
     type: "SET_SELECTED_MEMBER_TASKS",
-    payload: member
-  }
+    payload: member,
+  };
+}
+
+export function setClientUser(client) {
+  return {
+    type: "SET_CLIENT_USER",
+    payload: client,
+  };
 }

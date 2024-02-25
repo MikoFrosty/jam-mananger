@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useDispatch } from "react-redux";
-import { setLogout, setUser } from "../StateManagement/Actions/actions";
+import { setLogout, setClientUser} from "../StateManagement/Actions/actions";
 
 function Copyright(props) {
   return (
@@ -26,8 +26,8 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Jam Manager
+      <Link color="inherit" href="https://kamariteams.com">
+        Kamari
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -41,34 +41,33 @@ const iconHover = {
   margin: "0px 0px 20px 0px",
 };
 
-export default function Login() {
+export default function ClientLogin() {
   const dispatch = useDispatch();
-  const { user, setUserData, token, setTokenString } = useContext(AuthContext);
+  const { clientUser, setClientUserData, token, setTokenString } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const payload = {
-      email: data.get("email"),
-      password: data.get("password"),
+      client_user_email: data.get("email"),
+      client_user_password: data.get("password"),
     };
-    fetchWrapper("/login", "", "POST", { ...payload }).then((res) => {
-      setUserData(res.user);
+    fetchWrapper("/client-login", "", "POST", { ...payload }).then((res) => {
+      console.log(res);
       setTokenString(res.token);
-      localStorage.setItem("token", res.token)
 
-      dispatch(setUser(res.user))
+      dispatch(setClientUser(res.client_user))
       dispatch(setLogout(false))
 
       if (res?.token) {
-        navigate("/");
+        navigate("/client-dashboard");
       }
     });
   };
 
   function handleBackClick() {
-    navigate("/");
+    navigate("/home");
   }
 
   return (
@@ -118,18 +117,18 @@ export default function Login() {
           >
             Sign In
           </Button>
-          <Grid container spacing={"15px"} justifyContent="center">
+          {/* <Grid container>
+            <Grid item xs>
+              <Link href="#" variant="body2">
+                Forgot password?
+              </Link>
+            </Grid>
             <Grid item>
               <Link href="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
-            <Grid item>
-              <Link href="/client-login" variant="body2">
-                {"Client Login"}
-              </Link>
-            </Grid>
-          </Grid>
+          </Grid> */}
         </Box>
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />

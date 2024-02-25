@@ -7,6 +7,8 @@ import ClientAdmin from "../pages/ClientAdmin.jsx";
 import ClientTeam from "../pages/ClientTeam.jsx";
 import TeamSignup from "../pages/TeamSignup.jsx";
 import PublicDocs from "../pages/PublicDocs.jsx";
+import ClientLogin from "../pages/ClientLogin.jsx";
+import ClientDashboard from "../features/Clients/ClientDashboard.jsx";
 // import Pricing from "../features/LandingPage/pricing";
 // import { Elements } from "@stripe/react-stripe-js";
 // import { loadStripe } from "@stripe/stripe-js";
@@ -32,6 +34,16 @@ const commonRoutes = [
     path: "signup",
     element: <Signup />,
     children: <></>,
+  },
+  {
+    path: "client-login",
+    element: <ClientLogin />,
+    children: <></>
+  },
+  {
+    path: "client-dashboard",
+    element: <ClientDashboard />,
+    children: <></>
   },
   // {
   //   path: "about-us",

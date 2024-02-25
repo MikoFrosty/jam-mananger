@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../../css/SideBar.module.css"; // Assuming you have a CSS module
 import Typography from "@mui/material/Typography";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -8,17 +8,29 @@ import Plackard from "../../components/cards/Plackard";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import { useDispatch, useSelector } from "react-redux";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { toggleView } from "../../StateManagement/Actions/actions";
 
 export default function SideBar({
+  type = "user",
   onLogout,
   onToggleSidebar,
   customStyles,
   switchToggleIcon,
 }) {
-  const user = localStorage.getItem("user") === "undefined" ? {} : JSON.parse(localStorage.getItem("user"));
+  const user =
+    localStorage.getItem("user") === "undefined"
+      ? {}
+      : JSON.parse(localStorage.getItem("user"));
   const dispatch = useDispatch();
   const viewMode = useSelector((state) => state.app.viewMode);
+  const clientUser = useSelector((state) => state.app.client_user);
+  const [client, setClient] = useState(null);
+
+  useEffect(() => {
+    console.log(client)
+  }, [client])
 
   const [directories, setDirectories] = useState([
     {
@@ -81,6 +93,29 @@ export default function SideBar({
     // },
   ]);
 
+  const [clientDirectories, setClientDirectories] = useState([
+    {
+      id: 1,
+      name: "Documents",
+      view: "client-docs",
+      expanded: false,
+      subdirectories: [],
+    },
+    {
+      id: 3,
+      name: "Task Board",
+      view: "client-tasks",
+      expanded: false,
+      subdirectories: [],
+    },
+  ]);
+
+  useEffect(() => {
+    if (clientUser) {
+      setClient(clientUser.client);
+    }
+  }, [clientUser]);
+
   function toggleSubdirectory(id) {
     setDirectories(
       directories.map((dir) =>
@@ -90,7 +125,7 @@ export default function SideBar({
   }
 
   function handleNavigation(view) {
-    console.log(view)
+    console.log(view);
     dispatch(toggleView(view.toLowerCase()));
     localStorage.setItem("lastView", view.toLowerCase());
   }
@@ -98,14 +133,14 @@ export default function SideBar({
   // Define a function to check if the view matches and apply styles for directories
   const getDirectoryStyle = (dirName) => {
     return viewMode === dirName.toLowerCase()
-      ? { backgroundColor: '#f1f1f1', borderRadius: '5px' }
+      ? { backgroundColor: "#f1f1f1", borderRadius: "5px" }
       : {};
   };
 
   // Similar function for subdirectories
   const getSubdirectoryStyle = (subView) => {
     return viewMode === subView.toLowerCase()
-      ? { backgroundColor: '#f1f1f1', borderRadius: '5px' }
+      ? { backgroundColor: "#f1f1f1", borderRadius: "5px" }
       : {};
   };
 
@@ -116,50 +151,124 @@ export default function SideBar({
           <HeaderDropdown
             onToggleSidebar={onToggleSidebar}
             buttonContent={
-              <Typography variant="body2">{user?.organization?.name}</Typography>
+              <Typography variant="body2">
+                {type === "user" ? (
+                  user?.organization?.name
+                ) : type === "client" && client ? (
+                  client.client_name
+                ) : (
+                  <Skeleton height="100%" width="100%" />
+                )}
+              </Typography>
             }
             dropdownContent={
               <div>
-                <Plackard onLogout={onLogout} />
-                <button onClick={() => handleNavigation("clients")} className={styles.HeaderDropdownButton}>
-                  Invite Clients
-                </button>
-                <button onClick={() => handleNavigation("account-details")} className={styles.HeaderDropdownButton}>
-                  Account Details
-                </button>
+                <Plackard type={type} onLogout={onLogout} />
+                {type === "user" ? (
+                  <>
+                    <button
+                      onClick={() => handleNavigation("clients")}
+                      className={styles.HeaderDropdownButton}
+                    >
+                      View Clients
+                    </button>
+                    <button
+                      onClick={() => handleNavigation("account-details")}
+                      className={styles.HeaderDropdownButton}
+                    >
+                      Account Details
+                    </button>
+                  </>
+                ) : // <>
+                //   <button
+                //     onClick={() => handleNavigation("partner-view")}
+                //     className={styles.HeaderDropdownButton}
+                //   >
+                //     View Partners
+                //   </button>
+                //   <button
+                //     onClick={() => handleNavigation("client-account")}
+                //     className={styles.HeaderDropdownButton}
+                //   >
+                //     Account Details
+                //   </button>
+                // </>
+                null}
               </div>
             }
           />
         </div>
         <div className={styles.SidebarContent}>
           <ul>
-            {directories.map((dir) => (
-              <li key={dir.id} style={getDirectoryStyle(dir.name)}>
-                <div className={styles.directoryHeader}>
-                  <span onClick={() => handleNavigation(dir.view)}>
-                    {dir.name}
-                  </span>
-                  {dir.subdirectories.length !== 0 ? <button onClick={() => toggleSubdirectory(dir.id)}>
-                    {dir.expanded ? (
-                      <KeyboardArrowDownIcon className={styles.Icon} />
-                    ) : (
-                      <KeyboardArrowUpIcon className={styles.Icon} />
-                    )}
-                  </button> : null }
-                </div>
-                <ul
-                  className={`${styles.subdirectoryList} ${
-                    dir.expanded ? styles.expanded : ""
-                  }`}
-                >
-                  {dir.subdirectories?.map((sub, index) => (
-                    <li key={index} style={getSubdirectoryStyle(sub.view)}>
-                      <Typography onClick={() => handleNavigation(sub.view)} variant="body2">{sub.name}</Typography>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
+            {type === "user"
+              ? directories.map((dir) => (
+                  <li key={dir.id} style={getDirectoryStyle(dir.name)}>
+                    <div className={styles.directoryHeader}>
+                      <span onClick={() => handleNavigation(dir.view)}>
+                        {dir.name}
+                      </span>
+                      {dir.subdirectories.length !== 0 ? (
+                        <button onClick={() => toggleSubdirectory(dir.id)}>
+                          {dir.expanded ? (
+                            <KeyboardArrowDownIcon className={styles.Icon} />
+                          ) : (
+                            <KeyboardArrowUpIcon className={styles.Icon} />
+                          )}
+                        </button>
+                      ) : null}
+                    </div>
+                    <ul
+                      className={`${styles.subdirectoryList} ${
+                        dir.expanded ? styles.expanded : ""
+                      }`}
+                    >
+                      {dir.subdirectories?.map((sub, index) => (
+                        <li key={index} style={getSubdirectoryStyle(sub.view)}>
+                          <Typography
+                            onClick={() => handleNavigation(sub.view)}
+                            variant="body2"
+                          >
+                            {sub.name}
+                          </Typography>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))
+              : clientDirectories ? clientDirectories.map((dir) => (
+                  <li key={dir.id} style={getDirectoryStyle(dir.name)}>
+                    <div className={styles.directoryHeader}>
+                      <span onClick={() => handleNavigation(dir.view)}>
+                        {dir.name}
+                      </span>
+                      {dir.subdirectories.length !== 0 ? (
+                        <button onClick={() => toggleSubdirectory(dir.id)}>
+                          {dir.expanded ? (
+                            <KeyboardArrowDownIcon className={styles.Icon} />
+                          ) : (
+                            <KeyboardArrowUpIcon className={styles.Icon} />
+                          )}
+                        </button>
+                      ) : null}
+                    </div>
+                    <ul
+                      className={`${styles.subdirectoryList} ${
+                        dir.expanded ? styles.expanded : ""
+                      }`}
+                    >
+                      {dir.subdirectories?.map((sub, index) => (
+                        <li key={index} style={getSubdirectoryStyle(sub.view)}>
+                          <Typography
+                            onClick={() => handleNavigation(sub.view)}
+                            variant="body2"
+                          >
+                            {sub.name}
+                          </Typography>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                )) : <Skeleton height="100%" width="100%"/>}
           </ul>
         </div>
       </div>
@@ -178,4 +287,4 @@ export default function SideBar({
       </div>
     </div>
   );
-};
+}

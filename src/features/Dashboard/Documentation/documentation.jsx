@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { toggleRefetch } from "../../../StateManagement/Actions/actions";
 import { useSelector } from "react-redux";
 
-export default function Documentation({ withoutFirstCards }) {
+export default function Documentation({ type = "user" }) {
   const dispatch = useDispatch();
   const refetch = useSelector((state) => state.app.refetch);
   const [view, setView] = useState("Docs");
@@ -29,12 +29,12 @@ export default function Documentation({ withoutFirstCards }) {
       <DocumentationBar
         label={"Documentation"}
         toggle={true}
-        toggleOptions={["Folders", "Docs"]}
+        toggleOptions={type === "user" ? ["Folders", "Docs"] : ["Docs"]}
         view={view}
         onViewToggle={handleViewToggle}
         searchChild={<SearchBar onSearch={handleSearch} />}
       />
-      <TableView searchTerm={searchTerm} view={view} />
+      <TableView type={type} searchTerm={searchTerm} view={view} />
     </div>
   );
 }

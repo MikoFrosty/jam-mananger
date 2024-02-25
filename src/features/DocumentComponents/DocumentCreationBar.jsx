@@ -24,6 +24,12 @@ export default function DocumentCreatorBar({
   const folders = useSelector((state) => state.app.folders);
   const clients = useSelector((state) => state.app.clients);
 
+  useEffect(() => {
+    if (!clients) {
+      dispatch(fetchClients());
+    }
+  }, [clients])
+
   return (
     <div className={styles.DocumentationBar}>
       <div className={styles.DocBarLeft}>
@@ -88,7 +94,7 @@ export default function DocumentCreatorBar({
           }
           buttonContent={<Typography variant="body1">Visibility</Typography>}
         />
-        {clients.length > 0 ? (
+        {clients?.length > 0 ? (
           <HoverDropdown
             dropdownContent={
               <>
@@ -98,7 +104,7 @@ export default function DocumentCreatorBar({
                       key={`client_${index}`}
                       onClick={() => handleClientSelect(client)}
                       className={`${styles.HoverDropdownContentChildren} ${
-                        client.client_id === selectedClient.client_id
+                        client.client_id === selectedClient?.client_id
                           ? styles.Selected
                           : ""
                       }`}

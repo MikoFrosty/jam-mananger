@@ -9,6 +9,7 @@ import HoverDropdown from "../../../components/HoverDropdown";
 import SlidingModal from "../SlidingModal";
 import TaskCreate from "./CreateTaskForm";
 import {
+  fetchPartners,
   // fetchSprints,
   fetchTasks,
   getUser,
@@ -31,14 +32,16 @@ import fetchWrapper from "../../../utils/fetchWrapper";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-export default function KanBan() {
+export default function KanBan({ type = "user" }) {
   const dispatch = useDispatch();
   // const sprints = useSelector((state) => state.app.sprints);
   const organization = useSelector((state) => state.app.organization);
   const user = useSelector((state) => state.app.user);
   const memberTasks = useSelector((state) => state.app.memberTasks);
-  const selectedMember = useSelector((state) => state.app.selectedMember_Tasks)
-  console.log(memberTasks);
+  const selectedMember = useSelector((state) => state.app.selectedMember_Tasks);
+  const clientPartner = useSelector((state) => state.app.client_partner);
+
+  const [tasksFetched, setTasksFetched] = useState(false);
 
   const startPosition = useRef({ x: 0, y: 0 });
   // const [selectedSprint, setSelectedSprint] = useState(null);
@@ -63,8 +66,21 @@ export default function KanBan() {
   }, [user]);
 
   useEffect(() => {
-    if (selectedMember) {
+    console.log("Client Partner 2", clientPartner);
+    if (!clientPartner) {
+      dispatch(fetchPartners());
+    }
+  }, [clientPartner]);
+
+  useEffect(() => {
+    if (selectedMember && !tasksFetched) {
+      console.log("selected member task fetch")
       dispatch(fetchTasks({ email: selectedMember.email }));
+      setTasksFetched(true)
+    } else if (!tasksFetched) {
+      console.log("fetching all member tasks")
+      dispatch(setSelectedMemberTasks({ email: "All", user_id: "all" }));
+      setTasksFetched(true)
     }
   }, [selectedMember]);
 
@@ -127,7 +143,7 @@ export default function KanBan() {
   // }, [selectedSprint]);
 
   function handleMemberSelect(member) {
-    dispatch(setSelectedMemberTasks(member))
+    dispatch(setSelectedMemberTasks(member));
     if (member.user_id === "all") {
       dispatch(
         fetchTasks({
@@ -291,7 +307,9 @@ export default function KanBan() {
   };
 
   function handleTaskCreateToggleWithExisting(task) {
+    console.log(task);
     setSelectedTask(task);
+    setCreateTask(true);
   }
 
   return (
@@ -320,8 +338,27 @@ export default function KanBan() {
               >
                 <Typography variant="body1">All Members</Typography>
               </div>
-              {organization ? (
+              {organization && type === "user" ? (
                 organization.members.map((member, index) => {
+                  return (
+                    <div
+                      key={`member_${index}`}
+                      onClick={() => handleMemberSelect(member)}
+                      className={`${styles.HoverDropdownContentChildren} ${
+                        member?.user_id === selectedMember?.user_id
+                          ? styles.Selected
+                          : ""
+                      }`}
+                    >
+                      <Typography variant="body1">{`${member.name.first} ${member.name.last}`}</Typography>
+                      <Typography color={"#a1a1a1"} variant="caption">
+                        {member.email}
+                      </Typography>
+                    </div>
+                  );
+                })
+              ) : clientPartner && type === "client" ? (
+                clientPartner.members.map((member, index) => {
                   return (
                     <div
                       key={`member_${index}`}
@@ -539,6 +576,7 @@ export default function KanBan() {
             isOpen={createTask}
             selectedTask={selectedTask}
             setSelectedTask={setSelectedTask}
+            type={type}
             // selectedSprint={
             //   !selectedSprint || (selectedSprint.sprint_id === "All" && sprints)
             //     ? sprints?.filter((sprint) => sprint.status === "Active")[0]

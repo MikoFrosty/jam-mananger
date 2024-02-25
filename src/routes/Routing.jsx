@@ -20,7 +20,7 @@ export default function Routing() {
         })}
 
         <Route path="/" element={<ProtectedRoute />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard type={"user"}/>} />
         </Route>
       </Routes>
     </Suspense>
