@@ -59,8 +59,6 @@ export function fetchClients() {
           client_invitations: res.client_invitations,
         };
       });
-
-      console.log(clients, client_invitations);
       // Dispatch an action with the fetched data
       dispatch({
         type: "SET_CLIENTS_AND_INVITATIONS",
@@ -81,7 +79,6 @@ export function fetchDocuments() {
         "GET"
       );
       // Assuming the response from fetchWrapper is the actual data you want to set
-      console.log(response);
       dispatch({
         type: "SET_DOCUMENTS",
         payload: response.documents,
@@ -118,7 +115,6 @@ export function fetchPartners() {
         "GET"
       );
 
-      console.log(response);
 
       dispatch({
         type: "SET_CLIENT_PARTNERS",
@@ -140,7 +136,6 @@ export function fetchClientDocuments() {
         "GET"
       );
       // Assuming the response from fetchWrapper is the actual data you want to set
-      console.log(response);
       dispatch({
         type: "SET_DOCUMENTS",
         payload: response.documents,
@@ -161,7 +156,6 @@ export function fetchFolders() {
         "GET"
       );
       // Assuming the response from fetchWrapper is the actual data you want to set
-      console.log(response);
       dispatch({
         type: "SET_FOLDERS",
         payload: response.folders,
@@ -266,7 +260,6 @@ export const removeTemporaryDocument = (temporary_id) => ({
 });
 
 export function addMemberTask(task) {
-  console.log("Updated task", task);
   return {
     type: "ADD_MEMBER_TASK",
     payload: task,
@@ -274,7 +267,6 @@ export function addMemberTask(task) {
 }
 
 export function updateMemberTask(payload) {
-  console.log(payload);
   return {
     type: "UPDATE_MEMBER_TASK",
     payload: payload,
@@ -282,7 +274,6 @@ export function updateMemberTask(payload) {
 }
 
 export function setUser(user) {
-  console.log(user);
   return {
     type: "SET_USER",
     payload: user,
@@ -305,7 +296,6 @@ export function getUser() {
         "GET"
       );
 
-      console.log(response);
 
       if (response.message === "User found") {
         dispatch({
@@ -330,7 +320,6 @@ export function setLogout(bool) {
 export function setEditingDocument(document) {
   return async function (dispatch) {
     try {
-      console.log("fetch document by id", document.document_id);
 
       const res = await fetchWrapper(
         `/documents?doc_id=${document.document_id}`,
@@ -351,9 +340,7 @@ export function setEditingDocument(document) {
 
 export function fetchTasks(payload) {
   return async function (dispatch) {
-    console.log("FETCH TASK PAYLOAD", payload);
     try {
-      console.log("fetch task payload", payload);
       const res = await fetchWrapper(
         "/tasks",
         localStorage.getItem("token"),
@@ -361,7 +348,6 @@ export function fetchTasks(payload) {
         { ...payload }
       );
 
-      console.log("fetched member tasks", res);
       // Assuming the response from fetchWrapper is the actual data you want to set
       dispatch({
         type: "SET_MEMBER_TASKS",
@@ -383,7 +369,6 @@ export function updateUser(payload) {
       { ...payload }
     );
 
-    console.log(response);
 
     if (response.message === "User Updated") {
       dispatch({
@@ -403,7 +388,6 @@ export function fetchTeam() {
         "GET"
       );
 
-      console.log(response);
 
       dispatch({
         type: "SET_TEAM",
@@ -438,16 +422,12 @@ export function fetchSprints() {
 export function createSprint(payload) {
   return async function (dispatch) {
     try {
-      console.log(payload);
       const res = await fetchWrapper(
         "/sprints",
         localStorage.getItem("token"),
         "POST",
         { ...payload }
       );
-
-      console.log(payload);
-      console.log(res);
 
       dispatch({
         type: "SET_EDITING_SPRINT",
@@ -479,6 +459,13 @@ export function setSelectedMemberTasks(member) {
     type: "SET_SELECTED_MEMBER_TASKS",
     payload: member,
   };
+}
+
+export function deleteTasks(tasks) {
+  return {
+    type: "DELETE_TASKS",
+    payload: tasks
+  }
 }
 
 export function setClientUser(client) {

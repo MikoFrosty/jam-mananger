@@ -40,12 +40,10 @@ function TaskDescriptionEditor({
   // on the third render, the user has changed some value at which point
   //  the useEffect should run and update the selected task with new prop data
   useEffect(() => {
-    console.log(renderCount.current)
-    if (renderCount.current < 3) {
+    if (renderCount.current < 2) {
       renderCount.current += 1;
-      return;
     }
-    else if (renderCount.current >= 3) {
+    else if (renderCount.current >= 2) {
       if (initialRender.current) {
         initialRender.current = false;
         return;
@@ -65,9 +63,9 @@ function TaskDescriptionEditor({
     });
   }
 
-  useEffect(() => {
-    setNeedsSave(true)
-  }, [selectedClient])
+  // useEffect(() => {
+  //   setNeedsSave(true)
+  // }, [selectedClient])
 
   const handleSave = useCallback(async () => {
     if (!ejInstance) {
@@ -76,14 +74,8 @@ function TaskDescriptionEditor({
     }
     try {
       const editorContent = await ejInstance.save();
-      console.log("saving document")
-
-      console.log("Editor Content", editorContent);
-      console.log("Selected Status", selectedStatus);
-      console.log("Selected Escalation", selectedEscalation);
 
       if (editorContent && selectedStatus && selectedEscalation) {
-        console.log("Forming Payload")
         const payload = {
           task_id: selectedTask.task_id,
           task: {
@@ -95,8 +87,7 @@ function TaskDescriptionEditor({
             escalation: selectedEscalation,
           },
         };
-
-        console.log("payload to PUT task", payload);
+        
         notify("Saving...");
 
         // API call to save the document

@@ -66,7 +66,6 @@ export default function KanBan({ type = "user" }) {
   }, [user]);
 
   useEffect(() => {
-    console.log("Client Partner 2", clientPartner);
     if (!clientPartner) {
       dispatch(fetchPartners());
     }
@@ -74,11 +73,9 @@ export default function KanBan({ type = "user" }) {
 
   useEffect(() => {
     if (selectedMember && !tasksFetched) {
-      console.log("selected member task fetch")
       dispatch(fetchTasks({ email: selectedMember.email }));
       setTasksFetched(true)
     } else if (!tasksFetched) {
-      console.log("fetching all member tasks")
       dispatch(setSelectedMemberTasks({ email: "All", user_id: "all" }));
       setTasksFetched(true)
     }
@@ -183,7 +180,6 @@ export default function KanBan({ type = "user" }) {
 
   useEffect(() => {
     if (selectedTaskStatus) {
-      console.log(selectedTaskStatus);
       setCreateTask(true);
     }
   }, [selectedTaskStatus]);
@@ -206,7 +202,6 @@ export default function KanBan({ type = "user" }) {
     });
 
     function handleUp(event) {
-      console.log("pointer up", event);
       const lastStartPosition = startPosition.current;
       const endPosition = { x: event.pageX, y: event.pageY };
       if (
@@ -252,17 +247,14 @@ export default function KanBan({ type = "user" }) {
   }
 
   function handleDragStart(event) {
-    console.log("Drag Started");
     const { active } = event;
     const item = memberTasks.find(
       (task) => task.task_id.toString() === active.id
     );
-    console.log(item);
     setDraggedItem(item);
   }
 
   const handleDragEnd = (event) => {
-    console.log("Drag Ended");
     const { active, over } = event;
 
     // Find the task by ID without directly modifying it
@@ -272,12 +264,10 @@ export default function KanBan({ type = "user" }) {
 
     if (existing_task) {
       // Create a new object with the updated status
-      console.log("Existing Task", existing_task);
       const updatedTask = {
         ...existing_task,
         status: { status_title: over.id },
       };
-      console.log("Updated Task", updatedTask);
 
       dispatch(updateMemberTaskOptimistically(active.id, updatedTask));
 
@@ -297,7 +287,6 @@ export default function KanBan({ type = "user" }) {
         ...payload,
       })
         .then((res) => {
-          console.log(res);
           dispatch(updateMemberTaskOptimistically(res.task.task_id, res.task));
         })
         .catch((error) => {
@@ -307,7 +296,6 @@ export default function KanBan({ type = "user" }) {
   };
 
   function handleTaskCreateToggleWithExisting(task) {
-    console.log(task);
     setSelectedTask(task);
     setCreateTask(true);
   }

@@ -28,10 +28,6 @@ export default function SideBar({
   const clientUser = useSelector((state) => state.app.client_user);
   const [client, setClient] = useState(null);
 
-  useEffect(() => {
-    console.log(client)
-  }, [client])
-
   const [directories, setDirectories] = useState([
     {
       id: 1,
@@ -125,7 +121,6 @@ export default function SideBar({
   }
 
   function handleNavigation(view) {
-    console.log(view);
     dispatch(toggleView(view.toLowerCase()));
     localStorage.setItem("lastView", view.toLowerCase());
   }

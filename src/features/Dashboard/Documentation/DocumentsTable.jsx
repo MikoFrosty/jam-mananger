@@ -105,8 +105,6 @@ export default function DocumentTable({ type, searchTerm }) {
     navigator.clipboard
       .writeText(`http://localhost:5173/public-docs?doc_id=${doc_id}`)
       .then(() => {
-        console.log("Document ID copied to clipboard successfully!");
-        // Optionally, show a success message to the user.
         notify("Copied to Clipboard");
       })
       .catch((err) => {

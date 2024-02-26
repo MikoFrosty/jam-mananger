@@ -7,9 +7,6 @@ export default function Plackard({ type, onLogout }) {
   const user = useSelector((state) => state.app.user);
   const clientUser = useSelector((state) => state.app.client_user);
 
-  console.log(type)
-  console.log(clientUser)
-
   function handleLogout() {
     onLogout();
   }

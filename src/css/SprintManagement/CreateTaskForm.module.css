@@ -55,6 +55,14 @@
   color: #F5511F;
 }
 
+.CreateButton:focus {
+  outline: none;
+}
+
+.DeleteButton:focus {
+  outline: none;
+}
+
 .HoverDropdownContentChildren:hover {
   cursor: pointer;
   background-color: #e5e5e5;

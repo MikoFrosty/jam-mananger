@@ -10,6 +10,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import TaskDescriptionCreator from "../../DocumentComponents/TaskDescription";
 import {
   addMemberTask,
+  deleteTasks,
   fetchClientUser,
   fetchPartners,
   getOrganization,
@@ -30,7 +31,8 @@ export default function TaskCreate({
 }) {
   const dispatch = useDispatch();
   const clients = useSelector((state) => state.app.clients);
-  const organization = useSelector((state) => state.app.organization);
+  const currentOrg = useSelector((state) => state.app.organization)
+  const [organization, setOrganization] = useState(currentOrg);
   const clientPartner = useSelector((state) => state.app.client_partner);
   const user = useSelector((state) => state.app.user);
   const clientUser = useSelector((state) => state.app.client_user);
@@ -39,7 +41,7 @@ export default function TaskCreate({
 
   const [ejInstance, setEjInstance] = useState(null);
 
-  const [selectedClient, setSelectedClient] = useState({});
+  const [selectedClient, setSelectedClient] = useState(null);
   const [taskTitle, setTaskTitle] = useState("");
   const [titlePlaceholder, setTitlePlaceholder] = useState("Untitled Task");
   const [assignees, setAssignees] = useState([]);
@@ -97,14 +99,25 @@ export default function TaskCreate({
   ];
 
   useEffect(() => {
+    if(clientUser) {
+      if (!organization) {
+        setOrganization(clientUser.client.associated_org);
+      }
+      const associated_client = {
+        client_id: clientUser.client.client_id,
+        client_name: clientUser.client.client_name,
+        org_poc: clientUser.client.org_poc,
+      }
+      setSelectedClient(associated_client)
+    }
+  }, [clientUser])
+
+  useEffect(() => {
     if (selectedMember?.email === "All" && assignees) {
       dispatch(setSelectedMemberTasks(assignees[0]));
     }
   }, [selectedMember]);
 
-  useEffect(() => {
-    console.log(selectedClient);
-  }, [selectedClient]);
 
   const handleTaskCreate = async (event) => {
     event.preventDefault();
@@ -123,10 +136,9 @@ export default function TaskCreate({
         const temporary_task_id = `temporary_task_${Date.now()}`;
         const payload = {
           title: taskTitle === "" ? "Untitled Task" : taskTitle,
-          assigned_by: user || clientUser || {},
+          assigned_by: selectedClient,
           assignees,
           description: editorContent,
-          client: (selectedClient || clientUser?.client || {}),
           status: selectedStatus || {
             status_title: "Backlog",
           },
@@ -139,20 +151,25 @@ export default function TaskCreate({
           hard_limit: false,
           requires_authorization: selectedClient ? true : false,
           // sprint_id: selectedSprint.sprint_id,
-          organization: (type === "user" ? organization : clientPartner),
+          organization: {
+            name: organization.name,
+            members: organization.members,
+            org_id: organization.org_id,
+          },
           duration: 0,
           temporary_task_id,
         };
-
-        console.log(payload)
-        console.log(clientPartner)
-        console.log(clientUser)
 
         dispatch(addMemberTask(payload));
 
         try {
           fetchWrapper("/tasks", localStorage.getItem("token"), "POST", {
             ...payload,
+            client: {
+              client_id: selectedClient.client_id,
+              client_name: selectedClient.client_name,
+              org_poc: selectedClient.org_poc
+            }
           }).then((res) => {
             const task = res.task;
             task.temporary_task_id = res.temporary_task_id;
@@ -189,7 +206,6 @@ export default function TaskCreate({
       setSelectedEscalation(null);
     }
     if (selectedTask) {
-      console.log("selected task found");
       setTaskTitle(selectedTask.title);
       setTitlePlaceholder(selectedTask.title);
       setAssignees(selectedTask.assignees);
@@ -239,7 +255,8 @@ export default function TaskCreate({
     fetchWrapper("/tasks", localStorage.getItem("token"), "DELETE", {
       ...payload,
     }).then((res) => {
-      console.log(res);
+      dispatch(deleteTasks(res.requested_resource.resource));
+      toggleModal();
     });
   }
 
@@ -249,7 +266,6 @@ export default function TaskCreate({
   }
 
   function handleClientSelect(value) {
-    console.log(value);
     if (value.client_id === selectedClient?.client_id) {
       setSelectedClient(null);
     } else {
@@ -502,7 +518,7 @@ export default function TaskCreate({
           </div>
         ) : null}
         {!updateTask ? (
-          <button className={styles.CreateButton} onClick={handleTaskCreate}>
+          <button disabled={assignees.length === 0 ? true : false} className={styles.CreateButton} onClick={handleTaskCreate}>
             Create Task
           </button>
         ) : (

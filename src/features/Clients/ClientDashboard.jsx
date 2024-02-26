@@ -40,7 +40,6 @@ export default function ClientDashboard() {
   }, [])
 
   useEffect(() => {
-    console.log("Client Partner", clientPartners)
     if (!clientPartners) {
       dispatch(fetchPartners());
     }

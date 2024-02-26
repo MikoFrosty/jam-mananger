@@ -23,7 +23,7 @@ const initialState = {
   logout: false,
   team: null,
   selectedMember_Tasks: null,
-  client_partner: null
+  client_partner: null,
 };
 
 function appReducer(state = initialState, action) {
@@ -33,11 +33,26 @@ function appReducer(state = initialState, action) {
         ...state,
         viewMode: action.payload,
       };
+    case "DELETE_TASKS": {
+      // Assuming payload.tasks contains an array of task IDs to delete
+      const tasks = action.payload;
+      const { memberTasks } = state;
+
+      // Filter out tasks that are not in the list of IDs to delete
+      const filteredMemberTasks = memberTasks.filter(
+        (task) => !tasks.includes(task.task_id)
+      );
+
+      return {
+        ...state,
+        memberTasks: filteredMemberTasks,
+      };
+    }
     case "SET_SELECTED_MEMBER_TASKS": {
       return {
         ...state,
-        selectedMember_Tasks: action.payload
-      }
+        selectedMember_Tasks: action.payload,
+      };
     }
     case "SET_EDITING_TASK":
       return {
@@ -47,8 +62,8 @@ function appReducer(state = initialState, action) {
     case "SET_CLIENT_PARTNERS": {
       return {
         ...state,
-        client_partner: action.payload
-      }
+        client_partner: action.payload,
+      };
     }
     case "CLEAR_EDITING_TASK":
       return {
@@ -63,8 +78,8 @@ function appReducer(state = initialState, action) {
     case "SET_CLIENT_USER": {
       return {
         ...state,
-        client_user: action.payload
-      }
+        client_user: action.payload,
+      };
     }
     case "SET_LOGOUT":
       return {
@@ -92,13 +107,11 @@ function appReducer(state = initialState, action) {
         folders: action.payload,
       };
     case "GET_ORGANIZATION":
-      console.log(action.payload);
       return {
         ...state,
         organization: action.payload,
       };
     case "SET_MEMBER_TASKS":
-      console.log("fetched tasks for member", action.payload);
       return {
         ...state,
         memberTasks: action.payload,
@@ -127,9 +140,6 @@ function appReducer(state = initialState, action) {
     case "ADD_DOCUMENT": {
       // Destructure documents from current state for clarity
       const { documents } = state;
-
-      console.log("add", documents);
-      console.log("add", action.payload);
 
       // Check if the document being added has a temporary_id and if a document with this temporary_id already exists
       const documentIndex = documents.findIndex(
@@ -163,7 +173,6 @@ function appReducer(state = initialState, action) {
 
       let updatedDocuments = [];
 
-      console.log(document);
 
       if (status === "new") {
         const document_index = documents.findIndex(
@@ -180,7 +189,6 @@ function appReducer(state = initialState, action) {
           updatedDocuments = documents;
         }
 
-        console.log(updatedDocuments);
 
         return {
           ...state,
@@ -201,7 +209,6 @@ function appReducer(state = initialState, action) {
           updatedDocuments = documents;
         }
 
-        console.log(updatedDocuments);
 
         return {
           ...state,
@@ -260,13 +267,8 @@ function appReducer(state = initialState, action) {
     case "UPDATE_MEMBER_TASK": {
       const { memberTasks } = state;
 
-      console.log(action.payload.task);
       const updating_task = action.payload.task;
       const updating_task_id = action.payload.task_id;
-
-      console.log(updating_task_id);
-
-      console.log(memberTasks);
 
       const existingTaskIndex = memberTasks.findIndex(
         (task) => task.task_id === updating_task_id
@@ -275,8 +277,6 @@ function appReducer(state = initialState, action) {
       if (existingTaskIndex !== -1) {
         const updatedMemberTasks = [...memberTasks];
         updatedMemberTasks[existingTaskIndex] = updating_task;
-
-        console.log("Updated Task Array", updatedMemberTasks);
 
         return {
           ...state,
@@ -288,7 +288,6 @@ function appReducer(state = initialState, action) {
       // destructure member tasks
       const { memberTasks } = state;
 
-      console.log(action.payload);
 
       const existingTaskIndex = memberTasks.findIndex(
         (task) => task.temporary_task_id === action.payload.temporary_task_id
@@ -313,9 +312,6 @@ function appReducer(state = initialState, action) {
     case "UPDATE_DOCUMENT": {
       // Destructure documents from current state for clarity
       const { documents } = state;
-
-      console.log("update", action.payload);
-      console.log("update", documents);
 
       // Check if the document being added has a temporary_id and if a document with this temporary_id already exists
       const documentIndex = documents.findIndex(
