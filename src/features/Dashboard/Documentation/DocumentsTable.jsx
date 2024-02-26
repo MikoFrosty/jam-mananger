@@ -103,7 +103,7 @@ export default function DocumentTable({ type, searchTerm }) {
     e.preventDefault();
     e.stopPropagation();
     navigator.clipboard
-      .writeText(`https://kamariteams.com/public_docs?doc_id=${doc_id}`)
+      .writeText(`https://kamariteams.com/public-docs?doc_id=${doc_id}`)
       .then(() => {
         notify("Copied to Clipboard");
       })

@@ -28,8 +28,37 @@ function Copyright(props) {
 
 function Landing() {
   const initialData = {
-    "time": 1705896070060,
+    "time": 1708985135717,
     "blocks": [
+        {
+            "id": "SFFgVEgLtR",
+            "type": "header",
+            "data": {
+                "text": "Who was Kamari built for?",
+                "level": 1
+            }
+        },
+        {
+            "id": "DGHwA1eNn0",
+            "type": "paragraph",
+            "data": {
+                "text": "Kamari was built with product dev teams, freelancers, and go getters in mind.&nbsp;"
+            }
+        },
+        {
+            "id": "vDwv_PUchk",
+            "type": "paragraph",
+            "data": {
+                "text": "We offer an impressive documentation solution but you can also <code class=\"inline-code\">Invite Clients to manage their product development 🚀</code> and <code class=\"inline-code\">Manage Tasks 🥳</code> with much <code class=\"inline-code\">so more coming your way!</code>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;"
+            }
+        },
+        {
+            "id": "xLa81Web3K",
+            "type": "paragraph",
+            "data": {
+                "text": "Please edit this doc and see just a little about what Kamari offers."
+            }
+        },
         {
             "id": "13njERP1iQ",
             "type": "header",
@@ -45,6 +74,14 @@ function Landing() {
                 "items": [
                     {
                         "text": "Kamari has a rich text editing system designed with the intent to let users create stunning documentation 🚀",
+                        "checked": true
+                    },
+                    {
+                        "text": "Task Management!",
+                        "checked": true
+                    },
+                    {
+                        "text": "Client Management!",
                         "checked": true
                     },
                     {
@@ -120,55 +157,6 @@ function Landing() {
             isOpen={true}
             noBar={true}
           />
-        </div>
-        <div className={styles.ContentRow}>
-          <div className={styles.ContentColumn}>
-            <Typography variant="h3">
-              What's in the pipeline for Kamari?
-            </Typography>
-          </div>
-          <div className={styles.ContentColumnAlignLeft}>
-            <Typography variant="body2">1. Listen to our users</Typography>
-            <Typography variant="body2">
-              2. Introduce product management
-            </Typography>
-            <Typography variant="body2">
-              3. Create an integration marketplace
-            </Typography>
-            <Typography variant="body2">
-              Think we need to add something else or focus on other user needs?
-              Please tell us!
-            </Typography>
-          </div>
-        </div>
-        <div className={styles.ContentColumnBottom}>
-          <div className={styles.ContentColumnBottomText}>
-            <Typography variant="h3">Common Questions</Typography>
-            <Typography variant="h5">How much does Kamari cost?</Typography>
-            <Typography variant="body2">
-              Each seat is $2. As more features are added, more plans may be
-              added. But documentation seats are always just $2 a piece.
-            </Typography>
-            <br />
-            <Typography variant="h5">
-              Can I create public documentation for my product?
-            </Typography>
-            <Typography variant="body2">
-              Absolutely, just create a public folder and add any docs to it you
-              wish to let the world see!
-            </Typography>
-            <br />
-            <Typography variant="h5">
-              When will my clients be able to manage more of the product
-              pipeline, beyond just documentation?
-            </Typography>
-            <Typography variant="body2">
-              Kamari aims to raise capital and expand the team which will allow
-              for faster product deliverability. Our current target for full
-              product pipeline management is end of the 2nd quarter of 2024.
-            </Typography>
-          </div>
-          <Copyright style={{ justifySelf: "end", alignSelf: "center" }} />
         </div>
       </div>
     </div>

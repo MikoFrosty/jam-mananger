@@ -103,9 +103,9 @@ export default function LandingAppBar() {
           />
         </div>
         <div className={styles.ButtonGroupRow}>
-          <button onClick={() => navigate("/pricing")} className={styles.LandingAppBarButton}>
+          {/* <button onClick={() => navigate("/pricing")} className={styles.LandingAppBarButton}>
             <Typography variant="body1">Pricing</Typography>
-          </button>
+          </button> */}
           <button onClick={() => navigate("/login")} className={styles.LandingAppBarButton}>
             <Typography variant="body1">Login</Typography>
           </button>

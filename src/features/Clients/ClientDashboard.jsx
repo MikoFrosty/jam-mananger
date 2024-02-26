@@ -33,6 +33,12 @@ export default function ClientDashboard() {
   }, [logout, clientUser])
 
   useEffect(() => {
+    if (!localStorage.getItem("token") && !clientUser) {
+      navigate("/home");
+    }
+  }, [])
+
+  useEffect(() => {
     if (!viewMode) {
       dispatch(toggleView("client-tasks"));
       localStorage.setItem("lastView", "client-tasks")
