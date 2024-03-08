@@ -30,11 +30,11 @@ const commonRoutes = [
     element: <Landing />,
     children: <></>,
   },
-  // {
-  //   path: "signup",
-  //   element: <Signup />,
-  //   children: <></>,
-  // },
+  {
+    path: "signup",
+    element: <Signup />,
+    children: <></>,
+  },
   {
     path: "client-login",
     element: <ClientLogin />,
