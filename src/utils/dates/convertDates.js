@@ -6,24 +6,26 @@ function unixTimestampToFormatted(unixTimestamp) {
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
 
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
+  return `${month}/${day}/${year}`;
 }
 
 function formattedTimestampToUnix(formattedTimestamp) {
   const dateObject = new Date(formattedTimestamp);
   const unixTimestamp = dateObject.getTime();
-  
+
   return unixTimestamp;
 }
 
 function formattedTimestampToDate(formattedTimestamp) {
-  return unixTimestampToFormatted(formattedTimestampToDate(formattedTimestamp))
+  return unixTimestampToFormatted(formattedTimestampToDate(formattedTimestamp));
 }
 
 const convert = {
   unixToDate: (unixTimestamp) => unixTimestampToFormatted(unixTimestamp),
-  formattedToUnix: (formattedTimestamp) => formattedTimestampToUnix(formattedTimestamp),
-  formattedToDate: (formattedTimestamp) => formattedTimestampToDate(formattedTimestamp)
+  formattedToUnix: (formattedTimestamp) =>
+    formattedTimestampToUnix(formattedTimestamp),
+  formattedToDate: (formattedTimestamp) =>
+    formattedTimestampToDate(formattedTimestamp),
 };
 
 export default convert;

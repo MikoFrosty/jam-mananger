@@ -4,7 +4,7 @@ import HoverDropdown from "../../../components/HoverDropdown";
 import Typography from "@mui/material/Typography";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchClients } from "../../../StateManagement/Actions/actions";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function CreateTask({
   assignees,
@@ -20,10 +20,11 @@ export default function CreateTask({
   handleTaskDescriptionChange,
   handleTitleChange,
   updateTask,
-  taskTitle,
+  taskTitle
 }) {
   const dispatch = useDispatch();
-  const clients = useSelector((state) => state.app.clients);
+  const clients = useSelector((state) => state.app.clients)
+
   const statusOptions = [
     {
       status_title: "Backlog",

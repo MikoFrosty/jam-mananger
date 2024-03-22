@@ -7,7 +7,9 @@
 
 .DropdownButton {
   height: fit-content;
-  width: fit-content;
+  max-width: 250px;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
   padding: 5px;
   background-color: white;
   color: #333;
@@ -15,6 +17,7 @@
   flex-direction: row;
   align-items: center;
   border: none;
+  border-radius: 5px;
   transition: 0.2s;
 }
 
@@ -30,6 +33,7 @@
   width: fit-content;
   min-width: 200px;
   align-items: start;
+  border-radius: 5px;
   padding: 10px;
   row-gap: 10px;
   box-shadow: 0px 0px 10px #f1f1f1;

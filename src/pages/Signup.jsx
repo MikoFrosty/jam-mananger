@@ -1,7 +1,6 @@
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -26,7 +25,7 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="https://kamariteams.com">
         Kamari
       </Link>{" "}
       {new Date().getFullYear()}
@@ -46,32 +45,75 @@ export default function Signup() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const email = searchParams.get("email");
+  const [organization, setOrganization] = useState(null);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const payload = {
-      email: email ? email : data.get("email"),
-      password: data.get("password"),
-      type: "standard",
-      organization: data.get("organizationName"),
-      name: {
-        first: data.get("firstName"),
-        last: data.get("lastName"),
-      },
-    };
+    const email = data.get("email");
+    const password = data.get("password");
 
-    console.log(payload)
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError("Please enter a valid email address");
+    } else {
+      setEmailError("");
+    }
 
-    fetchWrapper("/signup", "", "POST", { ...payload }).then((res) => {
-      if (res.message === "User Registered") {
-        setUserData(res.user);
-        setTokenString(res.token);
-        navigate("/");
-      }
-    });
+    // Password validation
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
+      );
+    } else {
+      setPasswordError("");
+    }
+
+    // If both email and password are valid, proceed with form submission
+    if (emailRegex.test(email) && passwordRegex.test(password)) {
+      const payload = {
+        email: email ? email : data.get("email"),
+        password: data.get("password"),
+        type: "standard",
+        organization: data.get("organizationName"),
+        hourly_rate: data.get("hourlyRate"),
+        name: {
+          first: data.get("firstName"),
+          last: data.get("lastName"),
+        },
+      };
+
+      // client_reference_id and prefilled_email params to stripe payment page
+
+      console.log(payload);
+
+      fetchWrapper("/signup", "", "POST", { ...payload }).then((res) => {
+        if (res.message === "User Registered") {
+          console.log(res);
+          setUserData(res.user);
+          setTokenString(res.token);
+          setOrganization(res.organization)
+        }
+      });
+    }
   };
+
+  useEffect(() => {
+    console.log(token, user, organization)
+    if (token && user && organization) {
+      console.log("Should nav to stripe payment link location");
+      window.location.replace(
+        `https://buy.stripe.com/test_14k9CG4Ej1NP0g0fYZ?client_reference_id=${organization.org_id}&prefilled_email=${user.email}`
+      ); // test
+      // window.location.replace(`https://buy.stripe.com/dR69Bn316fND5kA6oo?client_reference_id=${res.organization.org_id}&prefilled_email=${res.user.email}`); // prod
+    }
+  }, [token, user, organization]);
 
   function handleBackClick() {
     navigate("/");
@@ -111,20 +153,23 @@ export default function Signup() {
               Sign Up
             </Typography>
             <Box
+              className={styles.AuthForm}
               component="form"
               onSubmit={handleSubmit}
               noValidate
               sx={{ mt: 1 }}
             >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="organizationName"
-                label="Organization Name"
-                name="organizationName"
-                autoFocus
-              />
+              <div className={styles.SprintInput}>
+                <label className={styles.SprintLabel}>Organization Name</label>
+                <input
+                  required
+                  id="organizationName"
+                  label="Organization Name"
+                  name="organizationName"
+                  className={styles.SprintTitleInput}
+                  type="text"
+                />
+              </div>
               <div
                 style={{
                   display: "flex",
@@ -132,45 +177,75 @@ export default function Signup() {
                   columnGap: "5px",
                 }}
               >
-                <TextField
-                  margin="normal"
-                  required
-                  id="firstName"
-                  label="First Name"
-                  name="firstName"
-                  autoFocus
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoFocus
-                />
+                <div className={styles.SprintInput}>
+                  <label className={styles.SprintLabel}>First Name</label>
+                  <input
+                    required
+                    id="firstname"
+                    name="firstName"
+                    className={styles.SprintTitleInput}
+                    type="text"
+                  />
+                </div>
+                <div className={styles.SprintInput}>
+                  <label className={styles.SprintLabel}>Last Name</label>
+                  <input
+                    required
+                    id="lastname"
+                    name="lastName"
+                    className={styles.SprintTitleInput}
+                    type="text"
+                  />
+                </div>
               </div>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                defaultValue={email ? email : ""}
-                name="email"
-                autoComplete="email"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                style={{ WebkitBoxShadow: "0 0 0 1000px white inset" }}
-              />
+              <div className={styles.SprintInput}>
+                <label className={styles.SprintLabel}>Hourly Rate</label>
+                <div className={styles.PrefixWrapper}>
+                  <div className={styles.Prefix}>$</div>
+                  <input
+                    name="hourlyRate"
+                    id="hourlyrate"
+                    required
+                    defaultValue={35}
+                    min={0}
+                    className={styles.SprintTitleInput}
+                    type="number"
+                  />
+                </div>
+              </div>
+              <div className={styles.SprintInput}>
+                <label className={styles.SprintLabel}>Email</label>
+                <input
+                  required
+                  id="email"
+                  name="email"
+                  defaultValue={email ? email : ""}
+                  className={styles.SprintTitleInput}
+                  type="email"
+                  autoComplete="email"
+                />
+                {emailError && (
+                  <Typography variant="caption" color="error">
+                    {emailError}
+                  </Typography>
+                )}
+              </div>
+              <div className={styles.SprintInput}>
+                <label className={styles.SprintLabel}>Password</label>
+                <input
+                  required
+                  id="password"
+                  name="password"
+                  className={styles.SprintTitleInput}
+                  type="password"
+                  autoComplete="current-password"
+                />
+                {passwordError && (
+                  <Typography variant="caption" color="error">
+                    {passwordError}
+                  </Typography>
+                )}
+              </div>
               <Button
                 type="submit"
                 fullWidth

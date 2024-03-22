@@ -48,11 +48,6 @@ export default function ClientAdmin() {
   const client = (searchParams.get("client"));
   const client_obj = JSON.parse(decodeURIComponent(client))
   console.log(client_obj)
-  // const client = JSON.parse(decodeURIComponent(searchParams.get("client")));
-
-  // useEffect(() => {
-  //   console.log(client_obj)
-  // }, [])
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -73,7 +68,7 @@ export default function ClientAdmin() {
         console.log(res)
         const client_admin = encodeURIComponent(JSON.stringify(res.client_user));
         const url_client = encodeURIComponent(JSON.stringify(client_obj));
-        console.log(client_admin, url_client)
+        setTokenString(res.token);
         // navigate(`/client-team/?client=${url_client}&client_admin=${client_admin}`);
         navigate("/client-dashboard")
       }

@@ -24,6 +24,8 @@ const initialState = {
   team: null,
   selectedMember_Tasks: null,
   client_partner: null,
+  projects: null,
+  invoices: null
 };
 
 function appReducer(state = initialState, action) {
@@ -46,6 +48,27 @@ function appReducer(state = initialState, action) {
       return {
         ...state,
         memberTasks: filteredMemberTasks,
+      };
+    }
+    case "SET_INVOICES": {
+      return {
+        ...state,
+        invoices: action.payload
+      }
+    }
+    case "DELETE_PROJECTS": {
+      // Assuming payload.tasks contains an array of task IDs to delete
+      const projectsToDelete = action.payload;
+      const { projects } = state;
+
+      // Filter out tasks that are not in the list of IDs to delete
+      const filteredProjects = projects.filter(
+        (project) => !projectsToDelete.includes(project.project_id)
+      );
+
+      return {
+        ...state,
+        projects: filteredProjects,
       };
     }
     case "SET_SELECTED_MEMBER_TASKS": {
@@ -106,6 +129,12 @@ function appReducer(state = initialState, action) {
         ...state,
         folders: action.payload,
       };
+    case "GET_PROJECTS": {
+      return {
+        ...state,
+        projects: action.payload
+      }
+    }
     case "GET_ORGANIZATION":
       return {
         ...state,
@@ -288,14 +317,19 @@ function appReducer(state = initialState, action) {
       // destructure member tasks
       const { memberTasks } = state;
 
+      console.log(action.payload)
+
 
       const existingTaskIndex = memberTasks.findIndex(
         (task) => task.temporary_task_id === action.payload.temporary_task_id
       );
 
       if (existingTaskIndex !== -1) {
+        console.log("task found, replacing")
         const updatedMemberTasks = [...memberTasks];
         updatedMemberTasks[existingTaskIndex] = action.payload;
+
+        console.log("Updated Member Tasks", updatedMemberTasks)
 
         return {
           ...state,
@@ -305,6 +339,36 @@ function appReducer(state = initialState, action) {
         return {
           ...state,
           memberTasks: [...memberTasks, action.payload],
+        };
+      }
+    }
+
+    case "ADD_MEMBER_PROJECT": {
+      // destructure member tasks
+      const { projects } = state;
+
+      console.log(action.payload)
+
+
+      const existingProjectIndex = projects.findIndex(
+        (project) => project.temporary_project_id === action.payload.temporary_project_id
+      );
+
+      if (existingProjectIndex !== -1) {
+        console.log("project found, replacing")
+        const updatedProjects = [...projects];
+        updatedProjects[existingProjectIndex] = action.payload;
+
+        console.log("Updated Projects", updatedProjects)
+
+        return {
+          ...state,
+          projects: updatedProjects,
+        };
+      } else {
+        return {
+          ...state,
+          projects: [...projects, action.payload],
         };
       }
     }

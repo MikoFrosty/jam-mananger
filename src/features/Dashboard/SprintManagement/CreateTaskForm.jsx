@@ -12,7 +12,9 @@ import {
   addMemberTask,
   deleteTasks,
   fetchClientUser,
+  fetchClients,
   fetchPartners,
+  fetchProjects,
   getOrganization,
   setSelectedMemberTasks,
 } from "../../../StateManagement/Actions/actions";
@@ -27,15 +29,19 @@ export default function TaskCreate({
   isOpen,
   selectedTask,
   type,
-  // selectedSprint,
 }) {
   const dispatch = useDispatch();
   const clients = useSelector((state) => state.app.clients);
-  const currentOrg = useSelector((state) => state.app.organization)
+  const projects = useSelector((state) => state.app.projects);
+  const currentOrg = useSelector((state) => state.app.organization);
   const [organization, setOrganization] = useState(currentOrg);
   const clientPartner = useSelector((state) => state.app.client_partner);
   const user = useSelector((state) => state.app.user);
   const clientUser = useSelector((state) => state.app.client_user);
+
+  const [filteredClients, setFilteredClients] = useState(null);
+  const [filteredProjects, setFilteredProjects] = useState(null);
+  const [refetchProjects, setRefetchProjects] = useState(false);
 
   const selectedMember = useSelector((state) => state.app.selectedMember_Tasks);
 
@@ -46,19 +52,22 @@ export default function TaskCreate({
   const [titlePlaceholder, setTitlePlaceholder] = useState("Untitled Task");
   const [assignees, setAssignees] = useState([]);
   const [updateTask, setUpdateTask] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState();
-  const [selectedEscalation, setSelectedEscalation] = useState();
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedEscalation, setSelectedEscalation] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     if (type) {
       if (type === "user") {
         dispatch(getOrganization());
-      }
-      else if (type === "client") {
+        if (!clients && type === "user") {
+          dispatch(fetchClients());
+        }
+      } else if (type === "client") {
         dispatch(fetchPartners());
       }
     }
-  }, [type])
+  }, [type]);
 
   const statusOptions = [
     {
@@ -99,7 +108,34 @@ export default function TaskCreate({
   ];
 
   useEffect(() => {
-    if(clientUser) {
+    if (clients) {
+      setFilteredClients(clients)
+    } else if (type === "user") {
+      dispatch(fetchClients());
+    }
+
+    if (!projects) {
+      dispatch(fetchProjects());
+    } else {
+      console.log("Projects", projects)
+    }
+  }, [clients, projects])
+
+  useEffect(() => {
+    if (!projects || refetchProjects) {
+      dispatch(fetchProjects());
+      setRefetchProjects(false);
+    }
+  }, [projects, refetchProjects]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setRefetchProjects(true);
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (clientUser) {
       if (!organization) {
         setOrganization(clientUser.client.associated_org);
       }
@@ -107,17 +143,32 @@ export default function TaskCreate({
         client_id: clientUser.client.client_id,
         client_name: clientUser.client.client_name,
         org_poc: clientUser.client.org_poc,
-      }
-      setSelectedClient(associated_client)
+      };
+      setSelectedClient(associated_client);
     }
-  }, [clientUser])
+  }, [clientUser]);
+
+  useEffect(() => {
+    if (selectedProject && clients) {
+      const theseClients = type === "user" ? clients.filter((client) => selectedProject.client.client_id === client.client_id) : projects;
+
+      setFilteredClients(theseClients);
+    }
+  }, [selectedProject])
+
+  useEffect(() => {
+    if (selectedClient && projects) {
+      const theseProjects = projects.filter((project) => project.client.client_id === selectedClient.client_id);
+
+      setFilteredProjects(theseProjects);
+    }
+  }, [selectedClient, projects])
 
   useEffect(() => {
     if (selectedMember?.email === "All" && assignees) {
       dispatch(setSelectedMemberTasks(assignees[0]));
     }
   }, [selectedMember]);
-
 
   const handleTaskCreate = async (event) => {
     event.preventDefault();
@@ -131,12 +182,14 @@ export default function TaskCreate({
       // Save the editor content
       const editorContent = await ejInstance.save();
 
+      const assigned_by = type === "user" ? user : clientUser;
+
       // add status, client, escalation
       if (editorContent) {
         const temporary_task_id = `temporary_task_${Date.now()}`;
         const payload = {
           title: taskTitle === "" ? "Untitled Task" : taskTitle,
-          assigned_by: selectedClient,
+          assigned_by: assigned_by,
           assignees,
           description: editorContent,
           status: selectedStatus || {
@@ -148,6 +201,7 @@ export default function TaskCreate({
             softerColor: "rgba(46, 196, 182, 0.3)", // Softer color with reduced opacity
           },
           start_time: Date.now(),
+          project: selectedProject,
           hard_limit: false,
           requires_authorization: selectedClient ? true : false,
           // sprint_id: selectedSprint.sprint_id,
@@ -161,21 +215,32 @@ export default function TaskCreate({
         };
 
         dispatch(addMemberTask(payload));
-
         try {
-          fetchWrapper("/tasks", localStorage.getItem("token"), "POST", {
-            ...payload,
-            client: {
-              client_id: selectedClient.client_id,
-              client_name: selectedClient.client_name,
-              org_poc: selectedClient.org_poc
-            }
-          }).then((res) => {
-            const task = res.task;
-            task.temporary_task_id = res.temporary_task_id;
-            dispatch(addMemberTask(res.task));
-            toggleModal();
-          });
+          if (selectedClient) {
+            fetchWrapper("/tasks", localStorage.getItem("token"), "POST", {
+              ...payload,
+              client: {
+                client_id: selectedClient.client_id,
+                client_name: selectedClient.client_name,
+                org_poc: selectedClient.org_poc,
+              },
+            }).then((res) => {
+              const task = res.task;
+              task.temporary_task_id = res.temporary_task_id;
+              dispatch(addMemberTask(res.task));
+              toggleModal();
+            });
+          } else {
+            fetchWrapper("/tasks", localStorage.getItem("token"), "POST", {
+              ...payload,
+            }).then((res) => {
+              const task = res.task;
+              console.log(res);
+              task.temporary_task_id = res.temporary_task_id;
+              dispatch(addMemberTask(res.task));
+              toggleModal();
+            });
+          }
         } catch (error) {
           console.log(error);
         }
@@ -212,6 +277,7 @@ export default function TaskCreate({
       setSelectedClient(selectedTask.client);
       setSelectedStatus(selectedTask.status);
       setSelectedEscalation(selectedTask.escalation);
+      setSelectedProject(selectedTask.project);
       setUpdateTask(true);
     } else if (!selectedTask) {
       setSelectedEscalation({
@@ -228,16 +294,43 @@ export default function TaskCreate({
         (assignee) => assignee.user_id === selectedAssignee.user_id
       );
 
+      // Check if there's an assignee with the email "All"
+      const allAssigneeIndex = prevAssignees.findIndex(
+        (assignee) => assignee.email === "All"
+      );
+
       if (isAlreadySelected) {
-        // Remove the assignee from the state
-        return prevAssignees.filter(
-          (assignee) => assignee.user_id !== selectedAssignee.user_id
-        );
+        // If the selected assignee is the only one and is being deselected
+        if (prevAssignees.length === 1) {
+          // Set the assignee to "All"
+          return [{ email: "All", name: "All" }];
+        } else {
+          // Remove the assignee from the state
+          return prevAssignees.filter(
+            (assignee) => assignee.user_id !== selectedAssignee.user_id
+          );
+        }
       } else {
-        // Add the assignee to the state
-        return [...prevAssignees, selectedAssignee];
+        // If a new assignee is selected and there's an assignee with email "All"
+        if (allAssigneeIndex !== -1) {
+          // Remove the "All" assignee from the state
+          const updatedAssignees = [...prevAssignees];
+          updatedAssignees.splice(allAssigneeIndex, 1);
+          return [...updatedAssignees, selectedAssignee];
+        } else {
+          // Add the assignee to the state
+          return [...prevAssignees, selectedAssignee];
+        }
       }
     });
+  }
+
+  function handleProjectSelect(project) {
+    if (selectedClient) {
+      if (project?.client.client_id === selectedClient.client_id) {
+        setSelectedProject(project)
+      }
+    }
   }
 
   const debouncedSetTitle = useCallback(
@@ -273,6 +366,14 @@ export default function TaskCreate({
     }
   }
 
+  function handleProjectSelect(value) {
+    if (value.project_id === selectedProject?.project_id) {
+      setSelectedProject(null);
+    } else {
+      setSelectedProject(value);
+    }
+  }
+
   function handleStatusSelect(status) {
     setSelectedStatus(status);
   }
@@ -293,6 +394,7 @@ export default function TaskCreate({
             isOpen={isOpen}
             selectedTask={selectedTask}
             selectedEscalation={selectedEscalation}
+            selectedProject={selectedProject}
             selectedClient={selectedClient}
             selectedStatus={selectedStatus}
             assignees={assignees}
@@ -330,7 +432,7 @@ export default function TaskCreate({
             customStyles={{ maxHeight: "300px", overflowY: "scroll" }}
             buttonContent={
               assignees && assignees.length > 0 ? (
-                <Typography variant="body1">
+                <Typography variant="body2">
                   {`${assignees[0].email}${
                     assignees.length > 1
                       ? ` + ${assignees.length - 1} more`
@@ -338,7 +440,7 @@ export default function TaskCreate({
                   }`}
                 </Typography>
               ) : (
-                <Typography variant="body1">Assignees</Typography>
+                <Typography variant="body2">Assignees</Typography>
               )
             }
             dropdownContent={
@@ -354,7 +456,7 @@ export default function TaskCreate({
                           : ""
                       }`}
                     >
-                      <Typography variant="body1">
+                      <Typography variant="body2">
                         {assignee.name.first}
                       </Typography>
                       <Typography color={"#a1a1a1"} variant="caption">
@@ -364,7 +466,7 @@ export default function TaskCreate({
                   ))
                 ) : (
                   <div className={styles.HoverDropdownContentChildren}>
-                    <Typography variant="body1">Fetching Team..</Typography>
+                    <Typography variant="body2">Fetching Team..</Typography>
                   </div>
                 )}
               </>
@@ -394,7 +496,7 @@ export default function TaskCreate({
               overflowY: "scroll",
             }}
             buttonContent={
-              <Typography variant="body1">
+              <Typography variant="body2">
                 {selectedStatus ? selectedStatus.status_title : "Status"}
               </Typography>
             }
@@ -411,7 +513,7 @@ export default function TaskCreate({
                           : ""
                       }`}
                     >
-                      <Typography variant="body1">
+                      <Typography variant="body2">
                         {option.status_title}
                       </Typography>
                     </div>
@@ -435,7 +537,7 @@ export default function TaskCreate({
               <Typography
                 sx={{ padding: "1px 5px 1px 5px", borderRadius: "5px" }}
                 backgroundColor={selectedEscalation?.softerColor}
-                variant="body1"
+                variant="body2"
               >
                 {selectedEscalation ? selectedEscalation.title : "Escalation"}
               </Typography>
@@ -454,7 +556,7 @@ export default function TaskCreate({
                           : ""
                       }`}
                     >
-                      <Typography variant="body1">
+                      <Typography variant="body2">
                         {escalation.title}
                       </Typography>
                     </div>
@@ -464,7 +566,7 @@ export default function TaskCreate({
             }
           />
         </div>
-        {clients && clients.length > 0 ? (
+        {filteredClients && filteredClients.length > 0 && type === "user" ? (
           <div className={styles.SprintInput}>
             <label className={styles.SprintLabel} htmlFor="SprintClientSelect">
               Client
@@ -476,7 +578,7 @@ export default function TaskCreate({
                 overflowY: "scroll",
               }}
               buttonContent={
-                <Typography variant="body1">
+                <Typography variant="body2">
                   {selectedClient
                     ? selectedClient.client_name
                     : "Select Client"}
@@ -484,21 +586,21 @@ export default function TaskCreate({
               }
               dropdownContent={
                 <>
-                  {clients ? (
-                    clients.map((client, index) => {
+                  {filteredClients ? (
+                    filteredClients.map((client, index) => {
                       return (
                         <div
                           key={`client_${index}`}
                           onClick={() => handleClientSelect(client)}
                           className={`${styles.HoverDropdownContentChildren} ${
-                            clients.some(
+                            filteredClients.some(
                               (c) => c.client_id === selectedClient?.client_id
                             )
                               ? styles.Selected
                               : ""
                           }`}
                         >
-                          <Typography variant="body1">
+                          <Typography variant="body2">
                             {client.client_name}
                           </Typography>
                           <Typography color={"#a1a1a1"} variant="caption">
@@ -509,7 +611,59 @@ export default function TaskCreate({
                     })
                   ) : (
                     <div className={styles.HoverDropdownContentChildren}>
-                      <Typography variant="body1">No Clients Found</Typography>
+                      <Typography variant="body2">No Clients Found</Typography>
+                    </div>
+                  )}
+                </>
+              }
+            />
+          </div>
+        ) : null}
+        {/* below is the project selector */}
+        {filteredProjects && filteredProjects.length > 0 ? (
+          <div className={styles.SprintInput}>
+            <label className={styles.SprintLabel} htmlFor="SprintClientSelect">
+              Client Projects
+            </label>
+            <HoverDropdown
+              id={"SprintClientSelect"}
+              customStyles={{
+                maxHeight: "300px",
+                overflowY: "scroll",
+              }}
+              buttonContent={
+                <Typography variant="body2">
+                  {selectedProject
+                    ? selectedProject.title
+                    : "Select Project"}
+                </Typography>
+              }
+              dropdownContent={
+                <>
+                  {filteredProjects ? (
+                    filteredProjects.map((project, index) => {
+                      return (
+                        <div
+                          key={`project_${index}`}
+                          onClick={() => handleProjectSelect(project)}
+                          className={`${styles.HoverDropdownContentChildren} ${
+                            // filteredProjects.some(
+                            //   (c) => c.project_id === selectedProject?.project_id
+                            // )
+                            selectedProject?.project_id === project.project_id
+                              ? styles.Selected
+                              : ""
+                          }`}
+                        >
+                          <Typography variant="body2">
+                            {project.title}
+                          </Typography>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className={styles.HoverDropdownContentChildren}>
+                      <Typography variant="body2">No Projects Found</Typography>
                     </div>
                   )}
                 </>
@@ -518,7 +672,11 @@ export default function TaskCreate({
           </div>
         ) : null}
         {!updateTask ? (
-          <button disabled={assignees.length === 0 ? true : false} className={styles.CreateButton} onClick={handleTaskCreate}>
+          <button
+            disabled={assignees.length === 0 ? true : false}
+            className={styles.CreateButton}
+            onClick={handleTaskCreate}
+          >
             Create Task
           </button>
         ) : (

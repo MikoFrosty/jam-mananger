@@ -9,6 +9,8 @@ import TeamSignup from "../pages/TeamSignup.jsx";
 import PublicDocs from "../pages/PublicDocs.jsx";
 import ClientLogin from "../pages/ClientLogin.jsx";
 import ClientDashboard from "../features/Clients/ClientDashboard.jsx";
+import PostStripe from "../pages/PostStripe.jsx";
+import ForgotPassword from "../pages/ForgotPassword.jsx";
 // import Pricing from "../features/LandingPage/pricing";
 // import { Elements } from "@stripe/react-stripe-js";
 // import { loadStripe } from "@stripe/stripe-js";
@@ -88,6 +90,16 @@ const commonRoutes = [
     path: "public-docs",
     element: <PublicDocs />,
     children: <></>,
+  },
+  {
+    path: "post-stripe",
+    element: <PostStripe />,
+    children: <></>,
+  },
+  {
+    path: "forgot-password",
+    element: <ForgotPassword />,
+    children: <></>
   },
   // {
   //   path: 'reset-password',

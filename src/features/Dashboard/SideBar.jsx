@@ -29,16 +29,16 @@ export default function SideBar({
   const [client, setClient] = useState(null);
 
   const [directories, setDirectories] = useState([
-    {
-      id: 1,
-      name: "Documentation",
-      view: "documentation",
-      expanded: false,
-      subdirectories: [
-        { name: "Browse Docs", view: "documentation-browse" },
-        { name: "Create Docs", view: "documentation-create" },
-      ],
-    },
+    // {
+    //   id: 1,
+    //   name: "Documentation",
+    //   view: "documentation",
+    //   expanded: false,
+    //   subdirectories: [
+    //     { name: "Browse Docs", view: "documentation-browse" },
+    //     { name: "Create Docs", view: "documentation-create" },
+    //   ],
+    // },
     // {
     //   id: 2,
     //   name: "Analytics",
@@ -75,7 +75,16 @@ export default function SideBar({
       name: "Clients",
       view: "clients",
       expanded: false,
-      subdirectories: [{ name: "Manage", view: "clients-manage" }],
+      subdirectories: []
+      // subdirectories: [{ name: "Manage", view: "clients-manage" }, { name: "Invoice", view: "clients-invoice" }],
+    },
+    {
+      id: 7,
+      name: "Invoices",
+      view: "invoices",
+      expanded: false,
+      subdirectories: []
+      // subdirectories: [{ name: "Manage", view: "invoices-manage" }, { name: "Create", view: "invoices-create" }],
     },
     // {
     //   id: 6,
@@ -90,19 +99,37 @@ export default function SideBar({
   ]);
 
   const [clientDirectories, setClientDirectories] = useState([
+    // {
+    //   id: 1,
+    //   name: "Documents",
+    //   view: "client-docs",
+    //   expanded: false,
+    //   subdirectories: [],
+    // },
     {
-      id: 1,
-      name: "Documents",
-      view: "client-docs",
+      id: 2,
+      name: "Task Board",
+      view: "client-tasks",
       expanded: false,
       subdirectories: [],
     },
     {
       id: 3,
-      name: "Task Board",
-      view: "client-tasks",
+      name: "Invoices",
+      view: "client-invoices",
       expanded: false,
       subdirectories: [],
+    },
+    {
+      id: 4,
+      name: "Projects",
+      view: "client-projects",
+      expanded: false,
+      subdirectories: [],
+      // subdirectories: [
+      //   { name: "Manage", view: "client-projects-manage" },
+      //   { name: "Manage", view: "client-projects-manage" },
+      // ],
     },
   ]);
 

@@ -117,18 +117,18 @@ export default function ClientLogin() {
           >
             Sign In
           </Button>
-          {/* <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
+          <Grid container spacing={"15px"} justifyContent="center">
+            <Grid item>
+              <Link href="/forgot-password" variant="body2">
+                {"Forgot Password?"}
               </Link>
             </Grid>
             <Grid item>
-              <Link href="/signup" variant="body2">
-                {"Don't have an account? Sign Up"}
+              <Link href="/login" variant="body2">
+                {"Not a Client?"}
               </Link>
             </Grid>
-          </Grid> */}
+          </Grid>
         </Box>
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />

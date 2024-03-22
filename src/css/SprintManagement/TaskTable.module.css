@@ -1,0 +1,85 @@
+.tableContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  height: fit-content;
+  table-layout: fixed;
+}
+
+.table tr:hover {
+  transition: 0.2s;
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.table thead tr:hover {
+  background-color: white;
+  cursor: default;
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.row {
+  height: 60px;
+  justify-content: space-between;
+  background-color: #ffffff;
+}
+
+.taskCell {
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Display ... for overflowing text */
+  white-space: nowrap; /* Prevent line breaks */
+}
+
+.pagination {
+  display: flex;
+  justify-content: right;
+  margin-top: 16px;
+}
+
+.pagination button {
+  margin: 0 4px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.pagination .activePage {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.pagination:focus {
+  outline: none;
+}
+
+.activePage:focus {
+  outline: none;
+}
+
+.EmptyListButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+  background-color: #e5e5e5;
+  color: #333;
+}
+
+.EmptyListButton:focus {
+  outline: none;
+}

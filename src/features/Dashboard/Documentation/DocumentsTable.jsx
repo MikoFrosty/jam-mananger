@@ -28,18 +28,17 @@ import "react-loading-skeleton/dist/skeleton.css";
 export default function DocumentTable({ type, searchTerm }) {
   const clientUser = useSelector((state) => state.app.client_user);
   const dispatch = useDispatch();
-  let documents = useSelector((state) => state.app.documents);
+  const documents = useSelector((state) => state.app.documents);
   const [rows, setRows] = useState(null);
 
   useEffect(() => {
+    console.log(type)
     if (type && type === "client" && clientUser) {
       dispatch(fetchClientDocuments());
     } else {
-      fetchDocuments();
+      dispatch(fetchDocuments());
     }
   }, [type, clientUser]);
-
-  // const documents = useSelector((state) => state.app.documents) || [];
 
   useEffect(() => {
     if (documents.length > 0) {

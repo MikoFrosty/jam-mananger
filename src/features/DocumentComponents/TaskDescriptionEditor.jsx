@@ -8,9 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import fetchWrapper from "../../utils/fetchWrapper";
 import { useDispatch } from "react-redux";
-import {
-  updateMemberTask,
-} from "../../StateManagement/Actions/actions";
+import { updateMemberTask } from "../../StateManagement/Actions/actions";
 
 function TaskDescriptionEditor({
   isOpen,
@@ -21,6 +19,7 @@ function TaskDescriptionEditor({
   assignees,
   title,
   selectedTask,
+  selectedProject,
 }) {
   const dispatch = useDispatch();
 
@@ -42,17 +41,22 @@ function TaskDescriptionEditor({
   useEffect(() => {
     if (renderCount.current < 2) {
       renderCount.current += 1;
-    }
-    else if (renderCount.current >= 2) {
+    } else if (renderCount.current >= 2) {
       if (initialRender.current) {
         initialRender.current = false;
         return;
-      }
-      else {
+      } else {
         handleEditorChange();
       }
     }
-  }, [selectedClient, selectedStatus, selectedEscalation, assignees, title]);
+  }, [
+    selectedClient,
+    selectedStatus,
+    selectedEscalation,
+    assignees,
+    title,
+    selectedProject,
+  ]);
 
   function notify(message) {
     toast(message, {
@@ -75,7 +79,12 @@ function TaskDescriptionEditor({
     try {
       const editorContent = await ejInstance.save();
 
-      if (editorContent && selectedStatus && selectedEscalation) {
+      if (
+        editorContent &&
+        selectedStatus &&
+        selectedEscalation &&
+        selectedProject
+      ) {
         const payload = {
           task_id: selectedTask.task_id,
           task: {
@@ -85,9 +94,10 @@ function TaskDescriptionEditor({
             client: selectedClient || {},
             status: selectedStatus,
             escalation: selectedEscalation,
+            project: selectedProject,
           },
         };
-        
+
         notify("Saving...");
 
         // API call to save the document
@@ -118,10 +128,11 @@ function TaskDescriptionEditor({
     selectedStatus,
     title,
     assignees,
+    selectedProject,
     dispatch,
   ]);
 
-  const debouncedSave = useCallback(_.debounce(handleSave, 5000), [handleSave]);
+  const debouncedSave = useCallback(_.debounce(handleSave, 3000), [handleSave]);
 
   useEffect(() => {
     if (needsSave) {

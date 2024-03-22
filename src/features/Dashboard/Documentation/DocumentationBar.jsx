@@ -29,9 +29,10 @@ export default function DocumentationBar({
         </button>
         {toggle === true ? (
           <div className={styles.ViewToggler}>
-            {toggleOptions.map((option) => {
+            {toggleOptions.map((option, index) => {
               return (
                 <button
+                  key={`doc_bar_button_${index}`}
                   onClick={() => onViewToggle(option)}
                   className={`${view === option ? styles.SelectedView : ""} ${
                     styles.TogglerButton

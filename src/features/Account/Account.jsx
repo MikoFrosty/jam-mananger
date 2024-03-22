@@ -7,6 +7,8 @@ import Team from "./Team";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { getOrganization } from "../../StateManagement/Actions/actions";
+import ProfileSettings from "./Settings";
+import AccountBilling from "./AccountBilling";
 
 export default function Account() {
   const dispatch = useDispatch();
@@ -67,6 +69,10 @@ export default function Account() {
           </>
         ) : view === "Team" ? (
           <Team />
+        ) : view === "Settings" ? (
+          <ProfileSettings />
+        ) : view === "Billing" ? (
+          <AccountBilling />
         ) : null}
       </div>
     </div>

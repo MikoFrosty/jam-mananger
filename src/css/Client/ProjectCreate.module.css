@@ -1,3 +1,82 @@
+.ProjectCreation {
+  display: flex;
+  width: 800px;
+  margin-top: 10px;
+  height: 100%;
+  background-color: white;
+  box-shadow: 0px 0px 10px #e5e5e5;
+  padding: 10px;
+  flex-direction: row;
+  column-gap: 10px;
+  overflow: hidden;
+}
+
+.MainForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+}
+
+.Selected {
+  background-color: #e5e5e5;
+}
+
+.Box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  row-gap: 10px;
+}
+
+.InlineFlex {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.HoverDropdownContentChildren {
+  transition: 0.2s;
+  width: 100%;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.CreateButton {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  width: 30%;
+}
+
+.DeleteButton {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  width: 30%;
+  background-color: rgba(245, 81, 31, 0.3);
+  color: #F5511F;
+}
+
+.CreateButton:focus {
+  outline: none;
+}
+
+.DeleteButton:focus {
+  outline: none;
+}
+
+.HoverDropdownContentChildren:hover {
+  cursor: pointer;
+  background-color: #e5e5e5;
+  transition: 0.2s;
+}
+
+.Selected {
+  background-color: #e5e5e5;
+}
+
 .CreateSprint {
   width: 100%;
   height: 100%;
@@ -12,7 +91,6 @@
   flex-direction: column;
   row-gap: 10px;
   height: 100%;
-  width: 100%;
   overflow: hidden;
 }
 
@@ -32,6 +110,17 @@
   flex-direction: column;
   align-items: start;
   position: relative;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.SprintInputRow {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  position: relative;
+  margin-top: 15px;
+  width: fit-content;
 }
 
 .SprintLabel {
@@ -42,16 +131,17 @@
 .SprintTitleInput {
   height: 35px;
   font-size: medium;
-  font-weight: 700;
+  font-weight: 500;
   background-color: #f1f1f1;
   border-radius: 5px;
   border: none;
   padding: 10px;
-  width: fit-content;
-  min-width: 300px;
-  color: #333;
+  max-width: 100%;
+  min-width: 100%;
   justify-content: center;
-  text-align: center;
+  text-align: left;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: #333;
 }
 
 .SprintTitleInput:focus {
@@ -170,30 +260,15 @@
   align-items: start;
   justify-content: center;
   width: calc(100% - 10px);
-  height: 100%;
+  height: fit-content;
   box-shadow: 0px 0px 5px #e5e5e5;
   padding: 10px;
   border-radius: 5px;
 }
 
 .TaskList {
-  display: flex;
-  flex-direction: row;
   width: 100%;
-  height: 100%;
   margin-top: 10px;
-  overflow-y: hidden;
-  column-gap: 10px;
-}
-
-.AllTasks {
-  display: flex;
-  flex-direction: column;
-  row-gap: 10px;
-  min-width: 250px;
-  max-height: 100%;
-  background-color: pink;
-  overflow-y: scroll;
 }
 
 .TaskView {
@@ -231,12 +306,27 @@
   background-color: #e5e5e5;
 }
 
+.InputGroupRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  width: fit-content;
+  height: fit-content;
+  column-gap: 5px;
+  background-color: rgba(46, 196, 182, 0.3);
+  padding-left: 5px;
+  border-radius: 5px;
+}
+
 .InputRow {
   display: flex;
   flex-direction: row;
   height: fit-content;
-  width: 100%;
-  column-gap: 30px;
+  width: fit-content;
+  column-gap: 15px;
+  align-items: end;
+  justify-content: start;
 }
 
 .KanBan {
@@ -255,8 +345,7 @@
   flex-direction: row;
   column-gap: 10px;
   height: fit-content;
-  width: 100%;
-  justify-content: space-between;
+  width: fit-content;
 }
 
 .KanBanColumn {
@@ -286,11 +375,6 @@
   background-color: white;
   padding: 10px;
   row-gap: 5px;
-  text-align: left;
-}
-
-.KanBanCard:hover {
-  cursor: pointer;
 }
 
 .KanBanCardTextRow {

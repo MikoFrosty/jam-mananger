@@ -26,7 +26,7 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="https://kamariteams.com">
         Kamari
       </Link>{" "}
       {new Date().getFullYear()}
@@ -48,34 +48,60 @@ export default function Signup() {
   const email = searchParams.get("email");
   const type = searchParams.get("type") || null;
   const org_id = searchParams.get("org_id") || null;
-  const invitation_id = searchParams.get("invitation_id") || null
+  const invitation_id = searchParams.get("invitation_id") || null;
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const payload = {
-      email: email ? email : data.get("email"),
-      password: data.get("password"),
-      type: "standard",
-      role: type,
-      existing_org_id: org_id,
-      invitation_id,
-      name: {
-        first: data.get("firstName"),
-        last: data.get("lastName"),
-      },
-    };
+    const email = data.get("email");
+    const password = data.get("password");
 
-    console.log(payload)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError("Please enter a valid email address");
+    } else {
+      setEmailError("");
+    }
 
-    fetchWrapper("/signup", "", "POST", { ...payload }).then((res) => {
-      if (res.message === "User Registered") {
-        setUserData(res.user);
-        setTokenString(res.token);
-        navigate("/");
-      }
-    });
+    // Password validation
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
+      );
+    } else {
+      setPasswordError("");
+    }
+
+    if (emailRegex.test(email) && passwordRegex.test(password)) {
+      const payload = {
+        email: email ? email : data.get("email"),
+        password: data.get("password"),
+        type: "standard",
+        role: type,
+        existing_org_id: org_id,
+        invitation_id,
+        name: {
+          first: data.get("firstName"),
+          last: data.get("lastName"),
+        },
+        hourly_rate: data.get("hourlyRate")
+      };
+  
+      console.log(payload);
+  
+      fetchWrapper("/signup", "", "POST", { ...payload }).then((res) => {
+        if (res.message === "User Registered") {
+          setUserData(res.user);
+          setTokenString(res.token);
+          navigate("/");
+        }
+      })
+    }
   };
 
   function handleBackClick() {
@@ -128,45 +154,75 @@ export default function Signup() {
                   columnGap: "5px",
                 }}
               >
-                <TextField
-                  margin="normal"
-                  required
-                  id="firstName"
-                  label="First Name"
-                  name="firstName"
-                  autoFocus
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoFocus
-                />
+                <div className={styles.SprintInput}>
+                  <label className={styles.SprintLabel}>First Name</label>
+                  <input
+                    required
+                    id="firstname"
+                    name="firstName"
+                    className={styles.SprintTitleInput}
+                    type="text"
+                  />
+                </div>
+                <div className={styles.SprintInput}>
+                  <label className={styles.SprintLabel}>Last Name</label>
+                  <input
+                    required
+                    id="lastname"
+                    name="lastName"
+                    className={styles.SprintTitleInput}
+                    type="text"
+                  />
+                </div>
               </div>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                defaultValue={email ? email : ""}
-                name="email"
-                autoComplete="email"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                style={{ WebkitBoxShadow: "0 0 0 1000px white inset" }}
-              />
+              <div className={styles.SprintInput}>
+                <label className={styles.SprintLabel}>Hourly Rate</label>
+                <div className={styles.PrefixWrapper}>
+                  <div className={styles.Prefix}>$</div>
+                  <input
+                    name="hourlyRate"
+                    id="hourlyrate"
+                    required
+                    defaultValue={35}
+                    min={0}
+                    className={styles.SprintTitleInput}
+                    type="number"
+                  />
+                </div>
+              </div>
+              <div className={styles.SprintInput}>
+                <label className={styles.SprintLabel}>Email</label>
+                <input
+                  required
+                  id="email"
+                  name="email"
+                  defaultValue={email ? email : ""}
+                  className={styles.SprintTitleInput}
+                  type="email"
+                  autoComplete="email"
+                />
+                {emailError && (
+                  <Typography variant="caption" color="error">
+                    {emailError}
+                  </Typography>
+                )}
+              </div>
+              <div className={styles.SprintInput}>
+                <label className={styles.SprintLabel}>Password</label>
+                <input
+                  required
+                  id="password"
+                  name="password"
+                  className={styles.SprintTitleInput}
+                  type="password"
+                  autoComplete="current-password"
+                />
+                {passwordError && (
+                  <Typography variant="caption" color="error">
+                    {passwordError}
+                  </Typography>
+                )}
+              </div>
               <Button
                 type="submit"
                 fullWidth

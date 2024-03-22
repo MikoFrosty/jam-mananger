@@ -24,6 +24,7 @@ import AllSprints from "./SprintManagement/AllSprints";
 //import CreateSprint from "./SprintManagement/CreateSprint";
 import Account from "../Account/Account";
 import KanBan from "./SprintManagement/KanBan";
+import Invoice from "../Invoices/Invoices";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -31,21 +32,18 @@ export default function Dashboard() {
   const user = useSelector((state) => state.app.user);
   const organization = useSelector((state) => state.app.organization);
   const team = useSelector((state) => state.app.team);
-  const logout = useSelector((state) => state.app.logout)
+  const logout = useSelector((state) => state.app.logout);
   const [sidebar, setSidebar] = useState(true);
   const viewMode = useSelector((state) => state.app.viewMode);
-
-  console.log(logout)
+  const [inStatus, setInStatus] = useState(true);
+  const [paymentLink, setPaymentLink] = useState(null);
 
   useEffect(() => {
-    console.log(user);
-    console.log(logout)
     if (!user && logout === false) {
-      console.log("no user but trying refetch")
-      dispatch(getUser())
+      dispatch(getUser());
     } else if (!user && logout === true) {
-      navigate("/home")
-      localStorage.clear()
+      navigate("/home");
+      localStorage.clear();
     }
   }, [user, logout]);
 
@@ -53,27 +51,49 @@ export default function Dashboard() {
     if (logout) {
       localStorage.clear();
     }
-  }, [logout])
+  }, [logout]);
 
   useEffect(() => {
     dispatch(fetchDocuments());
     dispatch(fetchFolders());
 
     if (!organization) {
-      dispatch(getOrganization())
+      dispatch(getOrganization());
     }
     if (!team) {
       dispatch(fetchTeam());
     }
     if (!viewMode) {
-      dispatch(toggleView("sprint-management"))
-      localStorage.setItem("lastView", "sprint-management")
+      dispatch(toggleView("sprint-management"));
+      localStorage.setItem("lastView", "sprint-management");
     }
   }, []);
 
+  useEffect(() => {
+    if (organization) {
+      const billing_status = organization.billing?.status;
+
+      if (billing_status) {
+        if (billing_status === "inactive" || billing_status === "incomplete") {
+          setInStatus(false);
+        } else if (
+          organization.billing.status === "active" ||
+          organization.billing.status === "trialing"
+        ) {
+          setInStatus(true);
+        }
+      } else {
+        setInStatus(false);
+        // set redirect link to payment link
+      }
+    } else {
+      dispatch(getOrganization());
+    }
+  }, [organization]);
+
   const handleLogout = () => {
-    dispatch(setUser(null))
-    dispatch(setLogout(true))
+    dispatch(setUser(null));
+    dispatch(setLogout(true));
   };
 
   function handleToggleSidebar() {
@@ -108,21 +128,40 @@ export default function Dashboard() {
         </div>
       ) : null}
       <div className={styles.Main}>
-        {viewMode === "documentation" ? (
-          <Documentation withoutFirstCards={false} />
-        ) : viewMode === "documentation-browse" ? (
-          <Documentation withoutFirstCards={true} />
-        ) : viewMode === "documentation-create" ? (
-          <DocumentCreator isOpen={true} />
-        ) : viewMode === "documentation-edit" ? (
-          <DocumentEditor isOpen={true}/>
-        ) : viewMode === "clients" || viewMode === "clients-manage" ? (
-          <ClientView />
-        ) : viewMode === "sprint-management" ? (
-          <KanBan />
-        ) : viewMode === "account-details" ? (
-          <Account />
-        ) : null}
+        {inStatus ? (
+          viewMode === "documentation" ? (
+            <Documentation withoutFirstCards={false} />
+          ) : viewMode === "documentation-browse" ? (
+            <Documentation withoutFirstCards={true} />
+          ) : viewMode === "documentation-create" ? (
+            <DocumentCreator isOpen={true} />
+          ) : viewMode === "documentation-edit" ? (
+            <DocumentEditor isOpen={true} />
+          ) : viewMode === "clients" || viewMode === "clients-manage" ? (
+            <ClientView />
+          ) : viewMode === "sprint-management" ? (
+            <KanBan />
+          ) : viewMode === "account-details" ? (
+            <Account />
+          ) : viewMode === "invoices" ? (
+            <Invoice />
+          ): null
+        ) : (
+          <div className={styles.Modal}>
+            <div className={styles.ModalContent}>
+              <p>We noticed your subscription has ended.</p>
+              <p>Click the button below to update payment details.</p>
+              <a
+                href="https://example.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.UpdateButton}
+              >
+                Update Payment
+              </a>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

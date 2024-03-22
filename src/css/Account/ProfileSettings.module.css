@@ -1,0 +1,71 @@
+.ProfileSettings {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  background-color: white;
+  align-items: start;
+}
+
+.Payouts {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  align-items: start;
+  row-gap: 20px;
+}
+
+.StripePayout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  text-align: left;
+  row-gap: 10px;
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.PayPalPayout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  text-align: left;
+  row-gap: 10px;
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.IntegrateButton {
+  width: fit-content;
+  padding: 5px 10px;
+  background-color: dodgerblue;
+  color: white;
+}
+
+.IntegrateButton:focus {
+  outline: none;
+}
+
+.IntegrationButtonRow {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+  width: fit-content;
+  height: fit-content;
+  align-items: center;
+}
+
+.StripeConnectLogin {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  align-items: start;
+  row-gap: 10px;
+}

@@ -3,8 +3,10 @@ import { Routes, Route } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import ProtectedRoute from "./ProtectedRoute";
 import commonRoutes from "./commonRoutes";
+import CircularProgress from "@mui/material/CircularProgress";
 
-const Dashboard = lazy(() => import("../features/Dashboard/Dashboard"))
+
+const Dashboard = lazy(() => import("../features/Dashboard/Dashboard"));
 
 export default function Routing() {
   return (
@@ -20,7 +22,7 @@ export default function Routing() {
         })}
 
         <Route path="/" element={<ProtectedRoute />}>
-          <Route path="/" element={<Dashboard type={"user"}/>} />
+          <Route path="/" element={<Dashboard type={"user"} />} />
         </Route>
       </Routes>
     </Suspense>
@@ -29,15 +31,14 @@ export default function Routing() {
 
 function FallBack() {
   return (
-    <Grid
-      container
-      justifyContent="center"
-      alignItems="center"
-      sx={{ height: "100vh" }}
-    >
-      <Grid item>
-        <h1>Loading...</h1>
-      </Grid>
-    </Grid>
+    <CircularProgress
+      style={{
+        color: "dodgerblue",
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+      }}
+      size={50}
+    />
   );
 }

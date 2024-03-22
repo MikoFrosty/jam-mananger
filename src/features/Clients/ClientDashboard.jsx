@@ -10,6 +10,7 @@ import Account from "../Account/Account";
 import ClientView from "./ClientView";
 import { useDispatch } from "react-redux";
 import DocumentEditor from "../DocumentComponents/DocumentEditor";
+import ClientProjects from "./ClientProjects";
 
 export default function ClientDashboard() {
   const dispatch = useDispatch();
@@ -92,16 +93,14 @@ export default function ClientDashboard() {
       ) : null}
       <div className={styles.Main}>
         {
-          viewMode === "client-docs" ? (
-            <Documentation type={"client"} />
-          ) : viewMode === "client-tasks" ? (
+          viewMode === "client-tasks" ? (
             <KanBan type={"client"} />
           ) : viewMode === "client-account" ? (
             <Account type={"client"} />
           ) : viewMode === "partner-view" ? (
             <ClientView type={"client"}/>
-          ) : viewMode === "documentation-edit" ? (
-            <DocumentEditor isOpen={true} readOnly={true} noBar={true}/>
+          ) : viewMode === "client-projects" ? (
+            <ClientProjects />
           ) : null
         }
       </div>

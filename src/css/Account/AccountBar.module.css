@@ -1,14 +1,14 @@
 .AccountBar {
   display: flex;
   flex-direction: row;
-  width: 100%;
+  width: fit-content;
   align-items: center;
   justify-content: space-between;
-  border-bottom: solid 2px #f1f1f1;
   background-color: white;
   padding: 0px 10px 10px 10px;
   column-gap: 10px;
   border-radius: 5px;
+  width: 100%;
 }
 
 .AccountBarRight {
@@ -64,6 +64,15 @@
 
 .AccountBarRightButton:hover {
   background-color: #e5e5e5;
+}
+
+.AccountBarLeft {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+  height: fit-content;
+  width: fit-content;
+  align-items: center;
 }
 
 .TogglerButton:hover {

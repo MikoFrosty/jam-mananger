@@ -61,11 +61,6 @@ export default function ClientSignup() {
         const client = JSON.stringify(res.client);
         console.log(client)
         const url_client = encodeURIComponent(client);
-        // console.log(url_client)
-        // const decoded = decodeURIComponent(url_client);
-        // console.log(decoded);
-        // const client_obj = JSON.parse(decoded);
-        // console.log(client_obj)
         navigate(`/client-admin/?client=${url_client}`);
       }
     });

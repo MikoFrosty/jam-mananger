@@ -4,7 +4,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -12,10 +11,11 @@ import AuthContext from "../Contexts/AuthContext";
 import { useContext } from "react";
 import fetchWrapper from "../utils/fetchWrapper";
 import { useNavigate } from "react-router-dom";
-import bcrypt from "bcryptjs";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useDispatch } from "react-redux";
 import { setLogout, setUser } from "../StateManagement/Actions/actions";
+
+import styles from "../css/Signup.module.css";
 
 function Copyright(props) {
   return (
@@ -26,8 +26,8 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Jam Manager
+      <Link color="inherit" href="https://kamariteams.com">
+        Kamari
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -49,6 +49,7 @@ export default function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
     const payload = {
       email: data.get("email"),
       password: data.get("password"),
@@ -56,10 +57,10 @@ export default function Login() {
     fetchWrapper("/login", "", "POST", { ...payload }).then((res) => {
       setUserData(res.user);
       setTokenString(res.token);
-      localStorage.setItem("token", res.token)
+      localStorage.setItem("token", res.token);
 
-      dispatch(setUser(res.user))
-      dispatch(setLogout(false))
+      dispatch(setUser(res.user));
+      dispatch(setLogout(false));
 
       if (res?.token) {
         navigate("/");
@@ -74,42 +75,39 @@ export default function Login() {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+      <div className={styles.AuthForm}>
         <ArrowBackIcon onClick={() => handleBackClick()} style={iconHover} />
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography textAlign={"left"} component="h1" variant="h5">
           Sign in
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
+        <form
+          className={styles.AuthForm}
+          onSubmit={handleSubmit}
+          noValidate
+          sx={{ mt: 1 }}
+        >
+          <div className={styles.SprintInput}>
+            <label className={styles.SprintLabel}>Email</label>
+            <input
+              required
+              id="email"
+              name="email"
+              className={styles.SprintTitleInput}
+              type="email"
+              autoComplete="email"
+            />
+          </div>
+          <div className={styles.SprintInput}>
+            <label className={styles.SprintLabel}>Password</label>
+            <input
+              required
+              id="password"
+              name="password"
+              className={styles.SprintTitleInput}
+              type="password"
+              autoComplete="current-password"
+            />
+          </div>
           <Button
             type="submit"
             fullWidth
@@ -121,7 +119,7 @@ export default function Login() {
           <Grid container spacing={"15px"} justifyContent="center">
             <Grid item>
               <Link href="/signup" variant="body2">
-                {"Don't have an account? Sign Up"}
+                {"Need an Account?"}
               </Link>
             </Grid>
             <Grid item>
@@ -129,9 +127,14 @@ export default function Login() {
                 {"Client Login"}
               </Link>
             </Grid>
+            <Grid item>
+              <Link href="/forgot-password" variant="body2">
+                {"Forgot Password?"}
+              </Link>
+            </Grid>
           </Grid>
-        </Box>
-      </Box>
+        </form>
+      </div>
       <Copyright sx={{ mt: 8, mb: 4 }} />
     </Container>
   );

@@ -23,6 +23,27 @@ export function selectFolder(folder) {
   };
 }
 
+export function fetchProjects() {
+  return async function (dispatch) {
+    try {
+      const projects = await fetchWrapper(
+        "/projects",
+        localStorage.getItem("token"),
+        "GET"
+      ).then((res) => {
+        return res.projects;
+      });
+
+      dispatch({
+        type: "GET_PROJECTS",
+        payload: projects,
+      });
+    } catch (error) {
+      console.error("Failed to fetch organization", error);
+    }
+  };
+}
+
 export function getOrganization() {
   return async function fetchOrganization(dispatch) {
     try {
@@ -93,17 +114,21 @@ export function fetchDocuments() {
 export function fetchClientUser() {
   return async function (dispatch) {
     try {
-      const response = await fetchWrapper("/client-user", localStorage.getItem("token"), "GET");
+      const response = await fetchWrapper(
+        "/client-user",
+        localStorage.getItem("token"),
+        "GET"
+      );
 
       dispatch({
         type: "SET_CLIENT_USER",
-        payload: response.client_user
-      })
+        payload: response.client_user,
+      });
     } catch (error) {
       console.error("Error fetching client user:", error);
       // Optionally, dispatch an error action here
     }
-  }
+  };
 }
 
 export function fetchPartners() {
@@ -115,11 +140,10 @@ export function fetchPartners() {
         "GET"
       );
 
-
       dispatch({
         type: "SET_CLIENT_PARTNERS",
-        payload: response.partners[0]
-      })
+        payload: response.partners[0],
+      });
     } catch (error) {
       console.error("Error fetching client partners:", error);
       // Optionally, dispatch an error action here
@@ -266,6 +290,13 @@ export function addMemberTask(task) {
   };
 }
 
+export function addMemberProject(project) {
+  return {
+    type: "ADD_MEMBER_PROJECT",
+    payload: project
+  }
+}
+
 export function updateMemberTask(payload) {
   return {
     type: "UPDATE_MEMBER_TASK",
@@ -296,7 +327,6 @@ export function getUser() {
         "GET"
       );
 
-
       if (response.message === "User found") {
         dispatch({
           type: "SET_USER",
@@ -320,7 +350,6 @@ export function setLogout(bool) {
 export function setEditingDocument(document) {
   return async function (dispatch) {
     try {
-
       const res = await fetchWrapper(
         `/documents?doc_id=${document.document_id}`,
         localStorage.getItem("token"),
@@ -369,7 +398,6 @@ export function updateUser(payload) {
       { ...payload }
     );
 
-
     if (response.message === "User Updated") {
       dispatch({
         type: "SET_USER",
@@ -388,7 +416,6 @@ export function fetchTeam() {
         "GET"
       );
 
-
       dispatch({
         type: "SET_TEAM",
         payload: response.team,
@@ -398,6 +425,27 @@ export function fetchTeam() {
       // Optionally, dispatch an error action here
     }
   };
+}
+
+export function fetchUserInvoices(type = "paid", chunk = 15) {
+  return async function (dispatch) {
+    try {
+      const response = await fetchWrapper("/invoices", localStorage.getItem("token"), "GET", {
+        type,
+        chunk
+      });
+
+      console.log(response);
+
+      dispatch({
+        type: "SET_INVOICES",
+        payload: response.invoices
+      })
+    } catch (error) {
+      console.error("Error fetching invoice data:", error);
+      // Optionally, dispatch an error action here
+    }
+  }
 }
 
 export function fetchSprints() {
@@ -464,8 +512,15 @@ export function setSelectedMemberTasks(member) {
 export function deleteTasks(tasks) {
   return {
     type: "DELETE_TASKS",
-    payload: tasks
-  }
+    payload: tasks,
+  };
+}
+
+export function deleteProjects(projects) {
+  return {
+    type: "DELETE_PROJECTS",
+    payload: projects,
+  };
 }
 
 export function setClientUser(client) {

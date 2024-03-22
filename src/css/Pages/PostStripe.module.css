@@ -1,0 +1,39 @@
+.PostStripeContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+}
+
+.PostStripeDialogue {
+  display: flex;
+  width: 70%;
+  flex-direction: column;
+  row-gap: 10px;
+  text-align: left;
+}
+
+.LoadingSkeleton {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.SubscriptionInfo {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 100%;
+  height: fit-content;
+}
+
+.LizardImage {
+  width: 50%;
+  align-self: center;
+}

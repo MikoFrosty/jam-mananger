@@ -1,6 +1,5 @@
 import styles from "../../css/Account/AccountBar.module.css";
 import Typography from "@mui/material/Typography";
-import FilterListIcon from "@mui/icons-material/FilterList";
 
 export default function AccountBar({
   view,
@@ -8,18 +7,23 @@ export default function AccountBar({
   toggle,
   toggleOptions,
   label,
+  children
 }) {
   return (
     <div className={styles.AccountBar}>
       <div className={styles.AccountBarLeft}>
         <Typography variant="body1">{label}</Typography>
+        {
+          children
+        }
       </div>
       <div className={styles.AccountBarRight}>
         {toggle === true ? (
           <div className={styles.ViewToggler}>
-            {toggleOptions.map((option) => {
+            {toggleOptions.map((option, index) => {
               return (
                 <button
+                  key={`option_${index}`}
                   onClick={() => onViewToggle(option)}
                   className={`${view === option ? styles.SelectedView : ""} ${
                     styles.TogglerButton
