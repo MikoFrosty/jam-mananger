@@ -139,7 +139,7 @@ export default function Dashboard() {
             <DocumentEditor isOpen={true} />
           ) : viewMode === "clients" || viewMode === "clients-manage" ? (
             <ClientView />
-          ) : viewMode === "sprint-management" ? (
+          ) : viewMode === "tasks" ? (
             <KanBan />
           ) : viewMode === "account-details" ? (
             <Account />

@@ -1,6 +1,6 @@
 .TaskCreation {
   display: flex;
-  width: 800px;
+  width: 100%;
   margin-top: 10px;
   height: 100%;
   background-color: white;
@@ -43,14 +43,14 @@
   position: absolute;
   bottom: 30px;
   right: 30px;
-  width: 30%;
+  width: fit-content;
 }
 
 .DeleteButton {
   position: absolute;
   bottom: 30px;
   right: 30px;
-  width: 30%;
+  width: fit-content;
   background-color: rgba(245, 81, 31, 0.3);
   color: #F5511F;
 }

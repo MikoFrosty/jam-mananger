@@ -4,6 +4,8 @@ import Box from "@mui/material/Box";
 import { useDispatch, useSelector } from "react-redux";
 import HoverDropdown from "../../../components/HoverDropdown";
 
+import Timer from "../../../components/inputs/Timer";
+
 import Typography from "@mui/material/Typography";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -11,7 +13,6 @@ import TaskDescriptionCreator from "../../DocumentComponents/TaskDescription";
 import {
   addMemberTask,
   deleteTasks,
-  fetchClientUser,
   fetchClients,
   fetchPartners,
   fetchProjects,
@@ -671,6 +672,14 @@ export default function TaskCreate({
             />
           </div>
         ) : null}
+        {
+          updateTask ? (
+            <div className={styles.SprintInput}>
+              <label className={styles.SprintLabel}>Track Time</label>
+              <Timer customStyles={{justifyContent: "start", width: "100%", justifyContent: "space-between"}} task={selectedTask}/>
+            </div>
+          ) : (null)
+        }
         {!updateTask ? (
           <button
             disabled={assignees.length === 0 ? true : false}

@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../../../css/SprintManagement/TaskTable.module.css";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import Typography from "@mui/material/Typography";
 import Timer from "../../../components/inputs/Timer";
 import TableSearch from "../../../components/searchbar/TableSearch";
 import Checkbox from "@mui/material/Checkbox";
+import { fetchTasks } from "../../../StateManagement/Actions/actions";
 
 const TaskTable = ({
   type = "user",
@@ -14,30 +15,76 @@ const TaskTable = ({
   hasClient = true,
   hasTimer = true,
   handleTaskSelect,
-  selectedTasks = null
+  selectedTasks = null,
 }) => {
+  const dispatch = useDispatch();
+
+  const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
+  const [startIndex, setStartIndex] = useState(0);
+  const [endIndex, setEndIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState(presetSearchTerm);
+  const [filteredTasks, setFilteredTasks] = useState(null);
+  const [currentTasks, setCurrentTasks] = useState(null);
   const tasks = useSelector((state) => state.app.memberTasks);
   const itemsPerPage = 15;
 
-  // Filter tasks based on search term
-  const filteredTasks = tasks.filter((task) => {
-    const { title, client, status } = task;
-    const searchRegex = new RegExp(searchTerm, "i");
-    return (
-      searchRegex.test(title) ||
-      searchRegex.test(client?.client_name || "") ||
-      searchRegex.test(status.status_title)
-    );
-  });
+  useEffect(() => {
+    if (presetSearchTerm !== "") {
+      setSearchTerm(presetSearchTerm)
+    }
+  }, [presetSearchTerm])
 
-  // Calculate the start and end indexes for the current page
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentTasks = filteredTasks.slice(startIndex, endIndex);
+  useEffect(() => {
+    // Calculate the start and end indexes for the current page
+    let start = (currentPage - 1) * itemsPerPage;
+    let end = start + itemsPerPage;
 
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
+    setStartIndex(start);
+    setEndIndex(end);
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (!tasks) {
+      dispatch(fetchTasks());
+    } else if (startIndex >= 0 && endIndex) {
+      console.log("tasks found");
+      let parsed_search_term = searchTerm.split(" ");
+      const these_tasks = tasks.filter((task) => {
+        const { title, client, status } = task;
+
+        // Iterate over each search term and test against multiple fields
+        const isMatch = parsed_search_term.every(term => {
+          const searchRegex = new RegExp(term, "i");
+          return (
+            searchRegex.test(title) ||
+            searchRegex.test(client?.client_name || "") ||
+            searchRegex.test(status.status_title)
+          );
+        });
+
+        return isMatch;
+      });
+      console.log(these_tasks);
+
+      setFilteredTasks(these_tasks);
+      setCurrentTasks(these_tasks?.slice(startIndex, endIndex));
+    }
+  }, [tasks, startIndex, endIndex, searchTerm]);
+
+
+  useEffect(() => {
+    if (filteredTasks) {
+      console.log("Filtered Tasks", filteredTasks);
+    }
+  }, [filteredTasks]);
+
+  useEffect(() => {
+    if (currentTasks) {
+      console.log(currentTasks);
+    }
+  }, [currentTasks]);
 
   // Function to handle page change
   const handlePageChange = (pageNumber) => {
@@ -48,11 +95,11 @@ const TaskTable = ({
   const handleSearch = (searchTerm) => {
     setSearchTerm(searchTerm);
     setCurrentPage(1); // Reset to the first page after a new search
-  }
+  };
 
   return (
     <div className={styles.tableContainer}>
-      {filteredTasks.length > 0 ? (
+      {filteredTasks?.length > 0 ? (
         <>
           <table className={styles.table}>
             <thead>
@@ -76,7 +123,11 @@ const TaskTable = ({
             </thead>
             <tbody>
               {currentTasks.map((task, index) => (
-                <tr onClick={() => handleTaskSelect(task)} key={index} className={styles.row}>
+                <tr
+                  onClick={() => handleTaskSelect(task)}
+                  key={index}
+                  className={styles.row}
+                >
                   <td className={styles.taskCell}>{task.title}</td>
                   <td>
                     <Typography
@@ -117,7 +168,16 @@ const TaskTable = ({
                   )}
                   {!hasTimer ? (
                     <td style={{ textAlign: "right" }}>
-                      <Checkbox checked={selectedTasks ? selectedTasks.some((selected_task) => selected_task.task_id === task.task_id) : false}/>
+                      <Checkbox
+                        checked={
+                          selectedTasks
+                            ? selectedTasks.some(
+                                (selected_task) =>
+                                  selected_task.task_id === task.task_id
+                              )
+                            : false
+                        }
+                      />
                     </td>
                   ) : null}
                 </tr>
@@ -126,7 +186,7 @@ const TaskTable = ({
           </table>
           <div className={styles.pagination}>
             {Array.from(
-              { length: Math.ceil(tasks.length / itemsPerPage) },
+              { length: Math.ceil(tasks?.length / itemsPerPage) },
               (_, index) => (
                 <button
                   key={index}
@@ -139,7 +199,7 @@ const TaskTable = ({
             )}
           </div>
         </>
-      ) : filteredTasks.length === 0 && searchTerm ? (
+      ) : filteredTasks?.length === 0 && searchTerm ? (
         <>
           <table className={styles.table}>
             <thead>
@@ -172,7 +232,7 @@ const TaskTable = ({
           </table>
           <div className={styles.pagination}>
             {Array.from(
-              { length: Math.ceil(tasks.length / itemsPerPage) },
+              { length: Math.ceil(tasks?.length / itemsPerPage) },
               (_, index) => (
                 <button
                   key={index}

@@ -34,8 +34,7 @@ export default function ClientInvite() {
 
   useEffect(() => {
     if (
-      (!clients && !clientsFetched) ||
-      (!clientInvites && !clientInvitesFetched)
+      (!clients && !clientInvites) && !clientsFetched
     ) {
       dispatch(fetchClients());
       setClientsFetched(true);

@@ -427,7 +427,7 @@ export function fetchTeam() {
   };
 }
 
-export function fetchUserInvoices(type = "paid", chunk = 15) {
+export function fetchUserInvoices(type = "expanded", chunk = 15) {
   return async function (dispatch) {
     try {
       const response = await fetchWrapper("/invoices", localStorage.getItem("token"), "GET", {

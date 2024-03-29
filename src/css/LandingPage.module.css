@@ -3,18 +3,21 @@
   flex-direction: column;
   width: 100vw;
   height: fit-content;
-  min-height: 100vh;
+  max-height: 100vh;
   background-color: white;
   align-items: center;
+  overflow-y: hidden;
 }
 
 .Main {
-  width: 90%;
-  height: fit-content;
+  width: 100%;
+  height: 100%;
   min-height: 600px;
   display: flex;
+  padding: 10px 20px;
   flex-direction: column;
-  row-gap: 30px;
+  row-gap: 80px;
+  overflow-y: scroll;
 }
 
 .ContentRow {
@@ -35,23 +38,63 @@
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: calc(100vh - 110px);
-  min-height: 200px;
-  margin: 20px 0px 20px 0px;
-  background-color: #f1f1f1;
+  height: calc(100vh - 100px);
+  background-color: white;
   border-radius: 10px;
-  padding: 20px;
-  justify-content: space-between;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .ContentColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  row-gap: 20px;
+  text-align: left;
+  height: 100%;
+  width: fit-content;
+  max-width: 50%;
+}
+
+.FullWidthContentColumn {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   row-gap: 20px;
   text-align: left;
-  height: 100vh;
+  height: fit-content;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.ContentColumnReversed {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  row-gap: 20px;
+  text-align: right;
+  align-items: end;
+  height: 100%;
+  width: fit-content;
+  min-width: 50%;
+}
+
+.TextWithIcon {
+  display: flex;
+  flex-direction: row;
+  column-gap: 15px;
+  align-items: center;
+  width: fit-content;
+  height: fit-content;
+  transition: 0.2s;
+}
+
+.TextWithIcon:hover {
+  color: rgba(201, 57, 240, 0.765);
+  transition: 0.2s;
+  cursor: pointer;
 }
 
 .ContentColumnFit {
@@ -106,12 +149,22 @@
 }
 
 .RowImage {
-  width: 45%;
   max-height: 400px;
   align-self: center;
 }
+
 .ColumnImage {
-  width: 35%;
+  width: 90%;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f1f1f1;
+}
+
+.ColumnImageSmall {
+  height: 600px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f1f1f1;
 }
 
 .KamariOffers {

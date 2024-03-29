@@ -51,8 +51,8 @@ export default function SideBar({
     // },
     {
       id: 3,
-      name: "Task Board",
-      view: "sprint-management",
+      name: "Tasks",
+      view: "tasks",
       expanded: false,
       subdirectories: [
         // { name: "Tasks", view: "sprint-management" },
@@ -165,6 +165,10 @@ export default function SideBar({
       ? { backgroundColor: "#f1f1f1", borderRadius: "5px" }
       : {};
   };
+
+  useEffect(() => {
+    console.log(viewMode)
+  }, [viewMode])
 
   return (
     <div style={customStyles ? customStyles : {}} className={styles.sidebar}>

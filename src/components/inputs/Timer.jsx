@@ -9,7 +9,7 @@ import fetchWrapper from "../../utils/fetchWrapper";
 import { updateMemberTaskOptimistically } from "../../StateManagement/Actions/actions";
 import { useDispatch } from "react-redux";
 
-const Timer = ({ task }) => {
+const Timer = ({ task, customStyles = {}, onlyIcon = false }) => {
   const dispatch = useDispatch();
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -68,7 +68,7 @@ const Timer = ({ task }) => {
   return (
     <div
       className={styles.container}
-      style={isRunning ? { backgroundColor: "rgba(46, 196, 182, 0.3)" } : {}}
+      style={isRunning ? { backgroundColor: "rgba(46, 196, 182, 0.3)", ...customStyles } : {...customStyles}}
     >
       <div className={styles.timerDisplay}>{formatTime()}</div>
       <button

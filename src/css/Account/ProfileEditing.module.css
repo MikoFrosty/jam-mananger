@@ -8,6 +8,10 @@
   row-gap: 10px;
 }
 
+.ToastContainerStyle {
+  width: fit-content !important;
+}
+
 .CreateProfile {
   width: 100%;
   height: 100%;
@@ -283,7 +287,7 @@
 }
 
 .ResetPasswordButton {
-  background-color: #5fa9fda1;
+  background-color: #ae5ffda1;
   color: #333;
   border-radius: 5px;
   width: 33%;
@@ -300,7 +304,7 @@
 }
 
 .Button {
-  background-color: #5fa9fda1;
+  background-color: #ae5ffda1;
   color: #333;
   border-radius: 5px;
   width: 33%;

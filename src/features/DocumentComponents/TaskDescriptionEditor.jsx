@@ -11,15 +11,15 @@ import { useDispatch } from "react-redux";
 import { updateMemberTask } from "../../StateManagement/Actions/actions";
 
 function TaskDescriptionEditor({
-  isOpen,
   customStyles,
+  isOpen,
+  selectedTask,
+  selectedEscalation,
+  selectedProject,
   selectedClient,
   selectedStatus,
-  selectedEscalation,
   assignees,
   title,
-  selectedTask,
-  selectedProject,
 }) {
   const dispatch = useDispatch();
 
@@ -30,6 +30,7 @@ function TaskDescriptionEditor({
   const initialRender = useRef(true);
 
   const handleEditorChange = () => {
+    console.log("editor needs save")
     setNeedsSave(true);
   };
 
@@ -39,9 +40,11 @@ function TaskDescriptionEditor({
   // on the third render, the user has changed some value at which point
   //  the useEffect should run and update the selected task with new prop data
   useEffect(() => {
+    console.log(renderCount.current)
     if (renderCount.current < 2) {
       renderCount.current += 1;
     } else if (renderCount.current >= 2) {
+      console.log("Is Initial Render", initialRender.current)
       if (initialRender.current) {
         initialRender.current = false;
         return;
@@ -78,6 +81,7 @@ function TaskDescriptionEditor({
     }
     try {
       const editorContent = await ejInstance.save();
+      console.log("saving")
 
       if (
         editorContent &&
@@ -95,6 +99,7 @@ function TaskDescriptionEditor({
             status: selectedStatus,
             escalation: selectedEscalation,
             project: selectedProject,
+            duration: selectedTask.duration
           },
         };
 
@@ -132,7 +137,7 @@ function TaskDescriptionEditor({
     dispatch,
   ]);
 
-  const debouncedSave = useCallback(_.debounce(handleSave, 3000), [handleSave]);
+  const debouncedSave = useCallback(_.debounce(handleSave, 1000), [handleSave]);
 
   useEffect(() => {
     if (needsSave) {
