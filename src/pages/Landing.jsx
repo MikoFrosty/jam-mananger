@@ -15,6 +15,7 @@ const LandingPage = () => {
       }
     };
 
+
     window.addEventListener('scroll', handleScroll);
 
     return () => {
