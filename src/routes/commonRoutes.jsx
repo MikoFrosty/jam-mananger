@@ -1,5 +1,4 @@
 import TermsAndConditions from "../components/regulatory/terms";
-import Landing from "../pages/Landing.jsx";
 import Signup from "../pages/Signup.jsx";
 import Login from "../pages/Login.jsx";
 import ClientSignup from "../pages/ClientSignup.jsx";
@@ -11,11 +10,10 @@ import ClientLogin from "../pages/ClientLogin.jsx";
 import ClientDashboard from "../features/Clients/ClientDashboard.jsx";
 import PostStripe from "../pages/PostStripe.jsx";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
+import SignupFlow from "../pages/SignupFlow";
 // import Pricing from "../features/LandingPage/pricing";
 // import { Elements } from "@stripe/react-stripe-js";
 // import { loadStripe } from "@stripe/stripe-js";
-
-
 
 // const stripePromise = loadStripe(
 //   "pk_test_51OU8cxDhEC7QrbhyXNDZFKnFjl1rM9eqZElMdnx5tqaw2xDrCmAH4InT78qJO7V88S2HihXphcY2xA6Ff3mMvNtv00SgSHNfGL"
@@ -28,11 +26,6 @@ const commonRoutes = [
     children: <></>,
   },
   {
-    path: "home",
-    element: <Landing />,
-    children: <></>,
-  },
-  {
     path: "signup",
     element: <Signup />,
     children: <></>,
@@ -40,27 +33,13 @@ const commonRoutes = [
   {
     path: "client-login",
     element: <ClientLogin />,
-    children: <></>
+    children: <></>,
   },
   {
     path: "client-dashboard",
     element: <ClientDashboard />,
-    children: <></>
+    children: <></>,
   },
-  // {
-  //   path: "about-us",
-  //   element: <AboutUs />,
-  //   children: <></>,
-  // },
-  // {
-  //   path: "pricing",
-  //   element: (
-  //     <Elements stripe={stripePromise}>
-  //       <Pricing />
-  //     </Elements>
-  //   ),
-  //   children: <></>,
-  // },
   {
     path: "terms-and-conditions",
     element: <TermsAndConditions />,
@@ -99,28 +78,13 @@ const commonRoutes = [
   {
     path: "forgot-password",
     element: <ForgotPassword />,
-    children: <></>
+    children: <></>,
   },
-  // {
-  //   path: 'reset-password',
-  //   element: <ResetPassword />,
-  //   children: <></>,
-  // },
-  // {
-  //   path: 'unauthorized',
-  //   element: <Unauthorized />,
-  //   children: <></>,
-  // },
-  // {
-  //   path: 'profile',
-  //   element: <ProtectedRoute />,
-  //   children: <Route index element={<Profile />} />,
-  // },
-  // {
-  //   path: '*',
-  //   element: <ProtectedRoute />,
-  //   children: <Route index element={<NotFound />} />,
-  // },
+  {
+    path: "home",
+    element: <Login />,
+    children: <></>,
+  },
 ];
 
 export default commonRoutes;

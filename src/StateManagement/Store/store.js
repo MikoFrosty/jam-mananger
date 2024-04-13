@@ -53,8 +53,8 @@ function appReducer(state = initialState, action) {
     case "SET_INVOICES": {
       return {
         ...state,
-        invoices: action.payload
-      }
+        invoices: action.payload,
+      };
     }
     case "DELETE_PROJECTS": {
       // Assuming payload.tasks contains an array of task IDs to delete
@@ -132,8 +132,8 @@ function appReducer(state = initialState, action) {
     case "GET_PROJECTS": {
       return {
         ...state,
-        projects: action.payload
-      }
+        projects: action.payload,
+      };
     }
     case "GET_ORGANIZATION":
       return {
@@ -202,7 +202,6 @@ function appReducer(state = initialState, action) {
 
       let updatedDocuments = [];
 
-
       if (status === "new") {
         const document_index = documents.findIndex(
           (doc) => doc.temporary_id === temporary_id
@@ -217,7 +216,6 @@ function appReducer(state = initialState, action) {
         } else {
           updatedDocuments = documents;
         }
-
 
         return {
           ...state,
@@ -237,7 +235,6 @@ function appReducer(state = initialState, action) {
         } else {
           updatedDocuments = documents;
         }
-
 
         return {
           ...state,
@@ -317,19 +314,18 @@ function appReducer(state = initialState, action) {
       // destructure member tasks
       const { memberTasks } = state;
 
-      console.log(action.payload)
-
+      console.log(action.payload);
 
       const existingTaskIndex = memberTasks.findIndex(
         (task) => task.temporary_task_id === action.payload.temporary_task_id
       );
 
       if (existingTaskIndex !== -1) {
-        console.log("task found, replacing")
+        console.log("task found, replacing");
         const updatedMemberTasks = [...memberTasks];
         updatedMemberTasks[existingTaskIndex] = action.payload;
 
-        console.log("Updated Member Tasks", updatedMemberTasks)
+        console.log("Updated Member Tasks", updatedMemberTasks);
 
         return {
           ...state,
@@ -347,19 +343,19 @@ function appReducer(state = initialState, action) {
       // destructure member tasks
       const { projects } = state;
 
-      console.log(action.payload)
-
+      console.log(action.payload);
 
       const existingProjectIndex = projects.findIndex(
-        (project) => project.temporary_project_id === action.payload.temporary_project_id
+        (project) =>
+          project.temporary_project_id === action.payload.temporary_project_id
       );
 
       if (existingProjectIndex !== -1) {
-        console.log("project found, replacing")
+        console.log("project found, replacing");
         const updatedProjects = [...projects];
         updatedProjects[existingProjectIndex] = action.payload;
 
-        console.log("Updated Projects", updatedProjects)
+        console.log("Updated Projects", updatedProjects);
 
         return {
           ...state,

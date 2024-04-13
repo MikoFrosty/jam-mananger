@@ -7,6 +7,9 @@ import AuthProvider from "./Providers/AuthProvider";
 import store from "./StateManagement/Store/store";
 import { Provider } from "react-redux";
 
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+
 const theme = createTheme({
   components: {
     MuiButton: {
