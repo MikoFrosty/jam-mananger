@@ -53,11 +53,11 @@ export default function ClientLogin() {
       client_user_email: data.get("email"),
       client_user_password: data.get("password"),
     };
-    fetchWrapper("/client-login", "", "POST", { ...payload }).then((res) => {
+    fetchWrapper("/client-account-login", "", "POST", { ...payload }).then((res) => {
       console.log(res);
       setTokenString(res.token);
 
-      dispatch(setClientUser(res.client_user))
+      dispatch(setClientUser(res.client_account))
       dispatch(setLogout(false))
 
       if (res?.token) {

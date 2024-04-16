@@ -44,6 +44,51 @@ export function fetchProjects() {
   };
 }
 
+export function fetchContracts(type) {
+  let contracts = [];
+
+  if (type === "authenticated") {
+    return async function (dispatch) {
+      try {
+        contracts = await fetchWrapper(
+          "/contracts-authenticated",
+          localStorage.getItem("token"),
+          "GET"
+        ).then((res) => {
+          console.log(res);
+          return res.contracts;
+        });
+
+        dispatch({
+          type: "SET_CONTRACTS",
+          payload: contracts,
+        });
+      } catch (error) {
+        console.error("Failed to fetch contracts", error);
+      }
+    };
+  } else {
+    return async function (dispatch) {
+      try {
+        contracts = await fetchWrapper(
+          "/contracts",
+          "",
+          "GET"
+        ).then((res) => {
+          return res.contracts;
+        });
+  
+        dispatch({
+          type: "SET_CONTRACTS",
+          payload: contracts,
+        });
+      } catch (error) {
+        console.error("Failed to fetch contracts", error);
+      }
+    };
+  }
+}
+
 export function getOrganization() {
   return async function fetchOrganization(dispatch) {
     try {
@@ -263,6 +308,14 @@ export function addDocument(document) {
   };
 }
 
+// Action to add contract
+export function addContract(contract) {
+  return {
+    type: "ADD_CONTRACT",
+    payload: contract
+  }
+}
+
 // Action to update an existing document
 export function updateDocument(document) {
   return {
@@ -293,8 +346,8 @@ export function addMemberTask(task) {
 export function addMemberProject(project) {
   return {
     type: "ADD_MEMBER_PROJECT",
-    payload: project
-  }
+    payload: project,
+  };
 }
 
 export function updateMemberTask(payload) {
@@ -430,22 +483,27 @@ export function fetchTeam() {
 export function fetchUserInvoices(type = "expanded", chunk = 15) {
   return async function (dispatch) {
     try {
-      const response = await fetchWrapper("/invoices", localStorage.getItem("token"), "GET", {
-        type,
-        chunk
-      });
+      const response = await fetchWrapper(
+        "/invoices",
+        localStorage.getItem("token"),
+        "GET",
+        {
+          type,
+          chunk,
+        }
+      );
 
       console.log(response);
 
       dispatch({
         type: "SET_INVOICES",
-        payload: response.invoices
-      })
+        payload: response.invoices,
+      });
     } catch (error) {
       console.error("Error fetching invoice data:", error);
       // Optionally, dispatch an error action here
     }
-  }
+  };
 }
 
 export function fetchSprints() {

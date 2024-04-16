@@ -1,5 +1,5 @@
 .Plackard {
-  width: 100%;
+  min-width: 200px;
   height: fit-content;
   padding: 5px 10px;
   background-color: #f1f1f1;
@@ -7,7 +7,7 @@
   flex-direction: row;
   border-radius: 5px;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .PlackardImage {
@@ -32,6 +32,7 @@
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
+  width: 100%;
 }
 
 .LogoutIcon:hover {

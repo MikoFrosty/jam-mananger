@@ -14,6 +14,8 @@ import SignupFlow from "../pages/SignupFlow";
 // import Pricing from "../features/LandingPage/pricing";
 // import { Elements } from "@stripe/react-stripe-js";
 // import { loadStripe } from "@stripe/stripe-js";
+import ClientAccountSignup from '../pages/ClientAccount';
+import BusinessDashboard from '../pages/KamariDashboard';
 
 // const stripePromise = loadStripe(
 //   "pk_test_51OU8cxDhEC7QrbhyXNDZFKnFjl1rM9eqZElMdnx5tqaw2xDrCmAH4InT78qJO7V88S2HihXphcY2xA6Ff3mMvNtv00SgSHNfGL"
@@ -44,6 +46,11 @@ const commonRoutes = [
     path: "terms-and-conditions",
     element: <TermsAndConditions />,
     children: <></>,
+  },
+  {
+    path: "client-account",
+    element: <ClientAccountSignup />,
+    children: <></>
   },
   {
     path: "client-signup",
@@ -85,6 +92,11 @@ const commonRoutes = [
     element: <Login />,
     children: <></>,
   },
+  {
+    path: "business-dashboard",
+    element: <BusinessDashboard />,
+    children: <></>
+  }
 ];
 
 export default commonRoutes;

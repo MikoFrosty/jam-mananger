@@ -25,7 +25,8 @@ const initialState = {
   selectedMember_Tasks: null,
   client_partner: null,
   projects: null,
-  invoices: null
+  invoices: null,
+  contracts: null,
 };
 
 function appReducer(state = initialState, action) {
@@ -55,6 +56,26 @@ function appReducer(state = initialState, action) {
         ...state,
         invoices: action.payload,
       };
+    }
+    case "SET_CONTRACTS": {
+      return {
+        ...state,
+        contracts: action.payload,
+      };
+    }
+    case "ADD_CONTRACT": {
+      const contract = action.payload;
+      const { contracts } = state;
+
+      let updated_contracts = [
+        ...(contracts ? contracts : []),
+        contract
+      ]
+
+      return {
+        ...state,
+        contracts: updated_contracts
+      }
     }
     case "DELETE_PROJECTS": {
       // Assuming payload.tasks contains an array of task IDs to delete

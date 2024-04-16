@@ -11,6 +11,7 @@ import ClientView from "./ClientView";
 import { useDispatch } from "react-redux";
 import DocumentEditor from "../DocumentComponents/DocumentEditor";
 import ClientProjects from "./ClientProjects";
+import ClientContracts from "./ClientContracts";
 
 export default function ClientDashboard() {
   const dispatch = useDispatch();
@@ -101,6 +102,8 @@ export default function ClientDashboard() {
             <ClientView type={"client"}/>
           ) : viewMode === "client-projects" ? (
             <ClientProjects />
+          ) : viewMode === "client-contracts" ? (
+            <ClientContracts />
           ) : null
         }
       </div>

@@ -1,20 +1,21 @@
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import AuthContext from "../Contexts/AuthContext";
-import { useContext, useState, useEffect, lazy } from "react";
+import Button from "@mui/material/Button";
 import fetchWrapper from "../utils/fetchWrapper";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import AuthContext from "../Contexts/AuthContext";
+import { useContext, useState, useEffect, lazy } from "react";
+
+import { Grid } from "@mui/material";
 
 import styles from "../css/Signup.module.css";
+import { useDispatch } from 'react-redux';
+import { setClientUser } from '../StateManagement/Actions/actions';
 
 function Copyright(props) {
   return (
@@ -25,7 +26,7 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://kamariteams.com">
+      <Link color="inherit" href="https://mui.com/">
         Kamari
       </Link>{" "}
       {new Date().getFullYear()}
@@ -40,12 +41,12 @@ const iconHover = {
   margin: "0px 0px 20px 0px",
 };
 
-export default function Signup() {
-  const { user, setUserData, token, setTokenString } = useContext(AuthContext);
+export default function ClientAccountSignup() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user, setUserData, token, setTokenString } = useContext(AuthContext);
   const [searchParams, setSearchParams] = useSearchParams();
   const email = searchParams.get("email");
-  const [organization, setOrganization] = useState(null);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
@@ -76,44 +77,30 @@ export default function Signup() {
     }
 
     // If both email and password are valid, proceed with form submission
-    if (emailRegex.test(email) && passwordRegex.test(password)) {
+    if (emailRegex.test(email) && passwordRegex.test(password) && data.get("organizationName").length > 2) {
       const payload = {
-        email: email ? email : data.get("email"),
-        password: data.get("password"),
-        type: "standard",
-        organization: data.get("organizationName"),
-        hourly_rate: data.get("hourlyRate"),
-        name: {
-          first: data.get("firstName"),
-          last: data.get("lastName"),
-        },
+        account_email: data.get("email"),
+        account_password: data.get("password"),
+        account_name: data.get("organizationName"),
       };
-
-      // client_reference_id and prefilled_email params to stripe payment page
 
       console.log(payload);
 
-      fetchWrapper("/signup", "", "POST", { ...payload }).then((res) => {
-        if (res.message === "User Registered") {
-          console.log(res);
-          setUserData(res.user);
+      fetchWrapper("/client-account", "", "POST", { ...payload }).then((res) => {
+        if (res.message === "Client account created") {
+          setUserData(res.client_account);
           setTokenString(res.token);
-          setOrganization(res.organization)
+          dispatch(setClientUser(res.client_account));
         }
       });
     }
   };
 
   useEffect(() => {
-    console.log(token, user, organization)
-    if (token && user && organization) {
-      console.log("Should nav to stripe payment link location");
-      window.location.replace(
-        `https://buy.stripe.com/test_14k9CG4Ej1NP0g0fYZ?client_reference_id=${organization.org_id}&prefilled_email=${user.email}`
-      ); // test
-      // window.location.replace(`https://buy.stripe.com/dR69Bn316fND5kA6oo?client_reference_id=${res.organization.org_id}&prefilled_email=${res.user.email}`); // prod
+    if (token && user) {
+      navigate("/client-dashboard")
     }
-  }, [token, user, organization]);
+  }, [token, user])
 
   function handleBackClick() {
     navigate("/");
@@ -125,9 +112,10 @@ export default function Signup() {
         <div className={styles.MessageText}>
           <Typography variant="h2">Welcome to Kamari</Typography>
           <Typography variant="body1">
-            We hope you are enjoy our beta testing. If you have any feed back,
-            reach out to us or submit a ticket by clicking the "Submit Issue"
-            button in your profile.
+            No more overpaying to find freelancers. With Kamari, you can post jobs, find talent, and manage tasks easily.
+          </Typography>
+          <Typography mt={15} variant="caption">
+            You are using the beta version of Kamari so if there is something you see that can be better, reach out to us and let us know!
           </Typography>
         </div>
       </div>
@@ -146,9 +134,6 @@ export default function Signup() {
               onClick={() => handleBackClick()}
               style={iconHover}
             />
-            <Avatar sx={{ m: 1, bgcolor: "#6CE5E8" }}>
-              <LockOutlinedIcon />
-            </Avatar>
             <Typography component="h1" variant="h5">
               Sign Up
             </Typography>
@@ -160,58 +145,14 @@ export default function Signup() {
               sx={{ mt: 1 }}
             >
               <div className={styles.SprintInput}>
-                <label className={styles.SprintLabel}>Organization Name</label>
+                <label className={styles.SprintLabel}>Brand Name</label>
                 <input
                   required
                   id="organizationName"
-                  label="Organization Name"
                   name="organizationName"
                   className={styles.SprintTitleInput}
                   type="text"
                 />
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  columnGap: "5px",
-                }}
-              >
-                <div className={styles.SprintInput}>
-                  <label className={styles.SprintLabel}>First Name</label>
-                  <input
-                    required
-                    id="firstname"
-                    name="firstName"
-                    className={styles.SprintTitleInput}
-                    type="text"
-                  />
-                </div>
-                <div className={styles.SprintInput}>
-                  <label className={styles.SprintLabel}>Last Name</label>
-                  <input
-                    required
-                    id="lastname"
-                    name="lastName"
-                    className={styles.SprintTitleInput}
-                    type="text"
-                  />
-                </div>
-              </div>
-              <div className={styles.SprintInput}>
-                <label className={styles.SprintLabel}>Hourly Rate</label>
-                <div className={styles.PrefixWrapper}>
-                  <div className={styles.Prefix}>$</div>
-                  <input
-                    name="hourlyRate"
-                    id="hourlyrate"
-                    required
-                    defaultValue={35}
-                    min={0}
-                    className={styles.SprintTitleInput}
-                    type="number"
-                  />
-                </div>
               </div>
               <div className={styles.SprintInput}>
                 <label className={styles.SprintLabel}>Email</label>
@@ -256,8 +197,8 @@ export default function Signup() {
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <Link href="/client-account" variant="body2">
-                    Are you a Client?
+                  <Link href="#" variant="body2">
+                    Forgot password?
                   </Link>
                 </Grid>
                 <Grid item xs>

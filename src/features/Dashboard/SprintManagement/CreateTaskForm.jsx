@@ -676,7 +676,7 @@ export default function TaskCreate({
           updateTask ? (
             <div className={styles.SprintInput}>
               <label className={styles.SprintLabel}>Track Time</label>
-              <Timer customStyles={{justifyContent: "start", width: "100%", justifyContent: "space-between"}} task={selectedTask}/>
+              <Timer customStyles={{width: "100%", justifyContent: "space-between"}} task={selectedTask}/>
             </div>
           ) : (null)
         }
