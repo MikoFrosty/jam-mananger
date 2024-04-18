@@ -16,6 +16,7 @@ import SignupFlow from "../pages/SignupFlow";
 // import { loadStripe } from "@stripe/stripe-js";
 import ClientAccountSignup from '../pages/ClientAccount';
 import BusinessDashboard from '../pages/KamariDashboard';
+import FindWork from "../pages/FindWork";
 
 // const stripePromise = loadStripe(
 //   "pk_test_51OU8cxDhEC7QrbhyXNDZFKnFjl1rM9eqZElMdnx5tqaw2xDrCmAH4InT78qJO7V88S2HihXphcY2xA6Ff3mMvNtv00SgSHNfGL"
@@ -95,6 +96,11 @@ const commonRoutes = [
   {
     path: "business-dashboard",
     element: <BusinessDashboard />,
+    children: <></>
+  },
+  {
+    path: "find-work",
+    element: <FindWork />,
     children: <></>
   }
 ];

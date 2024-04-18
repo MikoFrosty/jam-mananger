@@ -35,6 +35,51 @@ export default function ContractCreate({
   const [max, setMax] = useState(30);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [skills, setSkills] = useState([]);
+
+  const topSkills = [
+    'JavaScript', 'Web Design', 'HTML', 'CSS', 'PHP', 'Graphic Design', 'HTML5', 'WordPress', 'Photoshop', 'Logo Design',
+    'Illustration', 'React', 'Illustrator', 'Python', 'jQuery', 'Cascading Style Sheets (CSS)', 'Website Development',
+    'Mobile App Development', 'User Interface Design', 'Adobe Photoshop', 'SQL', 'MySQL', 'Web Development', 'Android',
+    'Web Application', 'HTML 5', 'Software Development', 'Javascript', 'iOS', 'CSS3', 'UI/UX Design', 'Flutter', 'Java',
+    'Node.js', '.NET', 'Responsive Web Design', 'Adobe Illustrator', 'App Development', 'Kotlin', 'Front-end Development',
+    'C#', 'User Experience Design', 'Laravel', 'User Interface', 'Database Design', 'MongoDB', 'API Development',
+    'Database Development', 'Data Entry', 'Excel', 'Software Architecture', 'Power BI', 'Go', 'Virtual Assistant', 'REST',
+    'Figma', 'Dart', 'Amazon Web Services', 'Full Stack Development', 'Tableau', 'Graphic Art', 'Scripting', 'C++',
+    'Business Analysis', 'Microsoft Access', 'Microsoft SQL Server', 'XML', 'Sketch', 'Google Cloud Platform',
+    'Interactive Design', 'Google Docs', 'Google Analytics', 'Market Research', 'Instagram Marketing', 'UX Research',
+    'Logo Design Services', 'Infographic Design', 'Product Development', 'Three.js', 'Machine Learning', 'Copywriting',
+    'PostgreSQL', 'Proofreading', 'Drawing', 'Marketing Strategy', 'GitHub', 'Google AdWords', 'Google Sheets',
+    'AngularJS', 'Google Workspace', 'Redux', 'Product Design', 'Statistical Analysis', 'Scala', 'Photo Editing',
+    'Content Writing', 'Pandas', 'NumPy', 'Symfony', 'Technical Support', 'Computer-aided Design', 'Game Development',
+    'Microsoft SQL', 'Network Administration', 'Web Application Development', 'Computer Science', 'Windows Desktop',
+    'Firebase', 'Data Science', 'Elasticsearch', 'Microsoft 365', 'TypeScript', 'Tensorflow', 'Search Engine Optimization (SEO)',
+    'Google Slides', 'SQLite', 'Presentations', 'Internet Research', 'Google Forms', 'GitHub API', 'Vue.js', 'ASP.NET',
+    'Docker', 'Rust', 'Unreal Engine', 'Haskell', 'Information Architecture', '2D Animation', 'Social Media Management',
+    'Salesforce', 'Microsoft PowerPoint', 'Scala Programming', 'Linux', 'OpenCV', 'Jenkins', 'Kubernetes', 'PyTorch',
+    'Blockchain', 'OpenGL', 'Ubuntu', 'iOS Development', '3D Modeling', 'Django', 'Spring Framework', 'Google App Engine',
+    'Google Translator Toolkit', 'Google App Script', 'Google Search Console', 'Google Ads', 'Google Maps API',
+    'Google Data Studio', 'Amazon S3', 'Amazon Aurora', 'Amazon DynamoDB', 'Amazon RDS', 'Amazon EC2', 'Clojure', 'Dart Programming Language',
+    'Progressive Web Apps (PWA)', 'AJAX', 'Google Fonts API', 'Microsoft Visio', 'Microsoft Azure',
+    'Google Tag Manager', 'Objective-C', 'Rust Programming Language', 'Angular 2+', 'Swift', 'Ruby on Rails',
+    'Keras', 'Express.js', '3D Rendering', 'Google Chrome Extension', 'Slack', 'Google My Business', 'Joomla',
+    'Google Analytics API', 'Git', 'Google Cloud Storage', 'YouTube API', 'Ruby', 'Grunt', 'Gulp',
+    'Adobe XD', 'Elasticsearch API', 'Google Places API', 'Google Maps JavaScript API', 'Mailchimp', 'Adobe Photoshop Lightroom',
+    '3D Animation', 'Natural Language Processing', 'GitLab', '3ds Max', 'Unity 3D', 'OpenAI', 'Scikit-learn',
+    'Solidity', 'Google Cloud Functions',
+  ];
+
+  useEffect(() => {
+    if (skill === "" || !skill) {
+      setSkills(topSkills);
+    } else {
+      const filteredSkills = topSkills.filter((thisSkill) =>
+        thisSkill.toLowerCase().includes(skill.toLowerCase())
+      );
+
+      setSkills(filteredSkills);
+    }
+  }, [skill]);
 
   useEffect(() => {
     if (isOpen) {
@@ -68,6 +113,17 @@ export default function ContractCreate({
     {
       title: "Long Term",
       length: "More than 3 months",
+    },
+  ];
+
+  const recurring_options = [
+    {
+      title: "Recurring",
+      description: "This task will re-open every every repeat cycle",
+    },
+    {
+      title: "One Time",
+      description: "This task will open once and complete upon delivery",
     },
   ];
 
@@ -139,12 +195,16 @@ export default function ContractCreate({
         min,
         max,
       },
+      timeline: selectedTimeline
     };
 
     fetchWrapper("/contracts", localStorage.getItem("token"), "POST", {
       ...payload,
     }).then((res) => {
       dispatch(addContract(res.contract));
+      if (res.message === "Contract Created") {
+        toggleModal();
+      }
     });
   }
 
@@ -255,15 +315,29 @@ export default function ContractCreate({
                 Add Skill
               </button>
             </div>
-            <div className={styles.Skill}>
-              <AddIcon />
+            <div className={styles.AvailableSkills}>
+              {skills.map((skill, index) => {
+                return (
+                  <div
+                    style={selectedSkills.some((thisSkill) => thisSkill.title === skill) ? {border: "1px solid rgba(162, 75, 248, 0.328)"} : {}}
+                    onClick={() => handleSkillSelect({
+                      title: skill,
+                      id: skills.length + index,
+                    })}
+                    className={styles.Skill}
+                  >
+                    <AddIcon />
+                    {skill}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       ) : step === 3 ? (
         <div className={styles.StepContainer}>
           <Typography variant="caption">Describe your contract</Typography>
-          <div className={styles.SelectedSkills}>
+          <div className={styles.SelectedSkillsContainer}>
             <textarea
               onChange={(e) => handleDescriptionChange(e)}
               value={description}

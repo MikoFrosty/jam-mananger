@@ -1,7 +1,7 @@
 .SelectedSkillsContract {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   row-gap: 10px;
   column-gap: 10px;
   background-color: #f1f1f1;
@@ -9,6 +9,8 @@
   width: 100%;
   height: fit-content;
   min-height: 0px;
+  max-height: 54px;
+  overflow-x: auto;
   padding: 10px;
   max-width: 100%;
   margin-top: 10px;
@@ -20,7 +22,7 @@
   width: fit-content;
   min-width: fit-content;
   padding: 5px 10px;
-  border-radius: 150px;
+  border-radius: 5px;
   border: none;
   background-color: white;
   align-items: center;
@@ -72,7 +74,7 @@
   width: 100%;
   height: fit-content;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
 }
 
 .HeaderRight {
@@ -102,17 +104,6 @@
   align-items: center;
 }
 
-.Rating {
-  display: flex;
-  flex-direction: row;
-  height: fit-content;
-  width: fit-content;
-  column-gap: 10px;
-  background-color: #f1f1f1;
-  border-radius: 5px;
-  padding: 5px;
-}
-
 .ApplyButton {
   background-color: white;
   border: none;
@@ -129,5 +120,16 @@
   background-color: #f1f1f1;
   cursor: pointer;
   transition: 0.2s;
-  color: rebeccapurple;
+  color: rgb(162, 75, 248);
+}
+
+.Text {
+  text-align: left;
+  border-bottom: 1px solid #f1f1f1;
+  border-top: 1px solid #f1f1f1;
+  padding: 15px 0px;
+  max-height: 200px;
+  text-overflow: ellipsis;
+  overflow: auto;
+  white-space: pre-wrap;
 }

@@ -1,14 +1,13 @@
 import styles from "../../css/Client/Contract.module.css";
 
-import StarIcon from "@mui/icons-material/Star";
-import StarHalfIcon from "@mui/icons-material/StarHalf";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
+
 import DiamondIcon from "@mui/icons-material/Diamond";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 
 import { Typography } from "@mui/material";
 
 import { useSelector } from "react-redux";
+import Rating from "./Rating";
 
 export default function Contract({
   min,
@@ -17,16 +16,23 @@ export default function Contract({
   title,
   description,
   selectedTimeline,
+  customStyle = {},
+  createdDate,
+  type = "live",
+  rating
 }) {
   const clientUser = useSelector((state) => state.app.client_user);
 
   return (
-    <div className={styles.Contract}>
+    <div style={customStyle} className={styles.Contract}>
       <div className={styles.Header}>
-        <Typography variant="h6">{title}</Typography>
+        <Typography textAlign={"left"} variant="h6">
+          {title}
+        </Typography>
         <div className={styles.HeaderRight}>
-          <FiberNewIcon />
-          <DiamondIcon />
+          {
+            ((((parseInt(Date.now()) - parseInt(createdDate))/1000)/60) < 60) ? <FiberNewIcon /> : null
+          }
         </div>
       </div>
       <Typography
@@ -37,12 +43,11 @@ export default function Contract({
           width: "fit-content",
         }}
         variant="caption"
+        textAlign={"right"}
       >
         {selectedTimeline?.title}: {selectedTimeline?.length}
       </Typography>
-      <textarea className={styles.StepInputArea} disabled={true}>
-        {description}
-      </textarea>
+      <text className={styles.Text}>{description}</text>
       <div className={styles.SelectedSkillsContract}>
         {selectedSkills.map((skill) => {
           return (
@@ -52,7 +57,7 @@ export default function Contract({
           );
         })}
       </div>
-      <Typography variant="body1">
+      <Typography textAlign={"left"} variant="body1">
         From ${min} to ${max} / hr
       </Typography>
       <div className={styles.Footer}>
@@ -60,14 +65,10 @@ export default function Contract({
           By: {clientUser?.account_name || "Kamari"}
         </Typography>
         <div className={styles.FooterRight}>
-          <div className={styles.Rating}>
-            <StarBorderIcon />
-            <StarBorderIcon />
-            <StarBorderIcon />
-            <StarBorderIcon />
-            <StarBorderIcon />
-          </div>
-          <button className={styles.ApplyButton}>Apply</button>
+          <Rating rating={rating}/>
+          {type !== "demo" ? (
+            <button className={styles.ApplyButton}>Apply</button>
+          ) : null}
         </div>
       </div>
     </div>

@@ -451,9 +451,27 @@
   border-radius: 5px;
   border: none;
   margin-top: 50px;
+  overflow: hidden;
 }
 
 .SelectedSkills {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  row-gap: 10px;
+  column-gap: 10px;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  width: 100%;
+  height: fit-content;
+  height: 160px;
+  padding: 10px;
+  max-width: 100%;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+
+.SelectedSkillsContainer {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -467,27 +485,46 @@
   padding: 10px;
   max-width: 100%;
   margin-top: 10px;
+  overflow-y: auto;
 }
-
-
 
 .Skill {
   display: flex;
   flex-direction: row;
-  height: 60px;
+  height: 40px;
   width: fit-content;
   min-width: 100px;
   padding: 10px 20px;
-  border-radius: 150px;
+  border-radius: 5px;
   border: none;
   background-color: white;
   align-items: center;
   justify-content: start;
   column-gap: 10px;
-  font-size: 30px;
+  font-size: 15px;
 }
 
+.Skill:hover {
+  cursor: pointer;
+}
 
+.AvailableSkills {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  row-gap: 10px;
+  column-gap: 10px;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  width: 100%;
+  height: fit-content;
+  min-height: 160px;
+  padding: 10px;
+  max-width: 100%;
+  margin-top: 10px;
+  overflow-y: scroll;
+  max-height: 300px;
+}
 
 .ButtonRow {
   display: flex;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "../../css/Client/ClientDashboard.module.css"
 import SideBar from "../Dashboard/SideBar"
-import { fetchClientDocuments, fetchClientUser, fetchPartners, setClientUser, setLogout, toggleView } from "../../StateManagement/Actions/actions";
+import { fetchClientAccount, fetchClientDocuments, fetchClientUser, fetchPartners, setClientUser, setLogout, toggleView } from "../../StateManagement/Actions/actions";
 import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import Documentation from "../Dashboard/Documentation/documentation";
@@ -30,7 +30,7 @@ export default function ClientDashboard() {
       navigate("/home");
     }
     else if (!clientUser) {
-      dispatch(fetchClientUser());
+      dispatch(fetchClientAccount());
     }
   }, [logout, clientUser])
 

@@ -6,15 +6,30 @@ import { useSelector, useDispatch } from "react-redux";
 import SlidingModal from "../Dashboard/SlidingModal";
 import ContractCreate from "./CreateContractForm";
 import Contract from "./Contract";
-import { fetchContracts } from "../../StateManagement/Actions/actions";
+import {
+  fetchClientAccount,
+  fetchContracts,
+} from "../../StateManagement/Actions/actions";
+
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
+import ExploreIcon from "@mui/icons-material/Explore";
+import StarIcon from "@mui/icons-material/Star";
+import StarHalfIcon from "@mui/icons-material/StarHalf";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import Rating from "./Rating";
 
 export default function ClientContracts() {
   const dispatch = useDispatch();
-  const [view, setView] = useState("Active");
-  const contracts = useSelector((state) => state.app.contracts);
+  const [view, setView] = useState("Open");
+  const fetchedContracts = useSelector((state) => state.app.contracts);
+  const [contracts, setContracts] = useState(null);
+  const clientUser = useSelector((state) => state.app.client_user);
   const [createMode, setCreateMode] = useState(false);
   const [contractsFetched, setContractsFetched] = useState(false);
   const [selectedContract, setSelectedContract] = useState(null);
+  const [contractsFiltered, setContractsFiltered] = useState(false);
 
   useEffect(() => {
     if (!contractsFetched) {
@@ -23,15 +38,75 @@ export default function ClientContracts() {
     }
   }, [contractsFetched]);
 
+  useEffect(() => {
+    if (!clientUser) {
+      dispatch(fetchClientAccount());
+    }
+  }, [clientUser]);
+
+  useEffect(() => {
+    console.log(" ", fetchedContracts);
+    setContracts(fetchedContracts);
+  }, [fetchedContracts]);
+
   function toggleModal() {
     setCreateMode(!createMode);
   }
 
+  function formatDate(timestamp) {
+    const date = new Date(parseInt(timestamp));
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+    return `${month}, ${year}`;
+  }
+
+  function toggleLocalView(view) {
+    setView(view);
+    setContractsFiltered(false);
+  }
+
   useEffect(() => {
-    if (contracts.length > 0 && !selectedContract) {
+    if (contracts?.length > 0 && !selectedContract) {
       setSelectedContract(contracts[0]);
+    } else if (contracts?.length === 0) {
+      setSelectedContract(null);
     }
   }, [contracts]);
+
+  function formatPostedDate(postedDate) {
+    const seconds = parseInt(
+      (parseInt(Date.now()) - parseInt(postedDate)) / 1000
+    );
+
+    if (seconds >= 86400) {
+      return `Posted ${parseInt(seconds / 86400)} days ago`;
+    } else if (seconds >= 3600 && seconds < 86400) {
+      return `Posted ${parseInt(seconds / 3600)} hours ago`;
+    } else if (seconds >= 60 && seconds < 3600) {
+      return `Posted ${parseInt(seconds / 60)} minutes ago`;
+    } else {
+      return `Posted ${parseInt(seconds)} seconds ago`;
+    }
+  }
+
+  useEffect(() => {
+    if (contracts && !contractsFiltered) {
+      const filteredContracts = fetchedContracts.filter(
+        (contract) => contract.status.toLowerCase() === view.toLowerCase()
+      );
+      setContracts(filteredContracts);
+      setContractsFiltered(true);
+    }
+  }, [contracts, contractsFiltered]);
+
+  useEffect(() => {
+    console.log("Selected Contract:", selectedContract);
+  }, [selectedContract]);
+
+  function handleContractSelect(contract) {
+    setSelectedContract(contract);
+    console.log(contract);
+  }
 
   return (
     <div className={styles.ClientContracts}>
@@ -44,9 +119,9 @@ export default function ClientContracts() {
       </SlidingModal>
       <AccountBar
         view={view}
-        onViewToggle={setView}
+        onViewToggle={toggleLocalView}
         toggle={true}
-        toggleOptions={["Active", "Closed", "Applications"]}
+        toggleOptions={["Open", "Closed", "Applications"]}
       >
         <button className={styles.CreateButton} onClick={toggleModal}>
           Create New Contract
@@ -54,17 +129,34 @@ export default function ClientContracts() {
       </AccountBar>
       <div className={styles.Main}>
         <div className={styles.LeftColumn}>
-          {contracts ? (
+          {contracts !== null ? (
             contracts.map((this_contract, index) => {
               return (
-                <Contract
-                  min={this_contract.budget.min}
-                  max={this_contract.budget.max}
-                  selectedSkills={this_contract.skills}
-                  title={this_contract.title}
-                  description={this_contract.description}
-                  selectedTimeline={this_contract.timeline}
-                />
+                <div onClick={() => handleContractSelect(this_contract)}>
+                  <Contract
+                    rating={this_contract.rating}
+                    type={"demo"}
+                    createdDate={this_contract.created_date}
+                    min={this_contract.budget?.min}
+                    max={this_contract.budget?.max}
+                    selectedSkills={this_contract.skills}
+                    title={this_contract.title}
+                    description={this_contract.description}
+                    selectedTimeline={this_contract.timeline}
+                    customStyle={
+                      this_contract.contract_id ===
+                      selectedContract?.contract_id
+                        ? {
+                            border: "1px solid rgb(162, 75, 248)",
+                            borderRadius: "5px",
+                          }
+                        : {
+                            border: "1px solid transparent",
+                            borderRadius: "5px",
+                          }
+                    }
+                  />
+                </div>
               );
             })
           ) : (
@@ -86,8 +178,92 @@ export default function ClientContracts() {
             </div>
           )}
         </div>
-        <div className={styles.RightColumn}></div>
-        {view === "Active" ? null : null}
+        <div className={styles.RightColumn}>
+          {view !== "Applications" ? (
+            selectedContract ? (
+              <div className={styles.ExpandedContract}>
+                <Typography variant="h4">{selectedContract.title}</Typography>
+                <div className={styles.ContentRow}>
+                  <Typography variant="caption">
+                    {formatPostedDate(selectedContract.created_date)}
+                  </Typography>
+                  <div className={styles.IconWithText}>
+                    <ExploreIcon />
+                    <Typography variant="body1">Remote (US)</Typography>
+                  </div>
+                </div>
+                <div className={styles.MainContract}>
+                  <div
+                    style={{
+                      height: "90%",
+                      display: "flex",
+                      flexDirection: "column",
+                      rowGap: "10px",
+                    }}
+                  >
+                    <div className={styles.SelectedSkills}>
+                      {selectedContract.skills.map((skill) => {
+                        return (
+                          <div className={styles.Skill}>{skill.title}</div>
+                        );
+                      })}
+                    </div>
+                    <text className={styles.Text}>
+                      {selectedContract.description}
+                    </text>
+                    <Typography
+                      style={{
+                        backgroundColor: "rgba(162, 75, 248, 0.328)",
+                        padding: "5px",
+                        borderRadius: "5px",
+                      }}
+                      textAlign={"left"}
+                    >
+                      {selectedContract.timeline?.title
+                        ? `The client expects this contract to last ${selectedContract.timeline?.title}`
+                        : "The client expects this contract to last less than a month"}
+                    </Typography>
+                    <div className={styles.Budget}>
+                      <div className={styles.Rate}>
+                        <Typography variant="caption">
+                          Hourly Minimum
+                        </Typography>
+                        <Typography variant="h4">
+                          {`$${selectedContract.budget.min}`}
+                        </Typography>
+                      </div>
+                      <div className={styles.Rate}>
+                        <Typography variant="caption">
+                          Hourly Maximum
+                        </Typography>
+                        <Typography variant="h4">
+                          {`$${selectedContract.budget.max}`}
+                        </Typography>
+                      </div>
+                    </div>
+                    <div className={styles.AboutTheClient}>
+                      <Typography variant="caption">
+                        The client has been a member since{" "}
+                        {formatDate(clientUser?.creation_date)}
+                      </Typography>
+                      <Rating rating={clientUser.rating} />
+                    </div>
+                  </div>
+                  <div className={styles.ContractFooter}>
+                    <button className={styles.ApplyButton}>
+                      Manage Contract
+                    </button>
+                    <Typography variant="body1">
+                      {`${
+                        selectedContract.application_count || 0
+                      } Applications`}
+                    </Typography>
+                  </div>
+                </div>
+              </div>
+            ) : null
+          ) : null}
+        </div>
       </div>
     </div>
   );

@@ -176,6 +176,28 @@ export function fetchClientUser() {
   };
 }
 
+export function fetchClientAccount() {
+  return async function (dispatch) {
+    try {
+      const response = await fetchWrapper(
+        "/client-account",
+        localStorage.getItem("token"),
+        "GET"
+      );
+
+      console.log(response)
+
+      dispatch({
+        type: "SET_CLIENT_USER",
+        payload: response.client_account,
+      });
+    } catch (error) {
+      console.error("Error fetching client account:", error);
+      // Optionally, dispatch an error action here
+    }
+  };
+}
+
 export function fetchPartners() {
   return async function (dispatch) {
     try {

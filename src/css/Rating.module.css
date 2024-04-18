@@ -1,0 +1,14 @@
+.Rating {
+  display: flex;
+  flex-direction: row;
+  height: fit-content;
+  width: fit-content;
+  column-gap: 10px;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.Star {
+  color: rgba(162, 75, 248, 0.497);
+}
