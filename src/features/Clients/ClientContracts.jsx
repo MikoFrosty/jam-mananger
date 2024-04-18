@@ -108,6 +108,10 @@ export default function ClientContracts() {
     console.log(contract);
   }
 
+  useEffect(() => {
+    console.log("selected contract",selectedContract)
+  }, [selectedContract])
+
   return (
     <div className={styles.ClientContracts}>
       <SlidingModal isOpen={createMode} toggleModal={toggleModal}>
@@ -147,12 +151,10 @@ export default function ClientContracts() {
                       this_contract.contract_id ===
                       selectedContract?.contract_id
                         ? {
-                            border: "1px solid rgb(162, 75, 248)",
-                            borderRadius: "5px",
+                            border: "1px solid rgb(162, 75, 248)"
                           }
                         : {
-                            border: "1px solid transparent",
-                            borderRadius: "5px",
+                            border: "1px solid transparent"
                           }
                     }
                   />

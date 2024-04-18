@@ -367,7 +367,7 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  padding-top: 50px;
+  padding-top: 20px;
   text-align: left;
 }
 
@@ -604,3 +604,11 @@
   padding: 10px;
 }
 
+.StepGroup {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 100%;
+  height: fit-content;
+}

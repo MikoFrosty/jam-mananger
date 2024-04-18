@@ -4,12 +4,21 @@ import { useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import fetchWrapper from "../utils/fetchWrapper";
+import Contract from "../features/Clients/Contract";
 
-import { Rating, Typography } from "@mui/material";
-import ExploreIcon from "@mui/icons-material/Explore";
+import { Typography } from "@mui/material";
+import Rating from "../features/Clients/Rating";
 import HoverDropdown from "../components/HoverDropdown";
 
+import ExploreIcon from "@mui/icons-material/Explore";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { useNavigate } from "react-router-dom";
+import SlidingModal from "../features/Dashboard/SlidingModal";
+import FreeApplicationCreate from "../features/FreeCreateApplicationForm";
+
 export default function FindWork({ userType = "user", customStyles = {} }) {
+  const navigate = useNavigate();
   const contractsPerPage = 15;
   const topSkills = [
     "JavaScript",
@@ -227,18 +236,41 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
     },
   ];
 
+  const datePosted = [
+    {
+      title: "Last 24 Hours",
+      filter_length: 24,
+    },
+    {
+      title: "Last 3 Days",
+      filter_length: 72,
+    },
+    {
+      title: "Last 7 Days",
+      filter_length: 168,
+    },
+    {
+      title: "Last 30 Days",
+      filter_length: 720,
+    },
+  ];
+
   const [contracts, setContracts] = useState(null);
   const [page, setPage] = useState(1);
   const [skip, setSkip] = useState(0);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [filterString, setFilterString] = useState("");
-  const [filterDate, setFilterDate] = useState(null);
   const [fetchContracts, setFetchContracts] = useState(true);
   const [contractsLoading, setContractsLoading] = useState(false);
   const [selectedContract, setSelectedContract] = useState(null);
-  const [selectedTimelines, setSelectedTimelines] = useState([]);
+  const [selectedTimeline, setSelectedTimeline] = useState(null);
   const [skills, setSkills] = useState([]);
   const [skill, setSkill] = useState("");
+  const [selectedPostedDate, setSelectedPostedDate] = useState(null);
+  const [currentlyFetching, setCurrentlyFetching] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalResults, setTotalResults] = useState(0);
+  const [isOpen, setIsOpen] = useState(false)
 
   function handleSkillChange(e) {
     setSkill(e.target.value);
@@ -258,53 +290,163 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
 
   function handleSkillSelect(skill) {
     if (selectedSkills.some((thisSkill) => thisSkill === skill)) {
-      const filteredSkills = selectedSkills.filter((selectedSkill) => selectedSkill !== skill);
+      const filteredSkills = selectedSkills.filter(
+        (selectedSkill) => selectedSkill !== skill
+      );
       setSelectedSkills(filteredSkills);
     } else {
-      setSelectedSkills([
-        ...selectedSkills,
-        skill
-      ])
+      setSelectedSkills([...selectedSkills, skill]);
     }
+  }
+
+  function handleNavigate(destination) {
+    if (destination.includes("https")) {
+      window.open(destination);
+    } else {
+      navigate("destination");
+    }
+  }
+
+  function toggleModal() {
+    setIsOpen(!isOpen);
+  }
+
+  function handlePostedDateSelect(date) {
+    console.log(selectedPostedDate, date);
+    if (selectedPostedDate?.title === date.title) {
+      setSelectedPostedDate(null);
+    } else {
+      setSelectedPostedDate(date);
+    }
+  }
+
+  function handleFilterStringChange(e) {
+    setFilterString(e.target.value);
   }
 
   function handleTimelineSelect(timeline) {
-    if (selectedTimelines.some((thisTimeline) => thisTimeline.title === timeline.title)) {
-      const filteredTimelines = selectedTimelines.filter((selectedTimeline) => selectedTimeline.title !== timeline.title);
-      setSelectedTimelines(filteredTimelines)
+    if (selectedTimeline?.title === timeline.title) {
+      setSelectedTimeline(null);
     } else {
-      setSelectedTimelines([
-        ...selectedTimelines,
-        timeline
-      ])
+      setSelectedTimeline(timeline);
     }
+    console.log(timeline);
+  }
+
+  function clearFilters() {
+    setSelectedTimeline(null);
+    setSelectedSkills([]);
+    setSelectedPostedDate(null);
+    setFilterString("");
+    setFetchContracts(true);
+    setCurrentlyFetching(false);
+    setPage(1);
   }
 
   useEffect(() => {
-    if (page) {
-      setSkip(page * contractsPerPage);
-    } else {
-      setSkip(0);
-    }
-  }, [page]);
-
-  useEffect(() => {
-    if (1 === 2 && fetchContracts) {
-      setContractsLoading(true);
+    if (fetchContracts && !currentlyFetching) {
+      setCurrentlyFetching(true);
       const payload = {
-        filter_date: filterDate,
-        filter_skills: selectedSkills,
-        filter_title: filterString,
+        filter_date: selectedPostedDate?.filter_length
+          ? selectedPostedDate?.filter_length
+          : null,
+        filter_skills:
+          selectedSkills && selectedSkills.length > 0 ? selectedSkills : null,
+        filter_title: filterString && filterString !== "" ? filterString : null,
+        filter_timeline: selectedTimeline
+          ? JSON.stringify(selectedTimeline)
+          : null,
+        skip,
       };
+
+      setContractsLoading(true);
+      setSelectedContract(null);
+      console.log("searching", payload);
 
       fetchWrapper("/contracts-unauthenticated", "", "GET", {
         ...payload,
       }).then((res) => {
         console.log(res);
         setContractsLoading(false);
+        setContracts(res.contracts);
+        setFetchContracts(false);
+        setCurrentlyFetching(false);
+        setHasMore(res.hasMoreResults);
+        setTotalResults(res.totalCount);
       });
     }
+  }, [
+    fetchContracts,
+    selectedSkills,
+    selectedPostedDate,
+    filterString,
+    selectedTimeline,
+    skip,
+  ]);
+
+  function handleContractSearch() {
+    setFetchContracts(true);
+    setCurrentlyFetching(false);
+  }
+
+  function handleContractSelect(contract) {
+    setSelectedContract(contract);
+    console.log(contract);
+  }
+
+  useEffect(() => {
+    console.log("selected contract", selectedContract);
+  }, [selectedContract]);
+
+  function formatPostedDate(postedDate) {
+    const seconds = parseInt(
+      (parseInt(Date.now()) - parseInt(postedDate)) / 1000
+    );
+
+    if (seconds >= 86400) {
+      return `Posted ${parseInt(seconds / 86400)} days ago`;
+    } else if (seconds >= 3600 && seconds < 86400) {
+      return `Posted ${parseInt(seconds / 3600)} hours ago`;
+    } else if (seconds >= 60 && seconds < 3600) {
+      return `Posted ${parseInt(seconds / 60)} minutes ago`;
+    } else {
+      return `Posted ${parseInt(seconds)} seconds ago`;
+    }
+  }
+
+  function formatDate(timestamp) {
+    const date = new Date(parseInt(timestamp));
+    const month = date.toLocaleString("default", { month: "long" });
+    const year = date.getFullYear();
+    return `${month}, ${year}`;
+  }
+
+  function handlePaginationDecrement() {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  }
+
+  function handlePaginationIncrement() {
+    if (page * 15 < totalResults) {
+      setPage(page + 1);
+    }
+  }
+
+  useEffect(() => {
+    if (page) {
+      setSkip((page - 1) * contractsPerPage);
+    } else {
+      setSkip(0);
+    }
+    setFetchContracts(true);
   }, [page]);
+
+  useEffect(() => {
+    if (contracts && contracts.length > 0) {
+      setSelectedContract(contracts[0]);
+    }
+  }, [contracts]);
 
   return (
     <div className={styles.FindWork}>
@@ -315,29 +457,39 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
           alt="Kamari Logo Image"
         />
         <div className={styles.HeaderButtons}>
-          <button className={styles.HeaderButton}>Contact</button>
-          <button className={styles.HeaderButton}>Login</button>
-          <button className={styles.HeaderButton}>Get Started</button>
-          <HoverDropdown
-            id={"SkillsDropdown"}
-            customStyles={{ height: "30vh", width: "30vw" }}
-            buttonContent={
-              <Typography variant="body1">Select Skills</Typography>
-            }
-            dropdownContent={
-              <>
-                <div className={styles.DropdownContent}></div>
-              </>
-            }
-          />
+          <button
+            onClick={() => handleNavigate("https://kamariteams.com/contact")}
+            className={styles.HeaderButton}
+          >
+            Contact
+          </button>
+          <button
+            onClick={() => handleNavigate("/login")}
+            className={styles.HeaderButton}
+          >
+            Login
+          </button>
+          <button
+            onClick={() => handleNavigate("/signup")}
+            className={styles.HeaderButton}
+          >
+            Get Started
+          </button>
         </div>
       </div>
       <div className={styles.Main}>
+        <SlidingModal isOpen={isOpen} toggleModal={toggleModal}>
+          <FreeApplicationCreate isOpen={isOpen} toggleModal={toggleModal}/>
+        </SlidingModal>
         <div className={styles.MainLeft}>
           <div className={styles.FilterContainer}>
             <div className={styles.ContentRow}>
               <Typography variant="caption">Filters</Typography>
-              <Typography className={styles.ClickableText} variant="caption">
+              <Typography
+                onClick={clearFilters}
+                className={styles.ClickableText}
+                variant="caption"
+              >
                 Clear Filters
               </Typography>
             </div>
@@ -345,17 +497,39 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
               <input
                 placeholder="Search for Contracts"
                 className={styles.SkillSearch}
+                style={{ height: "100%" }}
                 type="text"
+                value={filterString}
+                onChange={(e) => handleFilterStringChange(e)}
               />
+              <button
+                className={styles.ApplyButton}
+                onClick={() => handleContractSearch()}
+                style={{
+                  width: "fit-content",
+                  backgroundColor: "rgb(162, 75, 248)",
+                  color: "white",
+                }}
+              >
+                Search
+              </button>
             </div>
             <div className={styles.ContractFilters}>
               <HoverDropdown
                 id={"SkillsDropdown"}
                 customStyles={{ height: "30vh", width: "30vw" }}
                 buttonContent={
-                  <Typography variant="body1">{
-                    selectedSkills.length === 0 ? "Select Skills" : selectedSkills.length === 1 ? selectedSkills[0] : selectedSkills.length > 1 ? `${selectedSkills[0]} + ${selectedSkills.length - 1} more` : null
-                  }</Typography>
+                  <Typography variant="body1">
+                    {selectedSkills.length === 0
+                      ? "Select Skills"
+                      : selectedSkills.length === 1
+                      ? selectedSkills[0]
+                      : selectedSkills.length > 1
+                      ? `${selectedSkills[0]} + ${
+                          selectedSkills.length - 1
+                        } more`
+                      : null}
+                  </Typography>
                 }
                 dropdownContent={
                   <div className={styles.Skills}>
@@ -367,51 +541,89 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                       type="text"
                     />
                     {skills.map((skill) => {
-                      return <div style={selectedSkills.some((thisSkill) => thisSkill === skill) ? {border: "1px solid rgb(162, 75, 248)"} : {}} onClick={() => handleSkillSelect(skill)} className={styles.Skill}>{skill}</div>;
+                      return (
+                        <div
+                          style={
+                            selectedSkills.some(
+                              (thisSkill) => thisSkill === skill
+                            )
+                              ? { border: "1px solid rgb(162, 75, 248)" }
+                              : {}
+                          }
+                          onClick={() => handleSkillSelect(skill)}
+                          className={styles.Skill}
+                        >
+                          {skill}
+                        </div>
+                      );
                     })}
                   </div>
+                }
+              />
+              <HoverDropdown
+                id={"PostedDateDropdown"}
+                customStyles={{ maxHeight: "300px", overflowY: "scroll" }}
+                buttonContent={
+                  <Typography variant="body1">
+                    {selectedPostedDate
+                      ? selectedPostedDate.title
+                      : "Posted Date"}
+                  </Typography>
+                }
+                dropdownContent={
+                  <>
+                    {datePosted.map((thisDate) => {
+                      return (
+                        <div
+                          style={
+                            selectedPostedDate?.title === thisDate.title
+                              ? { backgroundColor: "#e5e5e5" }
+                              : {}
+                          }
+                          onClick={() => handlePostedDateSelect(thisDate)}
+                          className={`${styles.HoverDropdownContentChildren}`}
+                        >
+                          <Typography variant="body1">
+                            {thisDate.title}
+                          </Typography>
+                        </div>
+                      );
+                    })}
+                  </>
                 }
               />
               <HoverDropdown
                 id={"TimelinesDropdown"}
                 customStyles={{ maxHeight: "300px", overflowY: "scroll" }}
                 buttonContent={
-                  <Typography variant="body1">Select Timelime</Typography>
+                  <Typography variant="body1">
+                    {selectedTimeline
+                      ? selectedTimeline.title
+                      : "Contract Timeline"}
+                  </Typography>
                 }
                 dropdownContent={
                   <>
                     {timelines.map((timeline) => {
                       return (
-                        <div style={selectedTimelines.some((thisTimeline) => thisTimeline.title === timeline.title) ? {backgroundColor: "#e5e5e5"} : {}} onClick={() => handleTimelineSelect(timeline)} className={`${styles.HoverDropdownContentChildren}`}>
-                          <Typography variant="body1">{timeline.title}</Typography>
-                          <Typography color={"#a1a1a1"} variant="caption">{timeline.length}</Typography>
+                        <div
+                          style={
+                            selectedTimeline?.title === timeline.title
+                              ? { backgroundColor: "#e5e5e5" }
+                              : {}
+                          }
+                          onClick={() => handleTimelineSelect(timeline)}
+                          className={`${styles.HoverDropdownContentChildren}`}
+                        >
+                          <Typography variant="body1">
+                            {timeline.title}
+                          </Typography>
+                          <Typography color={"#a1a1a1"} variant="caption">
+                            {timeline.length}
+                          </Typography>
                         </div>
-                      )
+                      );
                     })}
-                  </>
-                }
-              />
-              <HoverDropdown
-                id={"SkillsDropdown"}
-                customStyles={{ height: "30vh", width: "30vw" }}
-                buttonContent={
-                  <Typography variant="body1">Posted Date</Typography>
-                }
-                dropdownContent={
-                  <>
-                    <div className={styles.DropdownContent}></div>
-                  </>
-                }
-              />
-              <HoverDropdown
-                id={"SkillsDropdown"}
-                customStyles={{ height: "30vh", width: "30vw" }}
-                buttonContent={
-                  <Typography variant="body1">Applicants</Typography>
-                }
-                dropdownContent={
-                  <>
-                    <div className={styles.DropdownContent}></div>
                   </>
                 }
               />
@@ -423,6 +635,62 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                 <Skeleton width={"100%"} height={"200px"} />
                 <Skeleton width={"100%"} height={"200px"} />
                 <Skeleton width={"100%"} height={"200px"} />
+              </div>
+            ) : (
+              <div className={styles.Contracts}>
+                {contracts?.length > 0 ? (
+                  contracts.map((thisContract) => {
+                    return (
+                      <div onClick={() => handleContractSelect(thisContract)}>
+                        <Contract
+                          key={thisContract.contract_id}
+                          min={thisContract.budget.min}
+                          max={thisContract.budget.max}
+                          selectedSkills={thisContract.skills}
+                          title={thisContract.title}
+                          description={thisContract.description}
+                          selectedTimeline={thisContract.timeline}
+                          createdDate={thisContract.created_date}
+                          rating={thisContract.client_details?.rating || 5}
+                          customStyle={
+                            thisContract.contract_id ===
+                            selectedContract?.contract_id
+                              ? {
+                                  border: "1px solid rgb(162, 75, 248, 0.5)",
+                                }
+                              : {
+                                  border: "1px solid transparent",
+                                }
+                          }
+                        />
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className={styles.NoContractsCard}>
+                    <Typography variant="h4">No Contracts Found</Typography>
+                    <Typography variant="caption">
+                      Adjust filters to see available contracts
+                    </Typography>
+                  </div>
+                )}
+              </div>
+            )}
+            {hasMore ? (
+              <div className={styles.ContentRow}>
+                <ChevronLeftIcon
+                  onClick={() => handlePaginationDecrement()}
+                  className={styles.PaginationIcon}
+                />
+                <div className={styles.PaginationMiddle}>
+                  <Typography variant="caption">{`page ${page} of ${Math.ceil(
+                    totalResults / 15
+                  )}`}</Typography>
+                </div>
+                <ChevronRightIcon
+                  onClick={() => handlePaginationIncrement()}
+                  className={styles.PaginationIcon}
+                />
               </div>
             ) : null}
           </div>
@@ -460,7 +728,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
               <div className={styles.MainContract}>
                 <div
                   style={{
-                    height: "90%",
+                    height: "93%",
                     display: "flex",
                     flexDirection: "column",
                     rowGap: "10px",
@@ -476,7 +744,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                   </text>
                   <Typography
                     style={{
-                      backgroundColor: "rgba(162, 75, 248, 0.328)",
+                      backgroundColor: "rgba(46, 196, 182, 0.3)",
                       padding: "5px",
                       borderRadius: "5px",
                     }}
@@ -503,15 +771,20 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                   <div className={styles.AboutTheClient}>
                     <Typography variant="caption">
                       The client has been a member since{" "}
-                      {formatDate(clientUser?.creation_date)}
+                      {formatDate(
+                        selectedContract.client_account_details
+                          ?.creation_date || Date.now()
+                      )}
                     </Typography>
-                    <Rating rating={clientUser.rating} />
+                    <Rating
+                      rating={
+                        selectedContract.client_account_details?.rating || 5
+                      }
+                    />
                   </div>
                 </div>
                 <div className={styles.ContractFooter}>
-                  <button className={styles.ApplyButton}>
-                    Manage Contract
-                  </button>
+                  <button onClick={toggleModal} className={styles.ApplyButton}>Apply</button>
                   <Typography variant="body1">
                     {`${selectedContract.application_count || 0} Applications`}
                   </Typography>

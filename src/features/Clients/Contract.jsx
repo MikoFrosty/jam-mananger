@@ -1,6 +1,5 @@
 import styles from "../../css/Client/Contract.module.css";
 
-
 import DiamondIcon from "@mui/icons-material/Diamond";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 
@@ -57,7 +56,7 @@ export default function Contract({
           );
         })}
       </div>
-      <Typography textAlign={"left"} variant="body1">
+      <Typography textAlign={"right"} variant="body1">
         From ${min} to ${max} / hr
       </Typography>
       <div className={styles.Footer}>
@@ -66,9 +65,6 @@ export default function Contract({
         </Typography>
         <div className={styles.FooterRight}>
           <Rating rating={rating}/>
-          {type !== "demo" ? (
-            <button className={styles.ApplyButton}>Apply</button>
-          ) : null}
         </div>
       </div>
     </div>
