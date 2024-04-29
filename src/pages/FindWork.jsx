@@ -6,6 +6,9 @@ import "react-loading-skeleton/dist/skeleton.css";
 import fetchWrapper from "../utils/fetchWrapper";
 import Contract from "../features/Clients/Contract";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { Typography } from "@mui/material";
 import Rating from "../features/Clients/Rating";
 import HoverDropdown from "../components/HoverDropdown";
@@ -270,7 +273,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
   const [currentlyFetching, setCurrentlyFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [totalResults, setTotalResults] = useState(0);
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   function handleSkillChange(e) {
     setSkill(e.target.value);
@@ -303,7 +306,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
     if (destination.includes("https")) {
       window.open(destination);
     } else {
-      navigate("destination");
+      navigate(destination);
     }
   }
 
@@ -318,6 +321,15 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
     } else {
       setSelectedPostedDate(date);
     }
+  }
+
+  function notify(message) {
+    toast(message, {
+      className: styles.SmallToast,
+      hideProgressBar: true,
+      // You can also adjust the toast duration (auto-close time) here, if needed
+      autoClose: 1000,
+    });
   }
 
   function handleFilterStringChange(e) {
@@ -433,6 +445,10 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
     }
   }
 
+  function notifyApplicationSubmission() {
+    notify("Application Submitted");
+  }
+
   useEffect(() => {
     if (page) {
       setSkip((page - 1) * contractsPerPage);
@@ -479,7 +495,14 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
       </div>
       <div className={styles.Main}>
         <SlidingModal isOpen={isOpen} toggleModal={toggleModal}>
-          <FreeApplicationCreate isOpen={isOpen} toggleModal={toggleModal}/>
+          <FreeApplicationCreate
+            applicationCreated={notifyApplicationSubmission}
+            min={selectedContract?.budget.min}
+            max={selectedContract?.budget.max}
+            contract_id={selectedContract?.contract_id}
+            isOpen={isOpen}
+            toggleModal={toggleModal}
+          />
         </SlidingModal>
         <div className={styles.MainLeft}>
           <div className={styles.FilterContainer}>
@@ -784,7 +807,9 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                   </div>
                 </div>
                 <div className={styles.ContractFooter}>
-                  <button onClick={toggleModal} className={styles.ApplyButton}>Apply</button>
+                  <button onClick={toggleModal} className={styles.ApplyButton}>
+                    Apply
+                  </button>
                   <Typography variant="body1">
                     {`${selectedContract.application_count || 0} Applications`}
                   </Typography>
@@ -794,6 +819,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
           )}
         </div>
       </div>
+      <ToastContainer className={styles.ToastContainerStyle} />
     </div>
   );
 }

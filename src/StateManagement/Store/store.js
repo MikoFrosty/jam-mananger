@@ -77,6 +77,23 @@ function appReducer(state = initialState, action) {
         contracts: updated_contracts
       }
     }
+    case "REPLACE_CONTRACT": {
+      const contract = action.payload;
+      console.log(contract)
+      const { contracts } = state;
+
+      const filtered_contracts = contracts.filter((thisContract) => thisContract.contract_id !== contract.contract_id);
+
+      let updated_contracts = [
+        ...(filtered_contracts ? filtered_contracts : []),
+        contract
+      ]
+
+      return {
+        ...state,
+        contracts: updated_contracts
+      }
+    }
     case "DELETE_PROJECTS": {
       // Assuming payload.tasks contains an array of task IDs to delete
       const projectsToDelete = action.payload;
@@ -262,6 +279,8 @@ function appReducer(state = initialState, action) {
           documents: updatedDocuments,
         };
       }
+
+      break;
     }
     case "SET_EDITING_DOCUMENT": {
       return {
@@ -330,6 +349,8 @@ function appReducer(state = initialState, action) {
           memberTasks: updatedMemberTasks,
         };
       }
+
+      break;
     }
     case "ADD_MEMBER_TASK": {
       // destructure member tasks

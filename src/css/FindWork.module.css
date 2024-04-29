@@ -424,3 +424,7 @@
 .PaginationIcon:hover {
   cursor: pointer;
 }
+
+.ToastContainerStyle {
+  width: fit-content !important;
+}

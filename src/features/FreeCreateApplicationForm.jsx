@@ -12,11 +12,17 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import CheckIcon from "@mui/icons-material/Check";
 
 import _ from "lodash";
-import Contract from "./Clients/Contract";
 import fetchWrapper from "../utils/fetchWrapper";
 import { addContract } from "../StateManagement/Actions/actions";
 
-export default function FreeApplicationCreate({ toggleModal, isOpen }) {
+export default function FreeApplicationCreate({
+  toggleModal,
+  applicationCreated,
+  isOpen,
+  contract_id,
+  min,
+  max,
+}) {
   const dispatch = useDispatch();
   const [step, setStep] = useState(1);
   const [selectedSkills, setSelectedSkills] = useState([]);
@@ -25,11 +31,23 @@ export default function FreeApplicationCreate({ toggleModal, isOpen }) {
     title: "Short Term",
     length: "Less than a month",
   });
-  const [min, setMin] = useState(2);
-  const [max, setMax] = useState(30);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [skills, setSkills] = useState([]);
+  const [addWork, setAddWork] = useState(false);
+  const [workHistory, setWorkHistory] = useState([]);
+  const [workTitle, setWorkTitle] = useState("");
+  const [workStart, setWorkStart] = useState("");
+  const [workEnd, setWorkEnd] = useState("");
+  const [workDescription, setWorkDescription] = useState("");
+  const [currentLink, setCurrentLink] = useState("");
+  const [workLinks, setWorkLinks] = useState([]);
+  const [applicantEmail, setApplicantEmail] = useState("");
+  const [hourlyRate, setHourlyRate] = useState(0);
+
+  useEffect(() => {
+    setHourlyRate(min);
+  }, [min]);
 
   const topSkills = [
     "JavaScript",
@@ -256,56 +274,7 @@ export default function FreeApplicationCreate({ toggleModal, isOpen }) {
     console.log(selectedSkills);
   }, [selectedSkills]);
 
-  const steps = ["Personal Info", "Relevant Work", "Proposal"];
-
-  const timelines = [
-    {
-      title: "Short Term",
-      length: "Less than a month",
-    },
-    {
-      title: "Mid Term",
-      length: "Between 1 and 2 months",
-    },
-    {
-      title: "Long Term",
-      length: "More than 3 months",
-    },
-  ];
-
-  const recurring_options = [
-    {
-      title: "Recurring",
-      description: "This task will re-open every every repeat cycle",
-    },
-    {
-      title: "One Time",
-      description: "This task will open once and complete upon delivery",
-    },
-  ];
-
-  const escalations = [
-    {
-      title: "Low",
-      color: "#2EC4B6",
-      softerColor: "rgba(46, 196, 182, 0.3)", // Softer color with reduced opacity
-    },
-    {
-      title: "Moderate",
-      color: "#FFC914",
-      softerColor: "rgba(255, 201, 20, 0.3)",
-    },
-    {
-      title: "High",
-      color: "#FF9F1C",
-      softerColor: "rgba(255, 159, 28, 0.3)",
-    },
-    {
-      title: "Severe",
-      color: "#F5511F",
-      softerColor: "rgba(245, 81, 31, 0.3)",
-    },
-  ];
+  const steps = ["Personal Info", "Relevant Work"];
 
   function handleSkillSelect(selectedSkill) {
     if (selectedSkills.some((skill) => skill.id === selectedSkill.id)) {
@@ -319,48 +288,101 @@ export default function FreeApplicationCreate({ toggleModal, isOpen }) {
     }
   }
 
-  function handleTimelineSelect(timeline) {
-    setSelectedTimeline(timeline);
-  }
-
   function handleSkillChange(e) {
     setSkill(e.target.value);
   }
 
-  function handleMinChange(e) {
-    setMin(e.target.value);
-  }
-
-  function handleMaxChange(e) {
-    setMax(e.target.value);
-  }
-
   function handleEmailChange(e) {
-    setTitle(e.target.value);
+    setApplicantEmail(e.target.value);
+  }
+
+  function handleHourlyRateChange(e) {
+    setHourlyRate(e.target.value);
   }
 
   function handleDescriptionChange(e) {
     setDescription(e.target.value);
   }
 
-  function handleContractCreate() {
+  function handleWorkTitleChange(e) {
+    setWorkTitle(e.target.value);
+  }
+
+  function handleWorkDescriptionChange(e) {
+    setWorkDescription(e.target.value);
+  }
+
+  function handleLinkChange(e) {
+    setCurrentLink(e.target.value);
+  }
+
+  function handleStartDateChange(e) {
+    console.log(e.target.value);
+    setWorkStart(e.target.value);
+  }
+
+  function handleEndDateChange(e) {
+    setWorkEnd(e.target.value);
+  }
+
+  function handleWorkCreate() {
+    setAddWork(true);
+  }
+
+  function convertToMS(dateStamp) {
+    const date = new Date(dateStamp);
+    const milliseconds = date.getTime();
+
+    return parseInt(milliseconds);
+  }
+
+  function handleLinkAdd() {
+    if (currentLink.includes("http://") || currentLink.includes("https://")) {
+      setWorkLinks([...workLinks, currentLink]);
+
+      setCurrentLink("");
+    }
+  }
+
+  function handleWorkHistoryCreate() {
     const payload = {
-      title,
-      description,
-      skills: selectedSkills,
-      budget: {
-        min,
-        max,
-      },
-      timeline: selectedTimeline,
+      company: workTitle,
+      duties: workDescription,
+      start: workStart,
+      end: workEnd,
+      links: workLinks,
     };
 
-    fetchWrapper("/contracts", localStorage.getItem("token"), "POST", {
+    setWorkHistory([...workHistory, payload]);
+
+    setWorkTitle("");
+    setWorkDescription("");
+    setWorkStart("");
+    setWorkEnd("");
+    setWorkLinks([]);
+    setAddWork(false);
+  }
+
+  function handleApplicationCreate() {
+    const payload = {
+      applicant_type: "free",
+      contract_id: contract_id,
+      applicant_email: applicantEmail,
+      applicant_work_history: workHistory,
+      applicant_description: description,
+      skills: selectedSkills,
+      quote: hourlyRate,
+      opt_in: true
+    };
+
+    console.log("Applied", payload);
+
+    fetchWrapper("/applications", "", "POST", {
       ...payload,
     }).then((res) => {
-      dispatch(addContract(res.contract));
-      if (res.message === "Contract Created") {
+      if (res.message === "Application Submitted") {
         toggleModal();
+        applicationCreated();
       }
     });
   }
@@ -405,14 +427,23 @@ export default function FreeApplicationCreate({ toggleModal, isOpen }) {
         ))}
       </div>
       {step === 1 ? (
-        <div style={{overflowY: "scroll"}} className={styles.StepContainer}>
-          <div style={{marginTop: "0px"}} className={styles.StepGroup}>
+        <div style={{ overflowY: "scroll" }} className={styles.StepContainer}>
+          <div style={{ marginTop: "0px" }} className={styles.StepGroup}>
             <Typography variant="caption">Your Email</Typography>
             <input
               onChange={(e) => handleEmailChange(e)}
-              value={title}
+              value={applicantEmail}
               className={styles.StepInput}
               type="email"
+            />
+          </div>
+          <div className={styles.StepGroup}>
+            <Typography variant="caption">Describe Yourself</Typography>
+            <textarea
+              onChange={(e) => handleDescriptionChange(e)}
+              value={description}
+              className={styles.StepInputArea}
+              style={{ backgroundColor: "#f1f1f1", borderRadius: "5px" }}
             />
           </div>
           <div className={styles.StepGroup}>
@@ -430,7 +461,10 @@ export default function FreeApplicationCreate({ toggleModal, isOpen }) {
                 );
               })}
             </div>
-            <div style={{ rowGap: "10px", marginTop: "10px" }} className={styles.Examples}>
+            <div
+              style={{ rowGap: "10px", marginTop: "10px" }}
+              className={styles.Examples}
+            >
               <div className={styles.SkillSearchContainer}>
                 <input
                   value={skill}
@@ -449,7 +483,7 @@ export default function FreeApplicationCreate({ toggleModal, isOpen }) {
                       : false
                   }
                   onClick={handleSkillAdd}
-                  style={{ marginTop: "0px", height: "50px" }}
+                  style={{ marginTop: "0px", height: "42.5px" }}
                   className={styles.CreateButton}
                 >
                   Add Skill
@@ -484,129 +518,189 @@ export default function FreeApplicationCreate({ toggleModal, isOpen }) {
           </div>
         </div>
       ) : step === 2 ? (
-        <div className={styles.StepContainer}></div>
-      ) : step === 3 ? (
-        <div className={styles.StepContainer}>
-          <Typography variant="caption">Describe your contract</Typography>
-          <div className={styles.SelectedSkillsContainer}>
-            <textarea
-              onChange={(e) => handleDescriptionChange(e)}
-              value={description}
-              className={styles.StepInputArea}
-            ></textarea>
-          </div>
-          <div className={styles.Examples}>
-            <Typography color={"rebeccapurple"} variant="h6">
-              Tips to craft a better description
-            </Typography>
-            <Typography color={"rebeccapurple"} variant="body1">
-              - Be descriptive by defining your problem, what you want to solve,
-              and any rules on how it needs to be solved
-            </Typography>
-            <Typography color={"rebeccapurple"} variant="body1">
-              - Include relevant links
-            </Typography>
-            <Typography color={"rebeccapurple"} variant="body1">
-              - Explain the goal with detail
-            </Typography>
-          </div>
-        </div>
-      ) : step === 4 ? (
-        <div className={styles.StepContainer}>
-          <Typography variant="caption">Budget & Settings</Typography>
-          <div className={styles.Budget}>
-            <Typography variant="h6">Select Your Hourly Rates</Typography>
-            <div className={styles.BudgetOptions}>
-              <div className={styles.BudgetOption}>
-                <Typography variant="h5">Min Hourly Rate</Typography>
-                <input
-                  onChange={(e) => handleMinChange(e)}
-                  value={min}
-                  className={styles.StepInput}
-                  min={2}
-                  type="number"
-                />
-              </div>
-              <div className={styles.BudgetOption}>
-                <Typography variant="h5">Max Hourly Rate</Typography>
-                <input
-                  onChange={(e) => handleMaxChange(e)}
-                  value={max}
-                  className={styles.StepInput}
-                  min={min}
-                  type="number"
-                />
-              </div>
-            </div>
-            <div className={styles.BudgetRange}></div>
-          </div>
-          <div className={styles.SprintInput}>
-            <label className={styles.SprintLabel} htmlFor="TaskAssignees">
-              What is your contract length
-            </label>
-            <HoverDropdown
-              customStyles={{
-                maxHeight: "300px",
-                overflowY: "scroll",
-                fontSize: "20px",
-              }}
-              buttonContent={
-                <Typography variant="body2">
-                  {selectedTimeline.title}
-                </Typography>
-              }
-              dropdownContent={
-                <>
-                  {timelines.map((timeline, index) => {
-                    return (
-                      <div
-                        key={`timeline_${index}`}
-                        onClick={() => handleTimelineSelect(timeline)}
-                        className={`${styles.HoverDropdownContentChildren} ${
-                          selectedTimeline.title === timeline.title
-                            ? styles.Selected
-                            : ""
-                        }`}
-                      >
-                        <Typography variant="body2">
-                          {timeline.title}
-                        </Typography>
-                        <Typography color={"#a1a1a1"} variant="caption">
-                          {timeline.length}
-                        </Typography>
-                      </div>
-                    );
-                  })}
-                </>
-              }
-            />
-          </div>
-        </div>
-      ) : step === 5 ? (
-        <div className={styles.StepContainer}>
-          <Typography variant="caption">Your New Contract</Typography>
-          <div style={{ backgroundColor: "white" }} className={styles.Budget}>
-            <Contract
+        <div style={{ overflowY: "auto" }} className={styles.StepContainer}>
+          <div style={{ marginTop: "0px" }} className={styles.StepGroup}>
+            <Typography variant="caption">Your Hourly Rate</Typography>
+            <input
+              onChange={(e) => handleHourlyRateChange(e)}
+              value={hourlyRate}
+              className={styles.StepInput}
+              type="number"
               min={min}
               max={max}
-              title={title}
-              description={description}
-              selectedSkills={selectedSkills}
-              selectedTimeline={selectedTimeline}
             />
+            <Typography
+              color={"#a1a1a1"}
+              variant="caption"
+            >{`The range for this contract is between $${min} & $${max} per hour`}</Typography>
           </div>
+          <div className={styles.StepGroup}>
+            <Typography variant="caption">Your Work</Typography>
+            <div className={styles.WorkExamples}>
+              <div
+                onClick={handleWorkCreate}
+                style={{ alignItems: "center", justifyContent: "center" }}
+                className={styles.WorkExample}
+              >
+                <Typography variant="caption">Add Work History</Typography>
+                <AddIcon />
+              </div>
+              {workHistory.map((work, index) => {
+                return (
+                  <div className={styles.WorkExample}>
+                    <div className={styles.ContentRow}>
+                      <Typography
+                        style={{
+                          maxWidth: "50%",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                        variant="h6"
+                      >
+                        {work.company}
+                      </Typography>
+                      <Typography
+                        textAlign={"right"}
+                        variant="caption"
+                      >{`${work.start} - ${work.end}`}</Typography>
+                    </div>
+                    <text className={styles.WorkExampleText}>
+                      {work.duties || "nothing to show"}
+                    </text>
+                    {work.links.length > 0 ? (
+                      <HoverDropdown
+                        id={`WorkLinksDropdown_${index}`}
+                        customStyles={{ maxHeight: "300px", width: "100%" }}
+                        buttonContent={
+                          <Typography variant="body1">
+                            {work.links.length === 1
+                              ? `${work.links[0]}`
+                              : `${work.links[0]} + ${
+                                  work.links.length - 1
+                                } more`}
+                          </Typography>
+                        }
+                        dropdownContent={
+                          <div className={styles.Skills}>
+                            {work.links.map((link) => {
+                              return <div>{link}</div>;
+                            })}
+                          </div>
+                        }
+                      />
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          {addWork ? (
+            <div className={styles.StepGroup}>
+              <Typography variant="caption">Add Work Details</Typography>
+              <div className={styles.AddWork}>
+                <input
+                  value={workTitle}
+                  onChange={(e) => handleWorkTitleChange(e)}
+                  placeholder="Workplace"
+                  className={styles.SkillSearch}
+                  type="text"
+                />
+                <div className={styles.DateSelectors}>
+                  <div className={styles.DateSelector}>
+                    <Typography variant="caption">From</Typography>
+                    <input
+                      value={workStart}
+                      onChange={(e) => handleStartDateChange(e)}
+                      className={styles.DateInput}
+                      type="date"
+                    />
+                  </div>
+                  <div className={styles.DateSelector}>
+                    <Typography variant="caption">To</Typography>
+                    <input
+                      value={workEnd}
+                      onChange={(e) => handleEndDateChange(e)}
+                      className={styles.DateInput}
+                      type="date"
+                    />
+                  </div>
+                </div>
+                <div style={{ marginTop: "0px" }} className={styles.StepGroup}>
+                  <Typography variant="caption">Describe Your Work</Typography>
+                  <textarea
+                    onChange={(e) => handleWorkDescriptionChange(e)}
+                    value={workDescription}
+                    className={styles.StepInputArea}
+                  />
+                </div>
+                <div style={{ marginTop: "20px" }} className={styles.StepGroup}>
+                  <Typography variant="caption">Add Relevant Links</Typography>
+                  <div className={styles.WorkLinks}>
+                    <div className={styles.SkillSearchContainer}>
+                      <input
+                        value={currentLink}
+                        onChange={(e) => handleLinkChange(e)}
+                        placeholder="Portfolio, Git, Dribble, Website"
+                        className={styles.SkillSearch}
+                        type="text"
+                      />
+                      <button
+                        onClick={handleLinkAdd}
+                        style={{ marginTop: "0px", height: "42.5px" }}
+                        className={styles.CreateButton}
+                      >
+                        Add Link
+                      </button>
+                    </div>
+                    {workLinks.map((link, index) => {
+                      return (
+                        <Typography
+                          textOverflow={"ellipsis"}
+                          key={`link_${index}`}
+                          variant="caption"
+                          style={{ padding: "5px" }}
+                        >
+                          {link}
+                        </Typography>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+              <button
+                disabled={
+                  workDescription.length < 50 ||
+                  workTitle.length < 2 ||
+                  !workStart ||
+                  !workEnd ||
+                  convertToMS(workEnd) < convertToMS(workStart)
+                    ? true
+                    : false
+                }
+                style={{
+                  alignSelf: "start",
+                  backgroundColor: "#f1f1f1",
+                  color: "rgb(162, 75, 248)",
+                }}
+                className={styles.CreateButton}
+                onClick={() => handleWorkHistoryCreate()}
+              >
+                Add Work
+              </button>
+            </div>
+          ) : null}
         </div>
       ) : null}
       <div className={styles.ButtonRow}>
-        {step < 5 ? (
+        {step < 2 ? (
           <button
             onClick={() => setStep(step + 1)}
             className={styles.CreateButton}
             disabled={
-              (step === 1 && (title.length < 5) || selectedSkills.length < 3) ||
-              (step === 2 && selectedSkills.length < 2) ||
-              (step === 3 && description.length < 50) ||
-              (step === 4 && !selectedTimeline)
+              (step === 1 && applicantEmail.length < 5) ||
+              selectedSkills.length < 3 ||
+              description.length < 50 ||
+              (step === 2 && workHistory.length < 1)
                 ? true
                 : false
             }
@@ -615,10 +709,11 @@ export default function FreeApplicationCreate({ toggleModal, isOpen }) {
           </button>
         ) : (
           <button
-            onClick={handleContractCreate}
+            disabled={workHistory.length < 1 || parseInt(hourlyRate) < 1}
+            onClick={handleApplicationCreate}
             className={styles.CreateButton}
           >
-            Create Contract
+            Submit Application
           </button>
         )}
         {step > 1 ? (

@@ -1,4 +1,5 @@
 import Avatar from "@mui/material/Avatar";
+import styles from "../css/FindWork.module.css";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -15,7 +16,9 @@ import { useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useDispatch } from "react-redux";
-import { setLogout, setClientUser} from "../StateManagement/Actions/actions";
+import { setLogout, setClientUser } from "../StateManagement/Actions/actions";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Copyright(props) {
   return (
@@ -43,8 +46,18 @@ const iconHover = {
 
 export default function ClientLogin() {
   const dispatch = useDispatch();
-  const { clientUser, setClientUserData, token, setTokenString } = useContext(AuthContext);
+  const { clientUser, setClientUserData, token, setTokenString } =
+    useContext(AuthContext);
   const navigate = useNavigate();
+
+  function notify(message) {
+    toast(message, {
+      className: styles.SmallToast,
+      hideProgressBar: true,
+      // You can also adjust the toast duration (auto-close time) here, if needed
+      autoClose: 1000,
+    });
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -53,17 +66,30 @@ export default function ClientLogin() {
       client_user_email: data.get("email"),
       client_user_password: data.get("password"),
     };
-    fetchWrapper("/client-account-login", "", "POST", { ...payload }).then((res) => {
-      console.log(res);
-      setTokenString(res.token);
+    fetchWrapper("/client-account-login", "", "POST", { ...payload })
+      .then((res) => {
+        console.log(res);
+        setTokenString(res.token);
 
-      dispatch(setClientUser(res.client_account))
-      dispatch(setLogout(false))
+        dispatch(setClientUser(res.client_account));
+        dispatch(setLogout(false));
 
-      if (res?.token) {
-        navigate("/client-dashboard");
-      }
-    });
+        if (res?.token) {
+          navigate("/client-dashboard");
+        }
+
+        console.log(res);
+      })
+      .catch((error) => {
+        notify("Invalid username or password. Try again.");
+        if (error.response) {
+          // Handle the specific case for status 409
+          notify("Specific error message for status 409");
+        } else {
+          // Handle other errors
+          notify(error);
+        }
+      });
   };
 
   function handleBackClick() {
@@ -82,9 +108,6 @@ export default function ClientLogin() {
         }}
       >
         <ArrowBackIcon onClick={() => handleBackClick()} style={iconHover} />
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-          <LockOutlinedIcon />
-        </Avatar>
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
@@ -132,6 +155,7 @@ export default function ClientLogin() {
         </Box>
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />
+      <ToastContainer className={styles.ToastContainerStyle} />
     </Container>
   );
 }

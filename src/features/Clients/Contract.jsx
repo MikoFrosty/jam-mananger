@@ -18,7 +18,7 @@ export default function Contract({
   customStyle = {},
   createdDate,
   type = "live",
-  rating
+  rating,
 }) {
   const clientUser = useSelector((state) => state.app.client_user);
 
@@ -29,9 +29,9 @@ export default function Contract({
           {title}
         </Typography>
         <div className={styles.HeaderRight}>
-          {
-            ((((parseInt(Date.now()) - parseInt(createdDate))/1000)/60) < 60) ? <FiberNewIcon /> : null
-          }
+          {(parseInt(Date.now()) - parseInt(createdDate)) / 1000 / 60 < 60 ? (
+            <FiberNewIcon />
+          ) : null}
         </div>
       </div>
       <Typography
@@ -48,9 +48,9 @@ export default function Contract({
       </Typography>
       <text className={styles.Text}>{description}</text>
       <div className={styles.SelectedSkillsContract}>
-        {selectedSkills.map((skill) => {
+        {selectedSkills.map((skill, index) => {
           return (
-            <div className={styles.SkillContract}>
+            <div key={`${index}_skill`} className={styles.SkillContract}>
               <Typography variant="body1">{skill.title}</Typography>
             </div>
           );
@@ -63,9 +63,11 @@ export default function Contract({
         <Typography style={{ alignSelf: "end" }} variant="body1">
           By: {clientUser?.account_name || "Kamari"}
         </Typography>
-        <div className={styles.FooterRight}>
-          <Rating rating={rating}/>
-        </div>
+        {type === "live" ? (
+          <div className={styles.FooterRight}>
+            <Rating rating={rating} />
+          </div>
+        ) : null}
       </div>
     </div>
   );

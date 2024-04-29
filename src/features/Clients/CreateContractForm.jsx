@@ -14,13 +14,13 @@ import CheckIcon from "@mui/icons-material/Check";
 import _ from "lodash";
 import Contract from "./Contract";
 import fetchWrapper from "../../utils/fetchWrapper";
-import { addContract } from "../../StateManagement/Actions/actions";
+import { addContract, replaceContract } from "../../StateManagement/Actions/actions";
 
 export default function ContractCreate({
   toggleModal,
   taskStatus,
   isOpen,
-  selectedTask,
+  selectedContract,
   type,
 }) {
   const dispatch = useDispatch();
@@ -36,37 +36,227 @@ export default function ContractCreate({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [skills, setSkills] = useState([]);
+  const [isManageing, setIsManaging] = useState(false);
+
+  const setSelectedSkillsMemoized = useCallback(
+    (skills) => {
+      setSelectedSkills(skills);
+    },
+    [setSelectedSkills]
+  );
+
+  useEffect(() => {
+    if (selectedContract) {
+      console.log("Selected Contract Skills:", selectedContract.skills);
+      setTitle(selectedContract.title);
+      setMin(parseInt(selectedContract.budget.min));
+      setMax(parseInt(selectedContract.budget.max));
+      setDescription(selectedContract.description);
+      setSelectedSkillsMemoized([...selectedContract.skills]);
+      setSelectedTimeline(selectedContract.timeline);
+      setIsManaging(true);
+    }
+  }, [selectedContract, setSelectedSkillsMemoized]);
 
   const topSkills = [
-    'JavaScript', 'Web Design', 'HTML', 'CSS', 'PHP', 'Graphic Design', 'HTML5', 'WordPress', 'Photoshop', 'Logo Design',
-    'Illustration', 'React', 'Illustrator', 'Python', 'jQuery', 'Cascading Style Sheets (CSS)', 'Website Development',
-    'Mobile App Development', 'User Interface Design', 'Adobe Photoshop', 'SQL', 'MySQL', 'Web Development', 'Android',
-    'Web Application', 'HTML 5', 'Software Development', 'Javascript', 'iOS', 'CSS3', 'UI/UX Design', 'Flutter', 'Java',
-    'Node.js', '.NET', 'Responsive Web Design', 'Adobe Illustrator', 'App Development', 'Kotlin', 'Front-end Development',
-    'C#', 'User Experience Design', 'Laravel', 'User Interface', 'Database Design', 'MongoDB', 'API Development',
-    'Database Development', 'Data Entry', 'Excel', 'Software Architecture', 'Power BI', 'Go', 'Virtual Assistant', 'REST',
-    'Figma', 'Dart', 'Amazon Web Services', 'Full Stack Development', 'Tableau', 'Graphic Art', 'Scripting', 'C++',
-    'Business Analysis', 'Microsoft Access', 'Microsoft SQL Server', 'XML', 'Sketch', 'Google Cloud Platform',
-    'Interactive Design', 'Google Docs', 'Google Analytics', 'Market Research', 'Instagram Marketing', 'UX Research',
-    'Logo Design Services', 'Infographic Design', 'Product Development', 'Three.js', 'Machine Learning', 'Copywriting',
-    'PostgreSQL', 'Proofreading', 'Drawing', 'Marketing Strategy', 'GitHub', 'Google AdWords', 'Google Sheets',
-    'AngularJS', 'Google Workspace', 'Redux', 'Product Design', 'Statistical Analysis', 'Scala', 'Photo Editing',
-    'Content Writing', 'Pandas', 'NumPy', 'Symfony', 'Technical Support', 'Computer-aided Design', 'Game Development',
-    'Microsoft SQL', 'Network Administration', 'Web Application Development', 'Computer Science', 'Windows Desktop',
-    'Firebase', 'Data Science', 'Elasticsearch', 'Microsoft 365', 'TypeScript', 'Tensorflow', 'Search Engine Optimization (SEO)',
-    'Google Slides', 'SQLite', 'Presentations', 'Internet Research', 'Google Forms', 'GitHub API', 'Vue.js', 'ASP.NET',
-    'Docker', 'Rust', 'Unreal Engine', 'Haskell', 'Information Architecture', '2D Animation', 'Social Media Management',
-    'Salesforce', 'Microsoft PowerPoint', 'Scala Programming', 'Linux', 'OpenCV', 'Jenkins', 'Kubernetes', 'PyTorch',
-    'Blockchain', 'OpenGL', 'Ubuntu', 'iOS Development', '3D Modeling', 'Django', 'Spring Framework', 'Google App Engine',
-    'Google Translator Toolkit', 'Google App Script', 'Google Search Console', 'Google Ads', 'Google Maps API',
-    'Google Data Studio', 'Amazon S3', 'Amazon Aurora', 'Amazon DynamoDB', 'Amazon RDS', 'Amazon EC2', 'Clojure', 'Dart Programming Language',
-    'Progressive Web Apps (PWA)', 'AJAX', 'Google Fonts API', 'Microsoft Visio', 'Microsoft Azure',
-    'Google Tag Manager', 'Objective-C', 'Rust Programming Language', 'Angular 2+', 'Swift', 'Ruby on Rails',
-    'Keras', 'Express.js', '3D Rendering', 'Google Chrome Extension', 'Slack', 'Google My Business', 'Joomla',
-    'Google Analytics API', 'Git', 'Google Cloud Storage', 'YouTube API', 'Ruby', 'Grunt', 'Gulp',
-    'Adobe XD', 'Elasticsearch API', 'Google Places API', 'Google Maps JavaScript API', 'Mailchimp', 'Adobe Photoshop Lightroom',
-    '3D Animation', 'Natural Language Processing', 'GitLab', '3ds Max', 'Unity 3D', 'OpenAI', 'Scikit-learn',
-    'Solidity', 'Google Cloud Functions',
+    "JavaScript",
+    "Web Design",
+    "HTML",
+    "CSS",
+    "PHP",
+    "Graphic Design",
+    "HTML5",
+    "WordPress",
+    "Photoshop",
+    "Logo Design",
+    "Illustration",
+    "React",
+    "Illustrator",
+    "Python",
+    "jQuery",
+    "Cascading Style Sheets (CSS)",
+    "Website Development",
+    "Mobile App Development",
+    "User Interface Design",
+    "Adobe Photoshop",
+    "SQL",
+    "MySQL",
+    "Web Development",
+    "Android",
+    "Web Application",
+    "HTML 5",
+    "Software Development",
+    "Javascript",
+    "iOS",
+    "CSS3",
+    "UI/UX Design",
+    "Flutter",
+    "Java",
+    "Node.js",
+    ".NET",
+    "Responsive Web Design",
+    "Adobe Illustrator",
+    "App Development",
+    "Kotlin",
+    "Front-end Development",
+    "C#",
+    "User Experience Design",
+    "Laravel",
+    "User Interface",
+    "Database Design",
+    "MongoDB",
+    "API Development",
+    "Database Development",
+    "Data Entry",
+    "Excel",
+    "Software Architecture",
+    "Power BI",
+    "Go",
+    "Virtual Assistant",
+    "REST",
+    "Figma",
+    "Dart",
+    "Amazon Web Services",
+    "Full Stack Development",
+    "Tableau",
+    "Graphic Art",
+    "Scripting",
+    "C++",
+    "Business Analysis",
+    "Microsoft Access",
+    "Microsoft SQL Server",
+    "XML",
+    "Sketch",
+    "Google Cloud Platform",
+    "Interactive Design",
+    "Google Docs",
+    "Google Analytics",
+    "Market Research",
+    "Instagram Marketing",
+    "UX Research",
+    "Logo Design Services",
+    "Infographic Design",
+    "Product Development",
+    "Three.js",
+    "Machine Learning",
+    "Copywriting",
+    "PostgreSQL",
+    "Proofreading",
+    "Drawing",
+    "Marketing Strategy",
+    "GitHub",
+    "Google AdWords",
+    "Google Sheets",
+    "AngularJS",
+    "Google Workspace",
+    "Redux",
+    "Product Design",
+    "Statistical Analysis",
+    "Scala",
+    "Photo Editing",
+    "Content Writing",
+    "Pandas",
+    "NumPy",
+    "Symfony",
+    "Technical Support",
+    "Computer-aided Design",
+    "Game Development",
+    "Microsoft SQL",
+    "Network Administration",
+    "Web Application Development",
+    "Computer Science",
+    "Windows Desktop",
+    "Firebase",
+    "Data Science",
+    "Elasticsearch",
+    "Microsoft 365",
+    "TypeScript",
+    "Tensorflow",
+    "Search Engine Optimization (SEO)",
+    "Google Slides",
+    "SQLite",
+    "Presentations",
+    "Internet Research",
+    "Google Forms",
+    "GitHub API",
+    "Vue.js",
+    "ASP.NET",
+    "Docker",
+    "Rust",
+    "Unreal Engine",
+    "Haskell",
+    "Information Architecture",
+    "2D Animation",
+    "Social Media Management",
+    "Salesforce",
+    "Microsoft PowerPoint",
+    "Scala Programming",
+    "Linux",
+    "OpenCV",
+    "Jenkins",
+    "Kubernetes",
+    "PyTorch",
+    "Blockchain",
+    "OpenGL",
+    "Ubuntu",
+    "iOS Development",
+    "3D Modeling",
+    "Django",
+    "Spring Framework",
+    "Google App Engine",
+    "Google Translator Toolkit",
+    "Google App Script",
+    "Google Search Console",
+    "Google Ads",
+    "Google Maps API",
+    "Google Data Studio",
+    "Amazon S3",
+    "Amazon Aurora",
+    "Amazon DynamoDB",
+    "Amazon RDS",
+    "Amazon EC2",
+    "Clojure",
+    "Dart Programming Language",
+    "Progressive Web Apps (PWA)",
+    "AJAX",
+    "Google Fonts API",
+    "Microsoft Visio",
+    "Microsoft Azure",
+    "Google Tag Manager",
+    "Objective-C",
+    "Rust Programming Language",
+    "Angular 2+",
+    "Swift",
+    "Ruby on Rails",
+    "Keras",
+    "Express.js",
+    "3D Rendering",
+    "Google Chrome Extension",
+    "Slack",
+    "Google My Business",
+    "Joomla",
+    "Google Analytics API",
+    "Git",
+    "Google Cloud Storage",
+    "YouTube API",
+    "Ruby",
+    "Grunt",
+    "Gulp",
+    "Adobe XD",
+    "Elasticsearch API",
+    "Google Places API",
+    "Google Maps JavaScript API",
+    "Mailchimp",
+    "Adobe Photoshop Lightroom",
+    "3D Animation",
+    "Natural Language Processing",
+    "GitLab",
+    "3ds Max",
+    "Unity 3D",
+    "OpenAI",
+    "Scikit-learn",
+    "Solidity",
+    "Google Cloud Functions",
   ];
 
   useEffect(() => {
@@ -84,7 +274,6 @@ export default function ContractCreate({
   useEffect(() => {
     if (isOpen) {
       setStep(1);
-      setSelectedSkills([]);
       setSkill("");
     }
   }, [isOpen]);
@@ -195,14 +384,24 @@ export default function ContractCreate({
         min,
         max,
       },
-      timeline: selectedTimeline
+      timeline: selectedTimeline,
     };
 
-    fetchWrapper("/contracts", localStorage.getItem("token"), "POST", {
-      ...payload,
-    }).then((res) => {
-      dispatch(addContract(res.contract));
+    fetchWrapper(
+      `${!isManageing ? "/contracts" : "/update-contracts"}`,
+      localStorage.getItem("token"),
+      `${!isManageing ? "POST" : "PUT"}`,
+      {
+        ...payload,
+        ...(isManageing ? { contract_id: selectedContract.contract_id } : {}),
+      }
+    ).then((res) => {
+      console.log(res);
       if (res.message === "Contract Created") {
+        toggleModal();
+        dispatch(addContract(res.contract));
+      } else if (res.message === "Contract Updated") {
+        dispatch(replaceContract(res.contract));
         toggleModal();
       }
     });
@@ -278,9 +477,11 @@ export default function ContractCreate({
         <div className={styles.StepContainer}>
           <Typography variant="caption">Add preferred skills</Typography>
           <div className={styles.SelectedSkills}>
-            {selectedSkills.map((skill) => {
+            {console.log("Selected Skills:", selectedSkills)}
+            {selectedSkills.map((skill, index) => {
               return (
                 <div
+                  key={`${index}_skill`}
                   onClick={() => handleSkillSelect(skill)}
                   className={styles.Skill}
                 >
@@ -319,11 +520,20 @@ export default function ContractCreate({
               {skills.map((skill, index) => {
                 return (
                   <div
-                    style={selectedSkills.some((thisSkill) => thisSkill.title === skill) ? {border: "1px solid rgba(162, 75, 248, 0.328)"} : {}}
-                    onClick={() => handleSkillSelect({
-                      title: skill,
-                      id: skills.length + index,
-                    })}
+                    key={`${index}_skill`}
+                    style={
+                      selectedSkills.some(
+                        (thisSkill) => thisSkill.title === skill
+                      )
+                        ? { border: "1px solid rgba(162, 75, 248, 0.328)" }
+                        : {}
+                    }
+                    onClick={() =>
+                      handleSkillSelect({
+                        title: skill,
+                        id: skills.length + index,
+                      })
+                    }
                     className={styles.Skill}
                   >
                     <AddIcon />
@@ -467,7 +677,7 @@ export default function ContractCreate({
             onClick={handleContractCreate}
             className={styles.CreateButton}
           >
-            Create Contract
+            {!isManageing ? "Create Contract" : "Update Contract"}
           </button>
         )}
         {step > 1 ? (

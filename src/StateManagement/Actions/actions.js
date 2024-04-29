@@ -338,6 +338,13 @@ export function addContract(contract) {
   }
 }
 
+export function replaceContract(contract) {
+  return {
+    type: "REPLACE_CONTRACT",
+    payload: contract
+  }
+}
+
 // Action to update an existing document
 export function updateDocument(document) {
   return {
