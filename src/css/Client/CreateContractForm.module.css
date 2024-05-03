@@ -117,7 +117,7 @@
   height: 35px;
   font-size: medium;
   font-weight: 500;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   border: none;
   padding: 10px;
@@ -140,7 +140,7 @@
 
 .SprintDatePicker {
   height: 35px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
 
 }
 
@@ -152,7 +152,7 @@
   height: 35px;
   width: fit-content;
   min-width: 100px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   padding: 10px;
   border-radius: 5px;
 }
@@ -164,7 +164,7 @@
 .DurationInputWrapper {
   display: flex;
   align-items: center;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   height: 35px;
   width: fit-content;
@@ -208,7 +208,7 @@
 .Description {
   max-width: 100%;
   min-width: 100%;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   color: #333;
   padding: 10px;
   border: none;
@@ -327,7 +327,7 @@
   min-height: 400px;
   height: 100%;
   min-width: 250px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   text-align: left;
   overflow-y: scroll;
 }
@@ -379,7 +379,7 @@
   padding: 10px;
   font-size: 20px;
   border-radius: 5px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   color: #333;
   border: none;
 }
@@ -445,7 +445,7 @@
 .Examples {
   display: flex;
   flex-direction: column;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   width: 100%;
   padding: 10px;
   border-radius: 5px;
@@ -460,7 +460,7 @@
   flex-wrap: wrap;
   row-gap: 10px;
   column-gap: 10px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   width: 100%;
   height: fit-content;
@@ -477,7 +477,7 @@
   flex-wrap: wrap;
   row-gap: 10px;
   column-gap: 10px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   width: 100%;
   height: fit-content;
@@ -514,7 +514,7 @@
   flex-wrap: wrap;
   row-gap: 10px;
   column-gap: 10px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   width: 100%;
   height: fit-content;
@@ -589,7 +589,7 @@
   display: flex;
   flex-direction: column;
   row-gap: 10px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   width: 100%;
   height: fit-content;
   padding: 10px;

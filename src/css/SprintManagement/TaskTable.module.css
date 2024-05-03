@@ -14,7 +14,7 @@
 
 .table tr:hover {
   transition: 0.2s;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   cursor: pointer;
 }
 

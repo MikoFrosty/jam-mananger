@@ -19,8 +19,10 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useNavigate } from "react-router-dom";
 import SlidingModal from "../features/Dashboard/SlidingModal";
 import FreeApplicationCreate from "../features/FreeCreateApplicationForm";
+import { useSelector } from "react-redux";
 
 export default function FindWork({ userType = "user", customStyles = {} }) {
+  const user = useSelector((state) => state.app.user);
   const navigate = useNavigate();
   const contractsPerPage = 15;
   const topSkills = [
@@ -394,6 +396,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
     filterString,
     selectedTimeline,
     skip,
+    currentlyFetching
   ]);
 
   function handleContractSearch() {
@@ -563,7 +566,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                       className={styles.SkillSearch}
                       type="text"
                     />
-                    {skills.map((skill) => {
+                    {skills.map((skill, index) => {
                       return (
                         <div
                           style={
@@ -575,7 +578,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                           }
                           onClick={() => handleSkillSelect(skill)}
                           className={styles.Skill}
-                        >
+                          key={`${index}_skill`}>
                           {skill}
                         </div>
                       );
@@ -595,7 +598,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                 }
                 dropdownContent={
                   <>
-                    {datePosted.map((thisDate) => {
+                    {datePosted.map((thisDate, index) => {
                       return (
                         <div
                           style={
@@ -605,7 +608,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                           }
                           onClick={() => handlePostedDateSelect(thisDate)}
                           className={`${styles.HoverDropdownContentChildren}`}
-                        >
+                         key={`${index}_date`}>
                           <Typography variant="body1">
                             {thisDate.title}
                           </Typography>
@@ -627,9 +630,10 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                 }
                 dropdownContent={
                   <>
-                    {timelines.map((timeline) => {
+                    {timelines.map((timeline, index) => {
                       return (
                         <div
+                          key={`${index}_skill`}
                           style={
                             selectedTimeline?.title === timeline.title
                               ? { backgroundColor: "#e5e5e5" }
@@ -664,7 +668,7 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                 {contracts?.length > 0 ? (
                   contracts.map((thisContract) => {
                     return (
-                      <div onClick={() => handleContractSelect(thisContract)}>
+                      <div key={thisContract.contract_id} onClick={() => handleContractSelect(thisContract)}>
                         <Contract
                           key={thisContract.contract_id}
                           min={thisContract.budget.min}
@@ -758,8 +762,8 @@ export default function FindWork({ userType = "user", customStyles = {} }) {
                   }}
                 >
                   <div className={styles.SelectedSkills}>
-                    {selectedContract.skills.map((skill) => {
-                      return <div className={styles.Skill}>{skill.title}</div>;
+                    {selectedContract.skills.map((skill, index) => {
+                      return <div key={`${index}_skill`} className={styles.Skill}>{skill.title}</div>;
                     })}
                   </div>
                   <text className={styles.Text}>

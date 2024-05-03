@@ -1,0 +1,121 @@
+.Modify {
+    width: 100%;
+    height: 100%;
+    background-color: orange;
+    text-align: left;
+    overflow: hidden;
+}
+
+.Information {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background-color: pink;
+}
+
+.InputGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    position: relative;
+    margin-top: 15px;
+    width: 100%;
+  }
+  
+  .InputLabel {
+    font-size: 12px;
+    color: #696969;
+  }
+  
+  .InputField {
+    height: 35px;
+    font-size: medium;
+    font-weight: 500;
+    background-color: #e5e5e5;
+    border-radius: 5px;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    justify-content: center;
+    text-align: left;
+    font-weight: 400;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: #333;
+  }
+  
+  .InputField:focus {
+    outline: none;
+  }
+  
+  .InputRow {
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+    width: 100%;
+    height: fit-content;
+  }
+  
+  .ContentRow {
+    display: flex;
+    flex-direction: row;
+    height: fit-content;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .Icon {
+    color: #333;
+    transition: 0.2s;
+  }
+  
+  .Icon:hover {
+    cursor: pointer;
+    color: rgba(176, 110, 238, 0.911);
+    transition: 0.2s;
+  }
+
+  .Button:disabled {
+    background-color: #696969;
+    color: #e5e5e5;
+    border: 1px solid #e5e5e5;
+    transition: 0.2s;
+  }
+  
+  .Button {
+    width: 100%;
+    max-width: 800px;
+    align-self: center;
+    margin-top: 15px;
+    border: 1px solid rgba(176, 110, 238, 0.911);
+    color: rgba(176, 110, 238, 0.911);
+    transition: 0.2s;
+  }
+  
+  .Button:hover {
+    border: 1px solid rgba(176, 110, 238, 0.911);
+  }
+  
+  .Button:focus {
+    outline: none;
+  }
+
+  .HoverDropdownContentChildren {
+    transition: 0.1s;
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  .HoverDropdownContentChildren:hover {
+    cursor: pointer;
+    background-color: #e5e5e5;
+    transition: 0.1s;
+  }
+
+  .Selected {
+    background-color: #e5e5e5;
+  }

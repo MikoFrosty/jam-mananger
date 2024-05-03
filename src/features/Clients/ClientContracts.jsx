@@ -7,6 +7,7 @@ import SlidingModal from "../Dashboard/SlidingModal";
 import ContractCreate from "./CreateContractForm";
 import Contract from "./Contract";
 import {
+  fetchApplications,
   fetchClientAccount,
   fetchContracts,
 } from "../../StateManagement/Actions/actions";
@@ -41,6 +42,12 @@ export default function ClientContracts() {
       setContractsFetched(true);
     }
   }, [contractsFetched]);
+
+  useEffect(() => {
+    if (view === "Applications") {
+      dispatch(fetchApplications())
+    }
+  }, [view])
 
   useEffect(() => {
     if (!clientUser) {

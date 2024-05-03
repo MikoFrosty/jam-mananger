@@ -57,78 +57,78 @@ const testimonials = [
   },
 ];
 
-export default function Landing() {
-  const [selectedSkills, setSelectedSkills] = useState([]);
-  const [emailValid, setEmailValid] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [newSkills, setNewSkills] = useState([]);
-
-  function handleSkillSelect(skill) {
-    if (selectedSkills.some((thisSkill) => thisSkill.title === skill.title)) {
-      const filteredSkills = selectedSkills.filter((selectedSkill) => selectedSkill.title !== skill.title);
-      setSelectedSkills(filteredSkills);
-    } else {
-      setSelectedSkills([skill, ...selectedSkills]);
-    }
-    setSearchQuery("");
-  }
-
-  function validateEmail(email) {
-    if (!emailValid) {
-      const re = /\S+@\S+\.\S+/;
-      return re.test(email);
-    }
-    return true;
-  }
-
-  function handleSearchChange(event) {
-    const value = event.target.value;
-    setSearchQuery(value);
-
-    if (value.includes(",")) {
-      const skills = value.split(",").map((skill) => skill.trim());
-      const updatedNewSkills = [...newSkills];
-      const updatedSelectedSkills = [...selectedSkills];
-
-      skills.forEach((skill) => {
-        if (skill !== "" && !topSkills.some((availableSkill) => availableSkill === skill) && !newSkills.some((newSkill) => newSkill.title === skill)) {
-          const newSkill = {
-            title: skill,
-            id: topSkills.length + newSkills.length + 1,
-          };
-          updatedNewSkills.push(newSkill);
-          updatedSelectedSkills.unshift(newSkill);
+export default function LandingVariation() {
+        const [selectedSkills, setSelectedSkills] = useState([]);
+        const [emailValid, setEmailValid] = useState(false);
+        const [searchQuery, setSearchQuery] = useState("");
+        const [newSkills, setNewSkills] = useState([]);
+      
+        function handleSkillSelect(skill) {
+          if (selectedSkills.some((thisSkill) => thisSkill.title === skill.title)) {
+            const filteredSkills = selectedSkills.filter((selectedSkill) => selectedSkill.title !== skill.title);
+            setSelectedSkills(filteredSkills);
+          } else {
+            setSelectedSkills([skill, ...selectedSkills]);
+          }
+          setSearchQuery("");
         }
-      });
-
-      setNewSkills(updatedNewSkills);
-      setSelectedSkills(updatedSelectedSkills);
-      setSearchQuery("");
-    }
-  }
-
-  function handleSearchSubmit(event) {
-    event.preventDefault();
-    if (searchQuery.trim() !== "") {
-      const newSkill = {
-        title: searchQuery,
-        id: topSkills.length + newSkills.length + 1,
-      };
-      const updatedNewSkills = [...newSkills, newSkill];
-      setNewSkills(updatedNewSkills);
-      handleSkillSelect(newSkill);
-    }
-  }
-
-  const allSkills = [...topSkills, ...newSkills.map((skill) => skill.title)];
-  const filteredSkills = allSkills.filter((skill) =>
-    skill.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const sortedSkills = [
-    ...selectedSkills.map((skill) => skill.title),
-    ...filteredSkills.filter((skill) => !selectedSkills.some((selectedSkill) => selectedSkill.title === skill)),
-  ];
+      
+        function validateEmail(email) {
+          if (!emailValid) {
+            const re = /\S+@\S+\.\S+/;
+            return re.test(email);
+          }
+          return true;
+        }
+      
+        function handleSearchChange(event) {
+          const value = event.target.value;
+          setSearchQuery(value);
+      
+          if (value.includes(",")) {
+            const skills = value.split(",").map((skill) => skill.trim());
+            const updatedNewSkills = [...newSkills];
+            const updatedSelectedSkills = [...selectedSkills];
+      
+            skills.forEach((skill) => {
+              if (skill !== "" && !topSkills.some((availableSkill) => availableSkill === skill) && !newSkills.some((newSkill) => newSkill.title === skill)) {
+                const newSkill = {
+                  title: skill,
+                  id: topSkills.length + newSkills.length + 1,
+                };
+                updatedNewSkills.push(newSkill);
+                updatedSelectedSkills.unshift(newSkill);
+              }
+            });
+      
+            setNewSkills(updatedNewSkills);
+            setSelectedSkills(updatedSelectedSkills);
+            setSearchQuery("");
+          }
+        }
+      
+        function handleSearchSubmit(event) {
+          event.preventDefault();
+          if (searchQuery.trim() !== "") {
+            const newSkill = {
+              title: searchQuery,
+              id: topSkills.length + newSkills.length + 1,
+            };
+            const updatedNewSkills = [...newSkills, newSkill];
+            setNewSkills(updatedNewSkills);
+            handleSkillSelect(newSkill);
+          }
+        }
+      
+        const allSkills = [...topSkills, ...newSkills.map((skill) => skill.title)];
+        const filteredSkills = allSkills.filter((skill) =>
+          skill.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      
+        const sortedSkills = [
+          ...selectedSkills.map((skill) => skill.title),
+          ...filteredSkills.filter((skill) => !selectedSkills.some((selectedSkill) => selectedSkill.title === skill)),
+        ];
 
   return (
     <div className={styles.Landing}>
@@ -142,6 +142,28 @@ export default function Landing() {
         <Typography fontSize={"larger"} marginTop={3}>
           Over 20,000 new Kamari exclusive contracts straight to your inbox. From copywriting to graphic design to AI model tuning, and many more.
         </Typography>
+        <div className={styles.TestimonialsSection}>
+          <Typography marginBottom={"10px"} className={styles.TestimonialsHeading} variant="h4">
+            What Our Users Say
+          </Typography>
+          <div className={styles.TestimonialCards}>
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className={styles.TestimonialCard}>
+                <Typography className={styles.TestimonialQuote} variant="body1">
+                  {
+                    `"${testimonial.quote}" ${testimonial.name}`
+                  }
+                </Typography>
+                <Typography className={styles.TestimonialRole} variant="subtitle2">
+                  {testimonial.role}
+                </Typography>
+                <Typography className={styles.TestimonialRole} variant="subtitle2">
+                  {testimonial.kpis}
+                </Typography>
+              </div>
+            ))}
+          </div>
+        </div>
         <Typography marginTop={"15px"} textAlign={"left"} variant="caption">
           Enter your email
         </Typography>
@@ -150,7 +172,7 @@ export default function Landing() {
           type="email"
           onChange={(e) => setEmailValid(validateEmail(e.target.value))}
         />
-        <div className={emailValid ? styles.ShowSkills : styles.HideSkills}>
+        <div style={emailValid ? {marginTop: "0px"} : {}} className={emailValid ? styles.ShowSkills : styles.HideSkills}>
           <Typography marginTop={"15px"} textAlign={"left"} variant="caption">
             Select your skills
           </Typography>
@@ -181,29 +203,6 @@ export default function Landing() {
             })}
           </div>
           <button className={styles.Button}>Start Receiving Jobs</button>
-        </div>
-
-        <div className={styles.TestimonialsSection}>
-          <Typography marginBottom={"10px"} className={styles.TestimonialsHeading} variant="h4">
-            What Our Users Say
-          </Typography>
-          <div className={styles.TestimonialCards}>
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className={styles.TestimonialCard}>
-                <Typography className={styles.TestimonialQuote} variant="body1">
-                  {
-                    `"${testimonial.quote}" ${testimonial.name}`
-                  }
-                </Typography>
-                <Typography className={styles.TestimonialRole} variant="subtitle2">
-                  {testimonial.role}
-                </Typography>
-                <Typography className={styles.TestimonialRole} variant="subtitle2">
-                  {testimonial.kpis}
-                </Typography>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>

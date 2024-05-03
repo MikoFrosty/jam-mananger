@@ -44,6 +44,27 @@ export function fetchProjects() {
   };
 }
 
+export function fetchApplications() {
+  return async function (dispatch) {
+    try {
+      const applications = await fetchWrapper(
+        "/applications",
+        localStorage.getItem("token"),
+        "GET"
+      ).then((res) => {
+        return res.applications;
+      });
+
+      dispatch({
+        type: "GET_APPLICATIONS",
+        payload: applications,
+      });
+    } catch (error) {
+      console.error("Failed to fetch organization", error);
+    }
+  };
+}
+
 export function fetchContracts(type) {
   let contracts = [];
 

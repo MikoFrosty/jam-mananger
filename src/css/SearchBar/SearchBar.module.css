@@ -8,7 +8,7 @@
 .FormInput {
   flex-grow: 1;
   padding: 5px;
-  border: 2px solid #f1f1f1;
+  border: 2px solid #e5e5e5;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
   border-top-left-radius: 5px;
@@ -24,12 +24,12 @@
   border: none;
   box-shadow: none;
   outline: none;
-  border: 2px solid #f1f1f1;
+  border: 2px solid #e5e5e5;
 }
 
 .FormButton {
   border: 2px solid transparent;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   color: #333;
   font-weight: 400;
   border-top-right-radius: 5px;
@@ -49,10 +49,10 @@
 .FormButton:hover {
   background-color: white;
   color: purple;
-  border-top: 2px solid #f1f1f1;
+  border-top: 2px solid #e5e5e5;
   border-left: none;
-  border-right: 2px solid #f1f1f1;
-  border-bottom: 2px solid #f1f1f1;
+  border-right: 2px solid #e5e5e5;
+  border-bottom: 2px solid #e5e5e5;
   transition: 0.2s;
 }
 

@@ -5,7 +5,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
-function HoverDropdown({ buttonContent, dropdownContent, customStyles = {} }) {
+export default function HoverDropdown({ buttonContent, dropdownContent, customStyles = {}, customButtonStyles = {} }) {
   const [isHovered, setIsHovered] = useState(false);
 
   // Adjust the style dynamically based on hover state
@@ -16,9 +16,9 @@ function HoverDropdown({ buttonContent, dropdownContent, customStyles = {} }) {
       className={styles.Dropdown} 
       onMouseEnter={() => setIsHovered(true)} 
       onMouseLeave={() => setIsHovered(false)}
-      style={dynamicStyle} // Apply the dynamic style here
+      style={{...dynamicStyle, ...customButtonStyles}} // Apply the dynamic style here
     >
-      <button className={styles.DropdownButton}>
+      <button style={customButtonStyles} className={styles.DropdownButton}>
         {buttonContent || <Skeleton />}
         <KeyboardArrowDownIcon fontSize={"small"} className={styles.IconDown}/>
         <KeyboardArrowUpIcon fontSize={"small"} className={styles.IconUp}/>
@@ -29,5 +29,3 @@ function HoverDropdown({ buttonContent, dropdownContent, customStyles = {} }) {
     </div>
   );
 }
-
-export default HoverDropdown;
