@@ -11,6 +11,10 @@
     flex-direction: column;
 }
 
+.ToastContainerStyle {
+  width: fit-content !important;
+}
+
 .MainContent {
     width: 80%;
     height: 80%;

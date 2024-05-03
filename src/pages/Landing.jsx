@@ -3,6 +3,10 @@ import styles from "../css/Pages/Landing.module.css";
 import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import fetchWrapper from "../utils/fetchWrapper";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
 
 const topSkills = [
   'JavaScript', 'Web Design', 'HTML', 'CSS', 'PHP', 'Graphic Design', 'HTML5', 'WordPress', 'Photoshop', 'Logo Design',
@@ -62,6 +66,7 @@ export default function Landing() {
   const [emailValid, setEmailValid] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [newSkills, setNewSkills] = useState([]);
+  const [email, setEmail] = useState("");
 
   function handleSkillSelect(skill) {
     if (selectedSkills.some((thisSkill) => thisSkill.title === skill.title)) {
@@ -73,9 +78,19 @@ export default function Landing() {
     setSearchQuery("");
   }
 
+  function notify(message) {
+    toast(message, {
+      className: styles.SmallToast,
+      hideProgressBar: true,
+      // You can also adjust the toast duration (auto-close time) here, if needed
+      autoClose: 1000,
+    });
+  }
+
   function validateEmail(email) {
     if (!emailValid) {
       const re = /\S+@\S+\.\S+/;
+      setEmail(email)
       return re.test(email);
     }
     return true;
@@ -117,6 +132,24 @@ export default function Landing() {
       const updatedNewSkills = [...newSkills, newSkill];
       setNewSkills(updatedNewSkills);
       handleSkillSelect(newSkill);
+    }
+  }
+
+  function handleSubmit() {
+    if (email && selectedSkills) {
+      const payload = {
+        email,
+        skills: selectedSkills
+      };
+
+      fetchWrapper("/talent", "", "POST", { ...payload }).then((res) => {
+        if (res.message === "talent created") {
+          notify("Great News, you'll start receiving opportunities shorlty!")
+          setSelectedSkills([]);
+          setEmail("")
+          setEmailValid(false)
+        }
+      })
     }
   }
 
@@ -180,7 +213,7 @@ export default function Landing() {
               );
             })}
           </div>
-          <button className={styles.Button}>Start Receiving Jobs</button>
+          <button disabled={email === "" || !emailValid} onClick={() => handleSubmit()} className={styles.Button}>Start Receiving Jobs</button>
         </div>
 
         <div className={styles.TestimonialsSection}>
@@ -206,6 +239,7 @@ export default function Landing() {
           </div>
         </div>
       </div>
+      <ToastContainer className={styles.ToastContainerStyle} />
     </div>
   );
 }
