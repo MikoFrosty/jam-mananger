@@ -1,0 +1,136 @@
+.SelectedSkillsContract {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  row-gap: 10px;
+  column-gap: 10px;
+  background-color: #e5e5e5;
+  border-radius: 5px;
+  width: 100%;
+  height: fit-content;
+  min-height: 0px;
+  max-height: 54px;
+  overflow-x: auto;
+  padding: 10px;
+  max-width: 100%;
+  margin-top: 10px;
+}
+
+.SkillContract {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  min-width: fit-content;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: white;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.StepInputArea {
+  width: 100%;
+  height: 140px;
+  font-weight: 400;
+  padding: 10px;
+  font-size: 15px;
+  border-radius: 5px;
+  background-color: white;
+  color: #333;
+  border: none;
+  min-height: 140px;
+  max-height: 140px;
+  min-width: 100%;
+  max-width: 100%;
+}
+
+.Contract {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0px 0px 10px #e5e5e5;
+  padding: 10px;
+  row-gap: 10px;
+  background-color: white;
+}
+
+.Contract textarea {
+  width: 100%;
+  min-height: 140px;
+  max-height: 140px;
+  min-width: 100%;
+  max-width: 100%;
+  box-shadow: 0px 0px 10px #e5e5e5;
+  text-overflow: ellipsis;
+}
+
+.Header {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: fit-content;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.HeaderRight {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  height: fit-content;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.Footer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: fit-content;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.FooterRight {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  height: fit-content;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.ApplyButton {
+  background-color: white;
+  border: none;
+  color: #333;
+  transition: 0.2s;
+  padding: 10px;
+}
+
+.ApplyButton:focus {
+  outline: none;
+}
+
+.ApplyButton:hover {
+  background-color: #e5e5e5;
+  cursor: pointer;
+  transition: 0.2s;
+  color: rgb(162, 75, 248);
+}
+
+.Text {
+  text-align: left;
+  border-bottom: 1px solid #e5e5e5;
+  border-top: 1px solid #e5e5e5;
+  padding: 15px 0px;
+  max-height: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: pre-wrap;
+}

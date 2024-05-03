@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "../../css/Client/ClientDashboard.module.css"
 import SideBar from "../Dashboard/SideBar"
-import { fetchClientDocuments, fetchClientUser, fetchPartners, setClientUser, setLogout, toggleView } from "../../StateManagement/Actions/actions";
+import { fetchClientAccount, fetchClientDocuments, fetchClientUser, fetchPartners, setClientUser, setLogout, toggleView } from "../../StateManagement/Actions/actions";
 import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import Documentation from "../Dashboard/Documentation/documentation";
@@ -11,6 +11,7 @@ import ClientView from "./ClientView";
 import { useDispatch } from "react-redux";
 import DocumentEditor from "../DocumentComponents/DocumentEditor";
 import ClientProjects from "./ClientProjects";
+import ClientContracts from "./ClientContracts";
 
 export default function ClientDashboard() {
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ export default function ClientDashboard() {
       navigate("/home");
     }
     else if (!clientUser) {
-      dispatch(fetchClientUser());
+      dispatch(fetchClientAccount());
     }
   }, [logout, clientUser])
 
@@ -101,6 +102,8 @@ export default function ClientDashboard() {
             <ClientView type={"client"}/>
           ) : viewMode === "client-projects" ? (
             <ClientProjects />
+          ) : viewMode === "client-contracts" ? (
+            <ClientContracts />
           ) : null
         }
       </div>

@@ -19,7 +19,7 @@ export default function Plackard({ type, onLogout }) {
             {type === "user"
               ? user?.name?.first[0].toUpperCase() ||
                 user?.email[0].toUpperCase()
-              : clientUser?.client_user_name?.first[0] || "?"}
+              : clientUser?.account_name[0].toUpperCase() || "?"}
           </Typography>
         }
       </div>
@@ -27,7 +27,7 @@ export default function Plackard({ type, onLogout }) {
         <Typography
           className={styles.InlineFlex}
           variant="body2"
-        >{`${type === "user" ? user?.name?.first : clientUser?.client_user_name?.first} ${type === "user" ? user?.name?.last : clientUser?.client_user_name?.last}`}</Typography>
+        >{`${type === "user" ? user?.name?.first : clientUser?.account_name} ${type === "user" ? user?.name?.last : ""}`}</Typography>
         <Typography variant="caption">{user?.type}</Typography>
       </div>
       <LogoutIcon className={styles.LogoutIcon} onClick={handleLogout} />

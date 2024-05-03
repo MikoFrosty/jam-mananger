@@ -138,7 +138,7 @@
   height: 35px;
   font-size: medium;
   font-weight: 500;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   border: none;
   padding: 10px;
@@ -154,7 +154,7 @@
 }
 
 .InvoiceInfoText {
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   color: #333;
   border-radius: 5px;
   text-align: center;
@@ -170,7 +170,7 @@
   align-items: center;
   justify-content: center;
   text-align: left;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   padding: 10px;
   text-overflow: ellipsis;

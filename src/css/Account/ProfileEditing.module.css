@@ -48,7 +48,7 @@
   height: 35px;
   font-size: medium;
   font-weight: 500;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   border: none;
   padding: 10px;
@@ -72,7 +72,7 @@
 
 .ProfileDatePicker {
   height: 35px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
 
 }
 
@@ -84,7 +84,7 @@
   height: 35px;
   width: fit-content;
   min-width: 100px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   padding: 10px;
   border-radius: 5px;
 }
@@ -96,7 +96,7 @@
 .DurationInputWrapper {
   display: flex;
   align-items: center;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   height: 35px;
   width: fit-content;
@@ -140,7 +140,7 @@
 .Description {
   max-width: 100%;
   min-width: 100%;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   color: #333;
   padding: 10px;
   border: none;
@@ -250,7 +250,7 @@
   height: fit-content;
   height: 400px;
   min-width: 250px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   text-align: left;
   overflow-y: scroll;
 }

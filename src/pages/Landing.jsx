@@ -1,238 +1,211 @@
-import React, { useEffect, useRef } from 'react';
+import { Typography } from "@mui/material";
+import styles from "../css/Pages/Landing.module.css";
+import { useState } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
-const LandingPage = () => {
-  const invoicingRef = useRef(null);
-  const clientManagementRef = useRef(null);
-  const timeTrackingRef = useRef(null);
+const topSkills = [
+  'JavaScript', 'Web Design', 'HTML', 'CSS', 'PHP', 'Graphic Design', 'HTML5', 'WordPress', 'Photoshop', 'Logo Design',
+  'Illustration', 'React', 'Illustrator', 'Python', 'jQuery', 'Cascading Style Sheets (CSS)', 'Website Development',
+  'Mobile App Development', 'User Interface Design', 'Adobe Photoshop', 'SQL', 'MySQL', 'Web Development', 'Android',
+  'Web Application', 'HTML 5', 'Software Development', 'Javascript', 'iOS', 'CSS3', 'UI/UX Design', 'Flutter', 'Java',
+  'Node.js', '.NET', 'Responsive Web Design', 'Adobe Illustrator', 'App Development', 'Kotlin', 'Front-end Development',
+  'C#', 'User Experience Design', 'Laravel', 'User Interface', 'Database Design', 'MongoDB', 'API Development',
+  'Database Development', 'Data Entry', 'Excel', 'Software Architecture', 'Power BI', 'Go', 'Virtual Assistant', 'REST',
+  'Figma', 'Dart', 'Amazon Web Services', 'Full Stack Development', 'Tableau', 'Graphic Art', 'Scripting', 'C++',
+  'Business Analysis', 'Microsoft Access', 'Microsoft SQL Server', 'XML', 'Sketch', 'Google Cloud Platform',
+  'Interactive Design', 'Google Docs', 'Google Analytics', 'Market Research', 'Instagram Marketing', 'UX Research',
+  'Logo Design Services', 'Infographic Design', 'Product Development', 'Three.js', 'Machine Learning', 'Copywriting',
+  'PostgreSQL', 'Proofreading', 'Drawing', 'Marketing Strategy', 'GitHub', 'Google AdWords', 'Google Sheets',
+  'AngularJS', 'Google Workspace', 'Redux', 'Product Design', 'Statistical Analysis', 'Scala', 'Photo Editing',
+  'Content Writing', 'Pandas', 'NumPy', 'Symfony', 'Technical Support', 'Computer-aided Design', 'Game Development',
+  'Microsoft SQL', 'Network Administration', 'Web Application Development', 'Computer Science', 'Windows Desktop',
+  'Firebase', 'Data Science', 'Elasticsearch', 'Microsoft 365', 'TypeScript', 'Tensorflow', 'Search Engine Optimization (SEO)',
+  'Google Slides', 'SQLite', 'Presentations', 'Internet Research', 'Google Forms', 'GitHub API', 'Vue.js', 'ASP.NET',
+  'Docker', 'Rust', 'Unreal Engine', 'Haskell', 'Information Architecture', '2D Animation', 'Social Media Management',
+  'Salesforce', 'Microsoft PowerPoint', 'Scala Programming', 'Linux', 'OpenCV', 'Jenkins', 'Kubernetes', 'PyTorch',
+  'Blockchain', 'OpenGL', 'Ubuntu', 'iOS Development', '3D Modeling', 'Django', 'Spring Framework', 'Google App Engine',
+  'Google Translator Toolkit', 'Google App Script', 'Google Search Console', 'Google Ads', 'Google Maps API',
+  'Google Data Studio', 'Amazon S3', 'Amazon Aurora', 'Amazon DynamoDB', 'Amazon RDS', 'Amazon EC2', 'Clojure', 'Dart Programming Language',
+  'Progressive Web Apps (PWA)', 'AJAX', 'Google Fonts API', 'Microsoft Visio', 'Microsoft Azure',
+  'Google Tag Manager', 'Objective-C', 'Rust Programming Language', 'Angular 2+', 'Swift', 'Ruby on Rails',
+  'Keras', 'Express.js', '3D Rendering', 'Google Chrome Extension', 'Slack', 'Google My Business', 'Joomla',
+  'Google Analytics API', 'Git', 'Google Cloud Storage', 'YouTube API', 'Ruby', 'Grunt', 'Gulp',
+  'Adobe XD', 'Elasticsearch API', 'Google Places API', 'Google Maps JavaScript API', 'Mailchimp', 'Adobe Photoshop Lightroom',
+  '3D Animation', 'Natural Language Processing', 'GitLab', '3ds Max', 'Unity 3D', 'OpenAI', 'Scikit-learn',
+  'Solidity', 'Google Cloud Functions',
+];
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.pageYOffset;
+const testimonials = [
+  {
+    name: "- Brandon M.",
+    role: "Web Developer",
+    kpis: "$12,971.68 Earned | 4 Contracts | 2 Months",
+    quote: "Kamari has been a game-changer for my freelance career. The quality of contracts and clients I've found through their platform is unmatched.",
+  },
+  {
+    name: "- Kristine F.",
+    role: "Graphic Designer",
+    kpis: "$3,897.37 Earned | 3 Contracts | 1 Month",
+    quote: "I've been able to consistently find high-paying design gigs through Kamari. The platform is user-friendly and the support team is always helpful.",
+  },
+  {
+    name: "- Mikal K.",
+    role: "Content Writer",
+    kpis: "$5,364.40 Earned | 1 Contract | 2 Months",
+    quote: "As a freelance writer, Kamari has provided me with a steady stream of interesting and diverse writing projects. It's been a great experience so far.",
+  },
+];
 
-      if (currentScrollPos > 100) {
-        // Load in content on scroll
-        // Add your scroll loading logic here
-      }
-    };
+export default function Landing() {
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [emailValid, setEmailValid] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [newSkills, setNewSkills] = useState([]);
 
+  function handleSkillSelect(skill) {
+    if (selectedSkills.some((thisSkill) => thisSkill.title === skill.title)) {
+      const filteredSkills = selectedSkills.filter((selectedSkill) => selectedSkill.title !== skill.title);
+      setSelectedSkills(filteredSkills);
+    } else {
+      setSelectedSkills([skill, ...selectedSkills]);
+    }
+    setSearchQuery("");
+  }
 
-    window.addEventListener('scroll', handleScroll);
+  function validateEmail(email) {
+    if (!emailValid) {
+      const re = /\S+@\S+\.\S+/;
+      return re.test(email);
+    }
+    return true;
+  }
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  function handleSearchChange(event) {
+    const value = event.target.value;
+    setSearchQuery(value);
 
-  const scrollToSection = (ref) => {
-    ref.current.scrollIntoView({ behavior: 'smooth' });
-  };
+    if (value.includes(",")) {
+      const skills = value.split(",").map((skill) => skill.trim());
+      const updatedNewSkills = [...newSkills];
+      const updatedSelectedSkills = [...selectedSkills];
+
+      skills.forEach((skill) => {
+        if (skill !== "" && !topSkills.some((availableSkill) => availableSkill === skill) && !newSkills.some((newSkill) => newSkill.title === skill)) {
+          const newSkill = {
+            title: skill,
+            id: topSkills.length + newSkills.length + 1,
+          };
+          updatedNewSkills.push(newSkill);
+          updatedSelectedSkills.unshift(newSkill);
+        }
+      });
+
+      setNewSkills(updatedNewSkills);
+      setSelectedSkills(updatedSelectedSkills);
+      setSearchQuery("");
+    }
+  }
+
+  function handleSearchSubmit(event) {
+    event.preventDefault();
+    if (searchQuery.trim() !== "") {
+      const newSkill = {
+        title: searchQuery,
+        id: topSkills.length + newSkills.length + 1,
+      };
+      const updatedNewSkills = [...newSkills, newSkill];
+      setNewSkills(updatedNewSkills);
+      handleSkillSelect(newSkill);
+    }
+  }
+
+  const allSkills = [...topSkills, ...newSkills.map((skill) => skill.title)];
+  const filteredSkills = allSkills.filter((skill) =>
+    skill.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const sortedSkills = [
+    ...selectedSkills.map((skill) => skill.title),
+    ...filteredSkills.filter((skill) => !selectedSkills.some((selectedSkill) => selectedSkill.title === skill)),
+  ];
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: '#f8f8f8', height: '60px' }}>
-        <img src="header_logo.png" alt="Kamari Logo" style={{ height: '40px' }} />
-        <nav>
-          <ul style={{ display: 'flex', listStyle: 'none', margin: 0, padding: 0 }}>
-            <li style={{ marginRight: '20px' }}>
-              <a href="/signup" style={{ textDecoration: 'none', color: '#333', fontSize: '16px', fontWeight: 'bold' }}>Sign Up</a>
-            </li>
-            <li style={{ marginRight: '20px' }}>
-              <a href="/pricing" style={{ textDecoration: 'none', color: '#333', fontSize: '16px', fontWeight: 'bold' }}>Pricing</a>
-            </li>
-            <li style={{ position: 'relative' }}>
-              <span style={{ cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}>
-                Features <span style={{ marginLeft: '5px' }}>&#9662;</span>
-              </span>
-              <ul style={{ position: 'absolute', top: '100%', left: 0, backgroundColor: '#fff', padding: '10px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', display: 'none' }}>
-                <li>
-                  <a href="#invoicing" onClick={() => scrollToSection(invoicingRef)} style={{ textDecoration: 'none', color: '#333', fontSize: '14px' }}>Invoicing</a>
-                </li>
-                <li>
-                  <a href="#client-management" onClick={() => scrollToSection(clientManagementRef)} style={{ textDecoration: 'none', color: '#333', fontSize: '14px' }}>Client Management</a>
-                </li>
-                <li>
-                  <a href="#time-tracking" onClick={() => scrollToSection(timeTrackingRef)} style={{ textDecoration: 'none', color: '#333', fontSize: '14px' }}>Time Tracking</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </nav>
-      </header>
+    <div className={styles.Landing}>
+      <div className={styles.MainContent}>
+        <Typography className={styles.Header} variant="h2">
+          Freelance Opportunities
+        </Typography>
+        <Typography className={styles.Header} variant="h2">
+          Delivered to Your Inbox
+        </Typography>
+        <Typography fontSize={"larger"} marginTop={3}>
+          Over 20,000 new Kamari exclusive contracts straight to your inbox. From copywriting to graphic design to AI model tuning, and many more.
+        </Typography>
+        <Typography marginTop={"15px"} textAlign={"left"} variant="caption">
+          Enter your email
+        </Typography>
+        <input
+          className={styles.InputField}
+          type="email"
+          onChange={(e) => setEmailValid(validateEmail(e.target.value))}
+        />
+        <div className={emailValid ? styles.ShowSkills : styles.HideSkills}>
+          <Typography marginTop={"15px"} textAlign={"left"} variant="caption">
+            Select your skills
+          </Typography>
+          <form onSubmit={handleSearchSubmit}>
+            <input
+              className={styles.InputField}
+              style={{marginBottom: "10px"}}
+              type="text"
+              placeholder="Search skills or add a new skill with a comma"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </form>
+          <div className={styles.AvailableSkills}>
+            {sortedSkills.map((skill, index) => {
+              const isSelected = selectedSkills.some((thisSkill) => thisSkill.title === skill);
+              return (
+                <div
+                  key={`skill_${index}`}
+                  style={isSelected ? {border: "2px solid rgb(79, 39, 255)", backgroundColor: "rgb(79, 39, 255)", color: "white"} : {}}
+                  onClick={() => handleSkillSelect({ title: skill, id: index })}
+                  className={styles.Skill}
+                >
+                  {isSelected ? <RemoveIcon /> : <AddIcon />}
+                  {skill}
+                </div>
+              );
+            })}
+          </div>
+          <button className={styles.Button}>Start Receiving Jobs</button>
+        </div>
 
-      <section style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', padding: '0 20px', textAlign: 'left' }}>
-        <h1 style={{ fontSize: '48px', color: '#333', marginBottom: '20px' }}>Streamline Your Freelance Business with Kamari</h1>
-        <p style={{ fontSize: '20px', color: '#666', marginBottom: '40px' }}>
-          Kamari teams is a time tracking, task management, and invoicing tool designed for freelancers. Invite clients, track time, send invoices, and manage your projects effortlessly.
-        </p>
-        <img src="hero_image.png" alt="Kamari Hero" style={{ maxWidth: '100%', marginBottom: '40px' }} />
-        <a href="/signup" style={{ backgroundColor: '#9013FE', color: '#fff', padding: '12px 24px', borderRadius: '4px', textDecoration: 'none', fontSize: '18px', fontWeight: 'bold' }}>Get Started for Free</a>
-      </section>
-
-      <section ref={invoicingRef} style={{ padding: '80px 20px', backgroundColor: '#f8f8f8', textAlign: 'left' }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '40px' }}>
-          <img src="feature_invoicing.png" alt="Invoicing" style={{ width: '50%', marginRight: '40px' }} />
-          <div>
-            <h2 style={{ fontSize: '36px', color: '#333', marginBottom: '20px' }}>Effortless Invoicing</h2>
-            <p style={{ fontSize: '18px', color: '#666' }}>
-              Create and send professional invoices to your clients with just a few clicks. Kamari teams integrates with Stripe to handle payments securely, with no platform fees.
-            </p>
+        <div className={styles.TestimonialsSection}>
+          <Typography marginBottom={"10px"} className={styles.TestimonialsHeading} variant="h4">
+            What Our Users Say
+          </Typography>
+          <div className={styles.TestimonialCards}>
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className={styles.TestimonialCard}>
+                <Typography className={styles.TestimonialQuote} variant="body1">
+                  {
+                    `"${testimonial.quote}" ${testimonial.name}`
+                  }
+                </Typography>
+                <Typography className={styles.TestimonialRole} variant="subtitle2">
+                  {testimonial.role}
+                </Typography>
+                <Typography className={styles.TestimonialRole} variant="subtitle2">
+                  {testimonial.kpis}
+                </Typography>
+              </div>
+            ))}
           </div>
         </div>
-      </section>
-
-      <section ref={clientManagementRef} style={{ padding: '80px 20px', textAlign: 'right' }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '40px' }}>
-          <div>
-            <h2 style={{ fontSize: '36px', color: '#333', marginBottom: '20px' }}>Seamless Client Management</h2>
-            <p style={{ fontSize: '18px', color: '#666' }}>
-              Invite clients to collaborate on projects, assign tasks, and keep everyone on the same page. Kamari teams simplifies client communication and project management.
-            </p>
-          </div>
-          <img src="feature_client_management.png" alt="Client Management" style={{ width: '50%', marginLeft: '40px' }} />
-        </div>
-      </section>
-
-      <section ref={timeTrackingRef} style={{ padding: '80px 20px', backgroundColor: '#f8f8f8', textAlign: 'left' }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '40px' }}>
-          <img src="feature_time_tracking.png" alt="Time Tracking" style={{ width: '50%', marginRight: '40px' }} />
-          <div>
-            <h2 style={{ fontSize: '36px', color: '#333', marginBottom: '20px' }}>Accurate Time Tracking</h2>
-            <p style={{ fontSize: '18px', color: '#666' }}>
-              Track time spent on tasks and projects accurately. Generate detailed reports to analyze your productivity and bill clients precisely for the work done.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <footer style={{ backgroundColor: '#333', color: '#fff', padding: '40px 20px', textAlign: 'center' }}>
-        <img src="footer_logo.png" alt="Kamari Logo" style={{ height: '40px', marginBottom: '20px' }} />
-        <p style={{ fontSize: '14px' }}>
-          &copy; {new Date().getFullYear()} Kamari. All rights reserved.
-        </p>
-      </footer>
+      </div>
     </div>
   );
-};
-
-export default LandingPage;
-
-
-// import React, { useRef } from "react";
-// import { useNavigate, Link } from "react-router-dom";
-
-// import Typography from "@mui/material/Typography";
-
-// import styles from "../css/LandingPage.module.css";
-// import LandingAppBar from "../features/AppBar/LandingAppBar";
-// import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-
-// import taskTablePhoto from "../../public/TaskTable.png";
-
-// function Copyright(props) {
-//   return (
-//     <Typography
-//       variant="body2"
-//       color="text.secondary"
-//       align="center"
-//       {...props}
-//     >
-//       {"Copyright © "}
-//       <Link color="inherit" href="https://kamariteams.com">
-//         Kamari
-//       </Link>
-//       {`${new Date().getFullYear()}.`}
-//     </Typography>
-//   );
-// }
-
-// function Landing() {
-//   const firstElementRef = useRef(null);
-//   const secondElementRef = useRef(null);
-//   const thirdElementRef = useRef(null);
-
-//   const scrollToElement = (element) => {
-//     if (secondElementRef.current) {
-//       const this_element = element;
-//       this_element.current.scrollIntoView({
-//         behavior: "smooth",
-//         block: "start", // Adjust this as per your requirements
-//       });
-//     }
-//   };
-
-//   return (
-//     <div className={styles.LandingPage}>
-//       <LandingAppBar />
-//       <div className={styles.Main}>
-//         <div ref={firstElementRef} className={styles.ContentRowTop}>
-//           <div className={styles.ContentColumn}>
-//             <Typography color={"rgba(201, 57, 240, 0.765)"} variant="h1">
-//               Built for Freelancers
-//             </Typography>
-//             <Typography variant="h5">
-//               Kamari started as a simple tool to manage quick development of
-//               product. It quickly grew into so much more and still has so much
-//               further to go before we feel like our mission is complete.
-//             </Typography>
-//             <img className={styles.ColumnImage} src={taskTablePhoto} alt="" />
-//           </div>
-//           <div className={styles.ContentColumnReversed}>
-//             <Typography color={"rgba(201, 57, 240, 0.765)"} variant="h4">
-//               Create an Account
-//             </Typography>
-//             <Typography color={"rgba(201, 57, 240, 0.765)"} variant="h4">
-//               Invite Clients
-//             </Typography>
-//             <Typography color={"rgba(201, 57, 240, 0.765)"} variant="h4">
-//               Complete Tasks
-//             </Typography>
-//             <Typography color={"rgba(201, 57, 240, 0.765)"} variant="h4">
-//               Invoice Clients
-//             </Typography>
-//             <div onClick={() => scrollToElement(secondElementRef)} className={styles.TextWithIcon}>
-//               <Typography variant="h6">And way more</Typography>
-//               <KeyboardArrowDownIcon />
-//             </div>
-//           </div>
-//         </div>
-//         <div ref={secondElementRef} id="two" className={styles.ContentRowTop}>
-//           <div className={styles.FullWidthContentColumn}>
-//             <Typography color={"rgba(201, 57, 240, 0.765)"} variant="h3">
-//               Manage. Perform. Invoice.
-//             </Typography>
-//             <Typography
-//               sx={{ maxWidth: "60%", width: "fit-content" }}
-//               variant="body1"
-//             >
-//               Easily manage internal or client given tasks
-//             </Typography>
-//             <img className={styles.ColumnImageSmall} src={taskTablePhoto} alt="" />
-//             <div onClick={() => scrollToElement(thirdElementRef)} className={styles.TextWithIcon}>
-//               <Typography variant="h6">And way more</Typography>
-//               <KeyboardArrowDownIcon />
-//             </div>
-//           </div>
-//         </div>
-//         <div ref={thirdElementRef} id="two" className={styles.ContentRowTop}>
-//           <div className={styles.FullWidthContentColumn}>
-//             <Typography color={"rgba(201, 57, 240, 0.765)"} variant="h3">
-//               Manage. Perform. Invoice.
-//             </Typography>
-//             <Typography
-//               sx={{ maxWidth: "60%", width: "fit-content" }}
-//               variant="body1"
-//             >
-//               Easily manage internal or client given tasks
-//             </Typography>
-//             <div className={styles.ContentRow}>
-//                 <img className={styles.RowImage} src={taskTablePhoto} alt="" />
-//                 <img className={styles.RowImage} src={taskTablePhoto} alt="" />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Landing;
+}

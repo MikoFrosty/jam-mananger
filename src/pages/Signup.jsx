@@ -1,275 +1,117 @@
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import AuthContext from "../Contexts/AuthContext";
-import { useContext, useState, useEffect, lazy } from "react";
-import fetchWrapper from "../utils/fetchWrapper";
+import { useEffect, useState } from "react";
+import styles from "../css/Pages/Authenticate.module.css";
+import SignupForm from "../Forms/SignupForm";
+import NumberPicker from "../components/inputs/NumberPicker";
+import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Modify from "./Modify";
 
-import styles from "../css/Signup.module.css";
+export default function Authenticate() {
+  const navigate = useNavigate()
+  const [accountType, setAccountType] = useState("freelancer");
+  const [authDirection, setAuthDirection] = useState(null);
+  const [value, setValue] = useState(50);
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://kamariteams.com">
-        Kamari
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
-const iconHover = {
-  cursor: "pointer",
-  alignSelf: "start",
-  margin: "0px 0px 20px 0px",
-};
-
-export default function Signup() {
-  const { user, setUserData, token, setTokenString } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const email = searchParams.get("email");
-  const [organization, setOrganization] = useState(null);
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
-    const email = data.get("email");
-    const password = data.get("password");
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailError("Please enter a valid email address");
-    } else {
-      setEmailError("");
-    }
-
-    // Password validation
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
-      setPasswordError(
-        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
-      );
-    } else {
-      setPasswordError("");
-    }
-
-    // If both email and password are valid, proceed with form submission
-    if (emailRegex.test(email) && passwordRegex.test(password)) {
-      const payload = {
-        email: email ? email : data.get("email"),
-        password: data.get("password"),
-        type: "standard",
-        organization: data.get("organizationName"),
-        hourly_rate: data.get("hourlyRate"),
-        name: {
-          first: data.get("firstName"),
-          last: data.get("lastName"),
-        },
-      };
-
-      // client_reference_id and prefilled_email params to stripe payment page
-
-      console.log(payload);
-
-      fetchWrapper("/signup", "", "POST", { ...payload }).then((res) => {
-        if (res.message === "User Registered") {
-          console.log(res);
-          setUserData(res.user);
-          setTokenString(res.token);
-          setOrganization(res.organization)
-        }
-      });
-    }
-  };
-
-  useEffect(() => {
-    console.log(token, user, organization)
-    if (token && user && organization) {
-      console.log("Should nav to stripe payment link location");
-      window.location.replace(
-        `https://buy.stripe.com/test_14k9CG4Ej1NP0g0fYZ?client_reference_id=${organization.org_id}&prefilled_email=${user.email}`
-      ); // test
-      // window.location.replace(`https://buy.stripe.com/dR69Bn316fND5kA6oo?client_reference_id=${res.organization.org_id}&prefilled_email=${res.user.email}`); // prod
-    }
-  }, [token, user, organization]);
-
-  function handleBackClick() {
-    navigate("/");
+  const searchParams = new URLSearchParams(location.search);
+  const direction = searchParams.get('direction');
+  const user_id = searchParams.get("user_id");
+  const type = searchParams.get("type");
+  
+  function selectAccountType( type ) {
+    setAccountType(type);
   }
 
+  useEffect(() => {
+    if (direction) {
+      setAuthDirection(direction);
+    } else {
+      setAuthDirection("signup");
+    }
+  }, [direction])
+
+    function handleValueChange(num) {
+        setValue(parseInt(num));
+      }
+
+    function adjustValue(num) {
+        num = parseInt(num)
+        if (value > 0) {
+            setValue(value + num);
+        } else if (value === 0 && num === 1) {
+            setValue(value + num)
+        }
+    }
+  
+    function handleNavigate(destination) {
+      navigate(destination);
+    }
+
   return (
-    <div className={styles.Signup}>
-      <div className={styles.Message}>
-        <div className={styles.MessageText}>
-          <Typography variant="h2">Welcome to Kamari</Typography>
-          <Typography variant="body1">
-            We hope you are enjoy our beta testing. If you have any feed back,
-            reach out to us or submit a ticket by clicking the "Submit Issue"
-            button in your profile.
-          </Typography>
-        </div>
-      </div>
-      <div className={styles.SignupForm}>
-        <Container component="main" maxWidth="xs">
-          <CssBaseline />
-          <Box
-            sx={{
-              marginTop: 8,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <ArrowBackIcon
-              onClick={() => handleBackClick()}
-              style={iconHover}
-            />
-            <Avatar sx={{ m: 1, bgcolor: "#6CE5E8" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign Up
-            </Typography>
-            <Box
-              className={styles.AuthForm}
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              sx={{ mt: 1 }}
-            >
-              <div className={styles.SprintInput}>
-                <label className={styles.SprintLabel}>Organization Name</label>
-                <input
-                  required
-                  id="organizationName"
-                  label="Organization Name"
-                  name="organizationName"
-                  className={styles.SprintTitleInput}
-                  type="text"
-                />
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  columnGap: "5px",
-                }}
-              >
-                <div className={styles.SprintInput}>
-                  <label className={styles.SprintLabel}>First Name</label>
-                  <input
-                    required
-                    id="firstname"
-                    name="firstName"
-                    className={styles.SprintTitleInput}
-                    type="text"
-                  />
+    <div className={styles.AuthenticatePage}>
+      { direction === "signup" || direction === "login" ? (<div className={styles.MessageBox}>
+        {authDirection === "signup" ? (
+          <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <h1 style={{ fontWeight: 700, color: "white" }}>Welcome to Kamari</h1>
+              <p style={{ color: "white" }}>
+                We are excited you have decided to use the world's fastest-growing job board. Not only do we offer completely free Kamari job postings and applications, we also offer an advanced contract management solution for non direct hire roles.
+              </p>
+            </div>
+            <div>
+              <div className={styles.PricingSection}>
+                <h3 style={{ color: "white", marginBottom: "10px" }}>Our Pricing is Simple</h3>
+                <div className={styles.PricingOptions}>
+                  <div className={styles.PricingOption}>
+                      <h3 style={{margin: "0px 0px 0px 0px"}}>Job Seekers</h3>
+                      <h5 style={{margin: "0px 0px 20px 0px"}}>free</h5>
+                      <ul className={styles.FeatureList}>
+                        <li>Unlimited applications</li>
+                        <li>Client messaging</li>
+                        <li>Weekly inbox delivered contracts</li>
+                        <li>Contracts worked on Kamari take home 100% of earned income</li>
+                        <li>Hosted Portfolio Link</li>
+                        <li>Access to job search and filtering</li>
+                        <li>100% Remote Only Work</li>
+                      </ul>
+                    </div>
+                    <div className={styles.PricingOption}>
+                      <h3 style={{margin: "0px 0px 0px 0px"}}>Companies</h3>
+                      <h5 style={{margin: "0px 0px 20px 0px"}}>free</h5>
+                      <ul className={styles.FeatureList}>
+                        <li>Unlimited Kamari jobs & contracts</li>
+                        <li>No contract invoice fees</li>
+                        <li>Hosted Company Page</li>
+                        <li>Unlimited applications on each contract</li>
+                        <li>Paid dispersion to other boards</li>
+                        <li>Find workers using the advanced talent search tool</li>
+                      </ul>
+                    </div>
                 </div>
-                <div className={styles.SprintInput}>
-                  <label className={styles.SprintLabel}>Last Name</label>
-                  <input
-                    required
-                    id="lastname"
-                    name="lastName"
-                    className={styles.SprintTitleInput}
-                    type="text"
-                  />
                 </div>
-              </div>
-              <div className={styles.SprintInput}>
-                <label className={styles.SprintLabel}>Hourly Rate</label>
-                <div className={styles.PrefixWrapper}>
-                  <div className={styles.Prefix}>$</div>
-                  <input
-                    name="hourlyRate"
-                    id="hourlyrate"
-                    required
-                    defaultValue={35}
-                    min={0}
-                    className={styles.SprintTitleInput}
-                    type="number"
-                  />
-                </div>
-              </div>
-              <div className={styles.SprintInput}>
-                <label className={styles.SprintLabel}>Email</label>
-                <input
-                  required
-                  id="email"
-                  name="email"
-                  defaultValue={email ? email : ""}
-                  className={styles.SprintTitleInput}
-                  type="email"
-                  autoComplete="email"
-                />
-                {emailError && (
-                  <Typography variant="caption" color="error">
-                    {emailError}
-                  </Typography>
-                )}
-              </div>
-              <div className={styles.SprintInput}>
-                <label className={styles.SprintLabel}>Password</label>
-                <input
-                  required
-                  id="password"
-                  name="password"
-                  className={styles.SprintTitleInput}
-                  type="password"
-                  autoComplete="current-password"
-                />
-                {passwordError && (
-                  <Typography variant="caption" color="error">
-                    {passwordError}
-                  </Typography>
-                )}
-              </div>
-              <Button
-                type="submit"
-                fullWidth
-                variant="outlined"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign Up
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item xs>
-                  <Link href="/login" variant="body2">
-                    Have an account? Log In
-                  </Link>
-                </Grid>
-              </Grid>
-            </Box>
-          </Box>
-          <Copyright sx={{ mt: 8, mb: 4 }} />
-        </Container>
+            </div>
+          </div>
+        ) : (
+          null
+        )}
+      </div>) : null}
+      <div style={direction !== ("signup"|"login") ? {width: "100%"} : {}} className={styles.AuthBox}>
+        {
+          authDirection === "signup" ? (
+            <div style={{ textAlign: "left" }}>
+              <SignupForm />
+            </div>
+          ) : authDirection === "modify" ? (
+            <Modify type={type} user_id={user_id}/>
+          ) : null
+        }
+        {
+          direction === ("signup"|"login") ? (
+            <div className={styles.AlternateDirections}>
+              <Typography onClick={() => handleNavigate("/home?direction=login")} className={styles.AlternateDirection} variant="caption">Already Have an Account</Typography>
+              <Typography onClick={() => handleNavigate("/forgot-password")} className={styles.AlternateDirection} variant="caption">Forgot Password</Typography>
+            </div>
+          ) : null
+        }
       </div>
     </div>
   );

@@ -1,0 +1,59 @@
+.NumberPicker {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    min-width: 100%;
+    height: fit-content;
+    justify-content: space-between;
+}
+
+.Left {
+    display: flex;
+    padding: 10px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    flex: 1;
+    width: fit-content;
+    flex-direction: column;
+    background-color: rgba(176, 110, 238, 0.911);
+    justify-content: center;
+    align-items: center;
+}
+
+.Middle {
+    display: flex;
+    flex-direction: row;
+    flex: 4;
+    justify-content: center;
+    padding: 10px;
+    align-items: center;
+    column-gap: 5px;
+    background-color: #e5e5e5;
+}
+
+.Right {
+    display: flex;
+    padding: 10px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    flex: 1;
+    width: fit-content;
+    flex-direction: column;
+    background-color: rgba(176, 110, 238, 0.911);
+    justify-content: center;
+    align-items: center;
+}
+
+.NumberInput {
+    font-size: 24px;
+    padding: 5px;
+    border: none;
+    width: fit-content;
+    width: 100px;
+    text-align: center;
+    background-color: #e5e5e5;
+}
+
+.NumberInput:focus { 
+    outline: none;
+}

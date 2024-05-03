@@ -1,26 +1,146 @@
 .FormContainer {
   display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 100%;
+  height: fit-content;
+}
+
+.InputGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  position: relative;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.InputLabel {
+  font-size: 12px;
+  color: #696969;
+}
+
+.InputField {
+  height: 35px;
+  font-size: medium;
+  font-weight: 500;
+  background-color: #e5e5e5;
+  border-radius: 5px;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  justify-content: center;
+  text-align: left;
+  font-weight: 400;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: #333;
+}
+
+.InputField:focus {
+  outline: none;
+}
+
+.InputRow {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+  width: 100%;
+  height: fit-content;
+}
+
+.ContentRow {
+  display: flex;
+  flex-direction: row;
+  height: fit-content;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.Icon {
+  color: #333;
+  transition: 0.2s;
+}
+
+.Icon:hover {
+  cursor: pointer;
+  color: rgba(176, 110, 238, 0.911);
+  transition: 0.2s;
+}
+
+.Form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  height: 100%;
+  width: 100%;
+  margin-top: 30px;
+}
+
+.TermsAndConditions {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.AccountTypes {
+  display: flex;
   flex-direction: row;
   width: 100%;
-  height: 100%;
   column-gap: 10px;
-  row-gap: 10px;
+  padding: 10px;
+  background-color: #e5e5e5;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.AccountType {
+  display: flex;
+  flex: 1;
+  transition: 0.2s;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
   padding: 5px;
-  overflow-y: hidden;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
-.FormLeft {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  height: 100%;
+.Selected {
+  background-color: rgba(176, 110, 238, 0.911);
+  color: white;
+  transition: 0.2s;
+}
+
+.ErrorMessage {
+  font-size: small;
+  text-align: center;
   width: 100%;
-  align-items: start;
+  color: rgb(255, 106, 106);
 }
 
-.FormRight {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  height: 100%;
+.Button:disabled {
+  background-color: #696969;
+  color: #e5e5e5;
+  border: 1px solid #e5e5e5;
+  transition: 0.2s;
+}
+
+.Button {
+  width: 100%;
+  max-width: 800px;
+  align-self: center;
+  margin-top: 15px;
+  border: 1px solid rgba(176, 110, 238, 0.911);
+  color: rgba(176, 110, 238, 0.911);
+  transition: 0.2s;
+}
+
+.Button:hover {
+  border: 1px solid rgba(176, 110, 238, 0.911);
+}
+
+.Button:focus {
+  outline: none;
 }

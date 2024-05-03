@@ -16,8 +16,10 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  border: none;
+  border: 1px solid #e5e5e5;
   border-radius: 5px;
+  white-space: nowrap;
+  width: fit-content;
   transition: 0.2s;
 }
 
@@ -36,7 +38,7 @@
   border-radius: 5px;
   padding: 10px;
   row-gap: 10px;
-  box-shadow: 0px 0px 10px #f1f1f1;
+  box-shadow: 0px 0px 10px #e5e5e5;
   text-align: left;
 }
 
@@ -48,10 +50,9 @@
 }
 
 .Dropdown:hover .DropdownButton {
-  border: none;
+  border: 1px solid #e5e5e5;
   background-color: #e5e5e5;
   transition: 0.2s;
-  
 }
 
 .IconDown {

@@ -59,7 +59,7 @@
   flex: 1;
   height: 100%;
   flex-direction: column;
-  border-right: 2px solid #f1f1f1;
+  border-right: 2px solid #e5e5e5;
   padding-right: 10px;
 }
 
@@ -89,7 +89,7 @@
 
 .Plan h2 {
   margin: 0px;
-  border-bottom: 2px solid #f1f1f1;
+  border-bottom: 2px solid #e5e5e5;
 }
 
 .SeatSelector {

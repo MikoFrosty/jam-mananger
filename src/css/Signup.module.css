@@ -15,7 +15,7 @@
   display: flex;
   height: 80%;
   width: 80%;
-  border-right: 2px solid #f1f1f1;
+  border-right: 2px solid #e5e5e5;
   align-items: center;
   justify-content: center;
   text-align: left;
@@ -83,7 +83,7 @@
   height: 35px;
   font-size: medium;
   font-weight: 500;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   border: none;
   padding: 10px;
@@ -105,7 +105,7 @@
   flex-direction: row;
   justify-content: center;
   column-gap: 5px;
-  background-color: #f1f1f1;
+  background-color: #e5e5e5;
   border-radius: 5px;
   padding: 0px 0px 0px 10px;
 }
